@@ -25,6 +25,7 @@ export default defineConfig({
           { text: "ディスクとページ", link: "/parts/disk-and-pages" },
           { text: "B-Tree", link: "/parts/btree" },
           { text: "ログ構造KV", link: "/parts/log-structured-kv" },
+          { text: "WAL", link: "/parts/wal" },
         ],
       },
       {
