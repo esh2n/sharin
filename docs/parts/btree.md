@@ -1,5 +1,25 @@
 <script setup>
 import BTreeDemo from '../components/BTreeDemo.vue'
+import BTreeNodeView from '../components/BTreeNodeView.vue'
+import FigureBox from '../components/figures/FigureBox.vue'
+import BarScale from '../components/figures/BarScale.vue'
+
+// 図: 1億件を探すときのページ読み回数
+const pageReads = [
+  { label: '二分探索木', text: '約27回', frac: 1, tone: 'bad' },
+  { label: 'B-Tree(分岐300)', text: '4回', frac: 4 / 27, tone: 'good' },
+]
+
+// 図: 分割の前後
+const beforeSplit = { id: 1, keys: [10, 20, 30], children: [] }
+const afterSplit = {
+  id: 2,
+  keys: [20],
+  children: [
+    { id: 3, keys: [10], children: [] },
+    { id: 4, keys: [30], children: [] },
+  ],
+}
 </script>
 
 # B-Tree
@@ -12,20 +32,36 @@ import BTreeDemo from '../components/BTreeDemo.vue'
 [ID Generation](./id-generation) の章で予告した
 「なぜ UUIDv7 はインデックスに優しいのか」をデモで実際に見るのがゴール。
 
+::: tip 前提章
+この章は2つの前提章の上に立っている。
+[二分探索木](./binary-search-tree)(半分ずつ捨てる速さと、崩壊の問題)と、
+[ディスクとページ](./disk-and-pages)(ページ読み回数という速さの物差し)を先に読んでほしい。
+:::
+
 この章の肝は3つ。
 
-- B-Tree の存在理由は**ディスク**。速さの単位は「比較の回数」ではなく「**ページ読みの回数**」
-- だから1ノードにキーを大量に詰めて枝分かれを太くし、**木を浅くする**
+- B-Tree の存在理由は**ディスク**。速さの単位は比較の回数ではなく**ページ読みの回数**
+- だから1ノード = 1ページにキーを大量に詰めて枝分かれを太くし、**木を浅くする**
 - 挿入は「降りながら、満杯のノードを先に割っておく」(proactive split)だけで書ける
 
-## なぜ二分探索木ではダメなのか
+## なぜ二分探索木のままではダメなのか
 
-メモリの中だけなら二分探索木で十分速い。しかしインデックスはディスクに置かれ、
-ディスクは**ページ**(PostgreSQL なら 8KB)単位でしか読めない。
+[二分探索木](./binary-search-tree)は、平衡さえ保てば比較 log2(n) 回で探せた。
+メモリの中ならこれで話は終わり。しかしインデックスはディスクに置かれる。
+[ディスクとページ](./disk-and-pages)で見たとおり、ディスクはページ単位でしか読めず、
+1回のページ読みはメモリアクセスの数千〜10万倍重い。だから
+**速さはページ読みの回数で数える**。
 
-二分木で1億件を探すと約27回の比較が要り、ノードがバラバラのページにいれば
-**27回のページ読み**になる。ここで発想を変えて、1ページに収まるだけキーを詰めたらどうなるか。
-8KB のページにはキーとポインタが数百組入る。枝分かれが300なら:
+二分木のノードは小さい(キー1個とポインタ2本)ので、1億件も入れるとノードは
+バラバラのページに散らばる。高さ約27の木をたどる = **最悪27回のページ読み**。
+
+<FigureBox caption="1億件から1件探すときのページ読み回数。比較回数はほぼ同じでも、ディスクに触る回数が違う">
+  <BarScale :bars="pageReads" />
+</FigureBox>
+
+ここで発想を変える。ページはどうせ8KBまるごと読まれるのだから、
+**1ページに収まるだけキーを詰めてしまえばいい**。8KB にはキーとポインタが
+数百組入る。枝分かれが300なら:
 
 ```
 高さ0:                1 ノード ×  300 キー
@@ -64,7 +100,23 @@ import BTreeDemo from '../components/BTreeDemo.vue'
 
 <<< ../../data-structures/btree/btree.go#insert{go}
 
-分割はこう動く。真ん中のキーが親に昇格し、残りが左右に分かれる:
+分割はこう動く。真ん中のキーが親に昇格し、残りが左右に分かれる。
+t=2(1ノード最大3キー)の木に 10, 20, 30 まで入れて、4件目を入れようとした瞬間:
+
+<FigureBox caption="左: 満杯のノード(これ以上入らない)。右: 分割後 — 真ん中の20が昇格して新しい root になり、木が1段高くなる">
+  <div class="split-fig">
+    <BTreeNodeView :node="beforeSplit" :touched="[]" />
+    <span class="split-arrow">分割</span>
+    <BTreeNodeView :node="afterSplit" :touched="[2]" />
+  </div>
+</FigureBox>
+
+<style>
+.split-fig { display: flex; align-items: center; justify-content: center; gap: 24px; }
+.split-arrow { font-size: 13px; color: var(--vp-c-text-2); white-space: nowrap; }
+</style>
+
+コードではこうなる:
 
 <<< ../../data-structures/btree/btree.go#split{go}
 

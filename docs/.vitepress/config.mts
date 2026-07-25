@@ -22,6 +22,7 @@ export default defineConfig({
         items: [
           { text: "ID Generation", link: "/parts/id-generation" },
           { text: "二分探索木", link: "/parts/binary-search-tree" },
+          { text: "ディスクとページ", link: "/parts/disk-and-pages" },
           { text: "B-Tree", link: "/parts/btree" },
         ],
       },
