@@ -13,3 +13,5 @@
 - sliding window log の記録は素朴なスライス管理
 
 本文: [教科書の章](../docs/parts/rate-limiter.md) / 実行: `go test ./rate-limiter/`
+
+分散版のライブデモ(Durable Objects 上の token bucket)は [demo/](./demo/) にある。
