@@ -1,4 +1,4 @@
-# db/kvlog
+# db/kvlog (ログ構造KV)
 
 追記だけの KV ストア(Bitcask 型)。db 編の第1段。
 
@@ -17,4 +17,4 @@
 - fsync の制御なし(OS のバッファ任せ)。durability の議論は WAL 編で
 - 全キーのインデックスがメモリに載る前提。単一 mutex
 
-本文: [教科書の章](../../docs/parts/append-only-kv.md) / 実行: `go test ./db/kvlog/`
+本文: [教科書の章](../../docs/parts/log-structured-kv.md) / 実行: `go test ./db/kvlog/`

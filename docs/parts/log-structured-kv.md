@@ -22,14 +22,14 @@ const logCells = [
 ]
 </script>
 
-# 追記だけのKV
+# ログ構造KV
 
 > 実装: [`db/kvlog/`](https://github.com/esh2n/sharin/tree/main/db/kvlog) / 実行: `go test ./db/kvlog/`
 
 ## この章で作るもの
 
-db 編の第1段。「ファイルには**追記しかしない**」という縛りだけで、
-Put / Get / Delete とクラッシュ耐性を持つ KV ストア(Bitcask 型)を作る。
+db 編の第1段。**ログ構造(log-structured)** — 「ファイルには追記しかしない」という
+縛りだけで、Put / Get / Delete とクラッシュ耐性を持つ KV ストア(Bitcask 型)を作る。
 
 この章の肝は3つ。
 

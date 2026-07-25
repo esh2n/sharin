@@ -24,7 +24,7 @@ export default defineConfig({
           { text: "二分探索木", link: "/parts/binary-search-tree" },
           { text: "ディスクとページ", link: "/parts/disk-and-pages" },
           { text: "B-Tree", link: "/parts/btree" },
-          { text: "追記だけのKV", link: "/parts/append-only-kv" },
+          { text: "ログ構造KV", link: "/parts/log-structured-kv" },
         ],
       },
       {
