@@ -51,7 +51,10 @@ export default defineConfig({
       },
       {
         text: "LLMのなかみ",
-        items: [{ text: "LLM Sampling", link: "/parts/llm-sampling" }],
+        items: [
+          { text: "LLM Sampling", link: "/parts/llm-sampling" },
+          { text: "行列演算", link: "/parts/tensor" },
+        ],
       },
     ],
     socialLinks: [{ icon: "github", link: "https://github.com/esh2n/sharin" }],
