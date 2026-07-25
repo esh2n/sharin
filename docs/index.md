@@ -13,9 +13,3 @@ hero:
       text: GitHub
       link: https://github.com/esh2n/sharin
 ---
-
-<script setup>
-import RoadmapMap from './components/RoadmapMap.vue'
-</script>
-
-<RoadmapMap />

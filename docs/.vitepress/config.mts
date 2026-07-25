@@ -5,10 +5,7 @@ export default defineConfig({
   title: "sharin",
   description: "車輪の再発明で学び直す教科書",
   themeConfig: {
-    nav: [
-      { text: "教科書", link: "/parts/rate-limiter" },
-      { text: "バックログ", link: "/backlog" },
-    ],
+    nav: [{ text: "教科書", link: "/parts/rate-limiter" }],
     sidebar: [
       {
         text: "トラフィック制御と観測",
