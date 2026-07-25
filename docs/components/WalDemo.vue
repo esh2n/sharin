@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, ref } from "vue";
+import DemoShell from "./DemoShell.vue";
 
 // Go 版 db/wal の送金シーケンスをブラウザで再現するシミュレータ。
 type CrashPoint = "none" | "before-commit" | "after-commit" | "mid-apply";
@@ -9,10 +10,17 @@ interface WalRec {
   commit?: boolean;
 }
 
+const POINTS: Array<{ value: CrashPoint; label: string }> = [
+  { value: "none", label: "なし" },
+  { value: "before-commit", label: "commit 前" },
+  { value: "after-commit", label: "commit 直後" },
+  { value: "mid-apply", label: "適用途中" },
+];
+
 const balances = ref({ a: 1000, b: 1000 });
 const wal = ref<WalRec[]>([]);
 const crashed = ref(false);
-const story = ref<string[]>([]);
+const story = ref<Array<{ text: string; crash?: boolean }>>([]);
 const point = ref<CrashPoint>("after-commit");
 
 const AMOUNT = 100;
@@ -25,58 +33,49 @@ function run() {
   const newA = balances.value.a - AMOUNT;
   const newB = balances.value.b + AMOUNT;
 
-  // 1. 変更内容を WAL に追記
   wal.value = [{ text: `set A=${newA}` }, { text: `set B=${newB}` }];
-  story.value.push(`1. WAL に set A=${newA}, set B=${newB} を追記した`);
+  story.value.push({ text: `WAL に set A=${newA} と set B=${newB} を追記` });
   if (point.value === "before-commit") {
     crashed.value = true;
-    story.value.push("ここでクラッシュ。commit レコードは書かれていない");
+    story.value.push({ text: "クラッシュ。commit レコードは書かれていない", crash: true });
     return;
   }
 
-  // 2. commit + fsync
   wal.value = [...wal.value, { text: "commit", commit: true }];
-  story.value.push("2. commit を追記して fsync。ここで「送金はやる」と確定");
+  story.value.push({ text: "commit を追記して fsync。「送金はやる」とここで確定" });
   if (point.value === "after-commit") {
     crashed.value = true;
-    story.value.push("ここでクラッシュ。ページは1枚も書き換えていない");
+    story.value.push({ text: "クラッシュ。ページは1枚も書き換えていない", crash: true });
     return;
   }
 
-  // 3. ページ適用
   balances.value = { ...balances.value, a: newA };
-  story.value.push(`3. ページ適用: A=${newA} を書いた`);
+  story.value.push({ text: `ページ適用: 口座A を ${newA} に書き換え` });
   if (point.value === "mid-apply") {
     crashed.value = true;
-    story.value.push(`ここでクラッシュ。B は古いまま(${balances.value.b})。データファイルは不整合!`);
+    story.value.push({ text: `クラッシュ。口座B は古いまま。データファイルは不整合`, crash: true });
     return;
   }
   balances.value = { ...balances.value, b: newB };
-  story.value.push(`3. ページ適用: B=${newB} を書いた`);
+  story.value.push({ text: `ページ適用: 口座B を ${newB} に書き換え` });
 
-  // 4. checkpoint
   wal.value = [];
-  story.value.push("4. checkpoint: 適用済みなので WAL を空にした");
+  story.value.push({ text: "checkpoint: 適用済みなので WAL を空に" });
 }
 
 function recoverDb() {
   if (!crashed.value) return;
-  story.value = ["再起動。リカバリが WAL を先頭から読む…"];
+  story.value = [{ text: "再起動。リカバリが WAL を先頭から読む" }];
   const hasCommit = wal.value.some((r) => r.commit);
   if (hasCommit) {
-    const sets = wal.value.filter((r) => !r.commit);
-    for (const s of sets) {
-      const m = s.text.match(/set (\w)=(\d+)/);
-      if (m) {
-        balances.value = { ...balances.value, [m[1].toLowerCase()]: Number(m[2]) };
-      }
+    for (const r of wal.value.filter((r) => !r.commit)) {
+      const m = r.text.match(/set (\w)=(\d+)/);
+      if (m) balances.value = { ...balances.value, [m[1].toLowerCase()]: Number(m[2]) };
     }
-    story.value.push("commit を発見。set を全部やり直す(redo)。冪等なので適用済みでも壊れない");
-    story.value.push(`復元完了: A=${balances.value.a}, B=${balances.value.b}。送金は完遂された`);
+    story.value.push({ text: "commit を発見。set を全部やり直す(redo)。冪等なので適用済み分も壊れない" });
+    story.value.push({ text: `復元完了: A=${balances.value.a}, B=${balances.value.b}。送金は完遂` });
   } else if (wal.value.length) {
-    story.value.push("commit が無い。書きかけのバッチなので捨てる。送金は「無かったこと」になる");
-  } else {
-    story.value.push("WAL は空。何もすることがない");
+    story.value.push({ text: "commit が無いので書きかけバッチを捨てる。送金は「無かったこと」に" });
   }
   wal.value = [];
   crashed.value = false;
@@ -91,167 +90,175 @@ function reset() {
 </script>
 
 <template>
-  <div class="wd-demo">
-    <div class="wd-controls">
-      <label class="wd-select">
-        クラッシュ地点:
-        <select v-model="point" :disabled="crashed">
-          <option value="none">クラッシュしない</option>
-          <option value="before-commit">commit を書く前</option>
-          <option value="after-commit">commit 直後(ページ適用前)</option>
-          <option value="mid-apply">ページ適用の途中(1枚だけ)</option>
-        </select>
-      </label>
-      <button class="wd-btn brand" type="button" :disabled="crashed" @click="run">
-        A から B へ 100 送金
+  <DemoShell
+    title="送金シミュレータ"
+    :badge="crashed ? 'クラッシュ中' : consistent ? '整合' : '不整合'"
+    :badge-tone="crashed ? 'ng' : consistent ? 'ok' : 'ng'"
+  >
+    <div class="sd-controls">
+      <span class="wd-caption">クラッシュ地点</span>
+      <div class="sd-seg">
+        <span
+          v-for="p in POINTS"
+          :key="p.value"
+          class="sd-seg-opt"
+          :class="{ on: point === p.value, disabled: crashed }"
+          @click="!crashed && (point = p.value)"
+        >
+          {{ p.label }}
+        </span>
+      </div>
+      <span class="spacer"></span>
+      <button v-if="!crashed" class="sd-btn sd-btn--primary" type="button" @click="run">
+        A→B へ 100 送金
       </button>
-      <button class="wd-btn" type="button" :disabled="!crashed" @click="recoverDb">
+      <button v-else class="sd-btn sd-btn--primary" type="button" @click="recoverDb">
         再起動してリカバリ
       </button>
-      <button class="wd-btn" type="button" @click="reset">リセット</button>
+      <button class="sd-btn" type="button" @click="reset">リセット</button>
     </div>
 
-    <div class="wd-panels">
-      <div class="wd-panel">
-        <p class="wd-label">データファイル(ページ)</p>
-        <div class="wd-slots">
-          <div class="wd-slot">口座A<br /><strong>{{ balances.a }}</strong></div>
-          <div class="wd-slot">口座B<br /><strong>{{ balances.b }}</strong></div>
+    <div class="wd-files">
+      <div class="wd-file">
+        <div class="wd-file-head">
+          <span class="wd-file-name">data.db</span>
+          <span class="wd-file-desc">口座ページ</span>
         </div>
-        <p class="wd-verdict" :class="consistent ? 'ok' : 'ng'">
-          合計 {{ balances.a + balances.b }} — {{ consistent ? "整合" : "不整合(お金が消えている)" }}
-        </p>
-      </div>
-      <div class="wd-panel">
-        <p class="wd-label">WAL</p>
-        <div v-if="wal.length" class="wd-wal">
-          <div v-for="(r, i) in wal" :key="i" class="wd-rec" :class="{ commit: r.commit }">
-            {{ r.text }}
+        <div class="wd-file-body">
+          <div class="wd-account">
+            <span>口座A</span>
+            <strong>{{ balances.a }}</strong>
+          </div>
+          <div class="wd-account">
+            <span>口座B</span>
+            <strong>{{ balances.b }}</strong>
+          </div>
+          <div class="wd-sum" :class="consistent ? 'ok' : 'ng'">
+            合計 {{ balances.a + balances.b }}
+            {{ consistent ? "" : " — 100 が消えている" }}
           </div>
         </div>
-        <p v-else class="wd-empty">空</p>
+      </div>
+      <div class="wd-file">
+        <div class="wd-file-head">
+          <span class="wd-file-name">wal.log</span>
+          <span class="wd-file-desc">先行書き込みログ</span>
+        </div>
+        <div class="wd-file-body">
+          <template v-if="wal.length">
+            <div v-for="(r, i) in wal" :key="i" class="wd-rec" :class="{ commit: r.commit }">
+              {{ r.text }}
+            </div>
+          </template>
+          <div v-else class="wd-rec empty">(空)</div>
+        </div>
       </div>
     </div>
 
     <ol v-if="story.length" class="wd-story">
-      <li v-for="(s, i) in story" :key="i">{{ s }}</li>
+      <li v-for="(s, i) in story" :key="i" :class="{ crash: s.crash }">{{ s.text }}</li>
     </ol>
-  </div>
+  </DemoShell>
 </template>
 
 <style scoped>
-.wd-demo {
-  margin: 16px 0 24px;
-  padding: 16px;
-  border: 1px solid var(--vp-c-divider);
-  border-radius: 8px;
-  background-color: var(--vp-c-bg-soft);
-}
-.wd-controls {
-  display: flex;
-  gap: 10px;
-  flex-wrap: wrap;
-  align-items: center;
-}
-.wd-select {
-  font-size: 13px;
-}
-.wd-select select {
-  margin-left: 4px;
-  padding: 4px 8px;
-  border: 1px solid var(--vp-c-divider);
-  border-radius: 6px;
-  background-color: var(--vp-c-bg);
-  color: var(--vp-c-text-1);
-  font-size: 13px;
-}
-.wd-btn {
-  padding: 6px 14px;
-  border-radius: 6px;
-  font-size: 13px;
-  color: var(--vp-c-text-1);
-  background-color: var(--vp-c-default-soft);
-}
-.wd-btn.brand {
-  font-weight: 600;
-  color: var(--vp-button-brand-text);
-  background-color: var(--vp-button-brand-bg);
-}
-.wd-btn.brand:hover {
-  background-color: var(--vp-button-brand-hover-bg);
-}
-.wd-btn:disabled {
-  opacity: 0.5;
-}
-.wd-panels {
-  display: flex;
-  gap: 16px;
-  flex-wrap: wrap;
-  margin-top: 12px;
-}
-.wd-panel {
-  flex: 1;
-  min-width: 220px;
-}
-.wd-label {
-  margin: 0 0 6px;
+.wd-caption {
   font-size: 12px;
   font-weight: 600;
   color: var(--vp-c-text-2);
 }
-.wd-slots {
-  display: flex;
-  gap: 8px;
+.wd-files {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-top: 14px;
 }
-.wd-slot {
-  flex: 1;
-  padding: 8px;
+@media (max-width: 560px) {
+  .wd-files {
+    grid-template-columns: 1fr;
+  }
+}
+.wd-file {
   border: 1px solid var(--vp-c-divider);
-  border-radius: 6px;
+  border-radius: 8px;
   background-color: var(--vp-c-bg);
-  text-align: center;
-  font-size: 13px;
+  overflow: hidden;
 }
-.wd-verdict {
-  margin: 8px 0 0;
-  font-size: 13px;
+.wd-file-head {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  padding: 6px 12px;
+  border-bottom: 1px solid var(--vp-c-divider);
+  background-color: var(--vp-c-default-soft);
+}
+.wd-file-name {
+  font-family: var(--vp-font-family-mono);
+  font-size: 12px;
   font-weight: 600;
 }
-.wd-verdict.ok {
-  color: var(--vp-c-green-1);
+.wd-file-desc {
+  font-size: 11px;
+  color: var(--vp-c-text-2);
 }
-.wd-verdict.ng {
-  color: var(--vp-c-danger-1);
-}
-.wd-wal {
+.wd-file-body {
+  padding: 10px 12px;
+  min-height: 108px;
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 6px;
+}
+.wd-account {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding: 4px 8px;
+  border-radius: 6px;
+  background-color: var(--vp-c-default-soft);
+  font-size: 13px;
+}
+.wd-account strong {
+  font-family: var(--vp-font-family-mono);
+  font-size: 14px;
+}
+.wd-sum {
+  margin-top: auto;
+  font-size: 12px;
+  font-weight: 600;
+  text-align: right;
+}
+.wd-sum.ok {
+  color: var(--vp-c-green-1);
+}
+.wd-sum.ng {
+  color: var(--vp-c-danger-1);
 }
 .wd-rec {
-  padding: 4px 10px;
-  border: 1px solid var(--vp-c-divider);
-  border-radius: 6px;
-  background-color: var(--vp-c-bg);
+  padding: 3px 8px;
+  border-left: 3px solid var(--vp-c-divider);
   font-family: var(--vp-font-family-mono);
   font-size: 12px;
 }
 .wd-rec.commit {
-  border-color: var(--vp-c-brand-1);
-  font-weight: 600;
+  border-left-color: var(--vp-c-brand-1);
+  font-weight: 700;
 }
-.wd-empty {
-  margin: 0;
-  font-size: 13px;
+.wd-rec.empty {
+  border-left: none;
   color: var(--vp-c-text-3);
 }
 .wd-story {
   margin: 14px 0 0;
-  padding-left: 20px;
+  padding-left: 22px;
   font-size: 13px;
   color: var(--vp-c-text-2);
 }
 .wd-story li {
-  margin: 2px 0;
+  margin: 3px 0;
+  padding-left: 4px;
+}
+.wd-story li.crash {
+  color: var(--vp-c-danger-1);
+  font-weight: 600;
 }
 </style>

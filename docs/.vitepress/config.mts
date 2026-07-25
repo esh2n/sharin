@@ -22,10 +22,12 @@ export default defineConfig({
         items: [
           { text: "ID Generation", link: "/parts/id-generation" },
           { text: "二分探索木", link: "/parts/binary-search-tree" },
+          { text: "LRUキャッシュ", link: "/parts/lru-cache" },
           { text: "ディスクとページ", link: "/parts/disk-and-pages" },
           { text: "B-Tree", link: "/parts/btree" },
           { text: "ログ構造KV", link: "/parts/log-structured-kv" },
           { text: "WAL", link: "/parts/wal" },
+          { text: "バッファプール", link: "/parts/buffer-pool" },
         ],
       },
       {

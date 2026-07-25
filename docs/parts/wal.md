@@ -1,19 +1,21 @@
 <script setup>
 import WalDemo from '../components/WalDemo.vue'
 import FigureBox from '../components/figures/FigureBox.vue'
-import FlowRow from '../components/figures/FlowRow.vue'
+import LaneSteps from '../components/figures/LaneSteps.vue'
 
-const naiveFlow = [
-  { label: 'A から 100 引く', note: 'ページ書き換え' },
-  { label: 'クラッシュ', state: 'hot', note: 'ここで死んだら?' },
-  { label: 'B に 100 足す', note: '実行されない', state: 'dim' },
+const naiveLanes = ['データファイル']
+const naiveSteps = [
+  { label: 'A から 100 引く', lane: 0, action: '書換' },
+  { label: 'クラッシュ', note: 'ここで死んだら?', accent: 'danger' },
+  { label: 'B に 100 足す', note: '実行されない', lane: 0, action: '書換', dim: true },
 ]
 
-const walFlow = [
-  { label: '1. WAL に変更を追記', note: 'set A / set B' },
-  { label: '2. commit + fsync', note: '「やる」と確定する瞬間', state: 'hot' },
-  { label: '3. ページ書き換え', note: 'A と B' },
-  { label: '4. checkpoint', note: 'WAL を空に' },
+const walLanes = ['wal.log', 'data.db']
+const walSteps = [
+  { label: '変更を追記', note: 'set A / set B', lane: 0, action: '追記' },
+  { label: 'commit + fsync', note: 'ここで「やる」と確定', lane: 0, action: 'fsync', accent: 'brand' },
+  { label: 'ページ書き換え', note: 'A と B の2ページ', lane: 1, action: '書換' },
+  { label: 'checkpoint', note: '適用済みログを捨てる', lane: 0, action: '空に' },
 ]
 </script>
 
@@ -44,7 +46,7 @@ db 編の第2段、**Write-Ahead Log**。題材は送金 — 「口座Aから引
 送金は本質的に2つの書き込みでできている。素朴にページを直接書き換えると:
 
 <FigureBox caption="素朴な送金。2つの書き込みの間でクラッシュすると、100円がこの世から消える">
-  <FlowRow :steps="naiveFlow" />
+  <LaneSteps :lanes="naiveLanes" :steps="naiveSteps" />
 </FigureBox>
 
 [ログ構造KV](./log-structured-kv)では「追記だけにする」ことでこの問題を避けたが、
@@ -53,8 +55,8 @@ B-Tree のような**その場で書き換えたい**構造ではそうもいか
 
 ## 解法: 先にログ、後でページ
 
-<FigureBox caption="WAL 付きの送金。2 の fsync が完了する前に死ねば「無かったこと」、後に死ねば「必ず完遂」。中間がない">
-  <FlowRow :steps="walFlow" />
+<FigureBox caption="WAL 付きの送金。各ステップがどのファイルに触るかに注目 — データファイル(3)より先に、必ずログ(1-2)に書く。2 の fsync より前に死ねば「無かったこと」、後に死ねば「必ず完遂」で、中間がない">
+  <LaneSteps :lanes="walLanes" :steps="walSteps" />
 </FigureBox>
 
 ログへの追記は[ディスクとページ](./disk-and-pages)で見た通りシーケンシャル書き込みで速い。
