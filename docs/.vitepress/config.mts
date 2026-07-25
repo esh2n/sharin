@@ -16,7 +16,10 @@ export default defineConfig({
       },
       {
         text: "ネットワーク下層",
-        items: [{ text: "HTTPサーバ", link: "/parts/http-server" }],
+        items: [
+          { text: "HTTPサーバ", link: "/parts/http-server" },
+          { text: "DNSリゾルバ", link: "/parts/dns" },
+        ],
       },
       {
         text: "データの持ち方",
