@@ -34,13 +34,101 @@
 - 状態は裸のテキストで置かない。カード/バッジ/ログ行など、意味に合う器に入れる
 - **ビルド後に Playwright スクリーンショットで必ず目視確認**してからコミットする
   (scratchpad の shot.mjs。dev サーバー + `node shot.mjs <url> <prefix>`)
-- 既存デモ(rate-limiter / sampling / trace / idgen / btree / bst / kvlog)の
-  DemoShell への移行は順次(バックログ)
 
-## 作業キュー
+## 全章に入れる必須要素(2026-07-25 夜 追加。既存章にも遡及適用)
 
-1. **binary-search-tree 章(新規)**: Go 実装 + 「昇順挿入で一本鎖に崩壊する」デモ。B-Tree の前提その1
-2. **disk-and-pages 章(新規)**: ページとは何か、ランダム/シーケンシャル I/O。図中心のミニ章。B-Tree の前提その2、db/WAL 編でも参照する
-3. **btree 章 改稿**: 導入を前提2章へのリンク前提で書き直し、分割・高さの図を追加
-4. **既存4章の一括監査**: テンプレートに照らして図不足・用語未定義を洗い出して補強
-5. 以降の新パーツは常にこのテンプレートで書く
+1. **30秒要約**: 章の冒頭に `<Summary>` カード。「これは何か / なぜ大事か / 肝ひとこと」を
+   3行で。忙しい人がここだけ読んで概要を掴める
+2. **トップに全体図**: `index.md` にパーツの依存マップ(グループ別・状態バッジ・依存の矢印注記)。
+   読む順と現在地が一目でわかる。ロードマップと同じ状態を反映する
+3. **ダークモード目視も必須**: ライトに加えダークでも Playwright スクショ確認してからコミット
+   (`colorScheme: 'dark'`)。テーマ変数だけ使っていれば基本崩れないが目視で担保する
+4. **実行可能 Go リンク**: 各章に「その場で動かす」導線。各パーツに `example/` の
+   self-contained な `main.go` を置き、`go run` の手順 + Go Playground 共有リンクを載せる
+   (共有リンクは play.golang.org/share への POST で採番)
+
+## ロードマップ(対応ページ一覧)
+
+状態: ✅公開済 / 🔜次に着手 / ⬜バックログ。順序は「前提 → 応用」の依存に従う。
+
+### トラフィック制御と観測
+| パーツ | 状態 | 備考 |
+|---|---|---|
+| rate-limiter | ✅ | Workers ライブデモ付き |
+| trace-sampling | ✅ | head/tail シミュレータ |
+| proxy | ⬜ | L4/L7、リバースプロキシ |
+
+### データの持ち方 — **db 編を完成させるのが当面の主軸**
+| パーツ | 状態 | 備考 |
+|---|---|---|
+| id-generation | ✅ | |
+| binary-search-tree | ✅ | 前提 |
+| lru-cache | ✅ | 前提 |
+| disk-and-pages | ✅ | 前提 |
+| btree | ✅ | |
+| log-structured-kv | ✅ | |
+| wal | ✅ | |
+| buffer-pool | ✅ | |
+| **btree-page-store** | 🔜 | B-Tree を buffer-pool の上に載せる(メモリ→ページ) |
+| **btree + wal 統合** | 🔜 | クラッシュセーフなインデックス。db 編のクライマックス |
+| **mini-sql** | 🔜 | 上記の上に parser + executor。SELECT/INSERT |
+| hash-map | ⬜ | 衝突・リサイズ。等価検索の対抗馬 |
+| bloom-filter | ⬜ | 確率的メンバシップ |
+| skip-list | ⬜ | 確率的平衡。LSM の MemTable 用 |
+
+### ネットワーク下層
+| パーツ | 状態 | 備考 |
+|---|---|---|
+| tcp-ip | ⬜ | ソケットから。proxy 編の土台 |
+| http-server | ⬜ | 生ソケットで HTTP を話す |
+| dns | ⬜ | 名前解決 |
+
+### 分散システム
+| パーツ | 状態 | 備考 |
+|---|---|---|
+| raft | ⬜ | 分散合意。レプリケーションの核 |
+| replication | ⬜ | WAL を他ノードへ送る |
+| consistent-hashing | ⬜ | シャーディングの土台 |
+| distributed-lock | ⬜ | |
+
+### メッセージングとRPC
+| パーツ | 状態 | 備考 |
+|---|---|---|
+| message-queue | ⬜ | at-least-once / 冪等 |
+| pubsub | ⬜ | |
+| rpc | ⬜ | protobuf 風シリアライズ + gRPC 風呼び出し |
+
+### 暗号と認証
+| パーツ | 状態 | 備考 |
+|---|---|---|
+| crypto | ⬜ | 共通鍵/公開鍵/ハッシュ/署名 |
+| auth | ⬜ | crypto の応用 |
+| blockchain | ⬜ | crypto の応用 |
+
+### ランタイム内部
+| パーツ | 状態 | 備考 |
+|---|---|---|
+| gc | ⬜ | mark-sweep GC |
+| scheduler | ⬜ | goroutine 風の協調スケジューラ |
+| event-loop | ⬜ | epoll 風の I/O 多重化 |
+| wasm | ⬜ | バイトコード実行(lang 編と隣接) |
+
+### LLMのなかみ
+| パーツ | 状態 | 備考 |
+|---|---|---|
+| llm-sampling | ✅ | |
+| llm | ⬜ | tensor 自作 → attention → GPT-2 forward。L サイズ |
+
+### 画面が出るまで / 計算機の土台
+| パーツ | 状態 | 備考 |
+|---|---|---|
+| vdom / mini-next / browser | ⬜ | フロント編 |
+| lang / container / os | ⬜ | 土台編 |
+
+## 直近の作業キュー(この順で)
+
+1. **既存デモ7つを DemoShell に一括移行**: rate-limiter / trace / llm-sampling / idgen /
+   btree / bst / kvlog。ライト+ダーク目視込み
+2. **全11章に 30秒要約 + Go 実行リンクを遡及追加**
+3. **db 編を進める**: btree-page-store → btree+wal 統合 → mini-sql
+4. 以降の新パーツは常にこのテンプレート + 必須要素で書く
