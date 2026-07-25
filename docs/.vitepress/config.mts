@@ -27,6 +27,7 @@ export default defineConfig({
           { text: "バッファプール", link: "/parts/buffer-pool" },
           { text: "B-Treeページストア", link: "/parts/btree-page-store" },
           { text: "B-Tree + WAL", link: "/parts/btree-wal" },
+          { text: "ミニSQL", link: "/parts/mini-sql" },
         ],
       },
       {
