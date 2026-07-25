@@ -54,6 +54,7 @@ export default defineConfig({
         items: [
           { text: "LLM Sampling", link: "/parts/llm-sampling" },
           { text: "行列演算", link: "/parts/tensor" },
+          { text: "Attention", link: "/parts/attention" },
         ],
       },
     ],
