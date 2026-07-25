@@ -15,6 +15,10 @@ export default defineConfig({
         ],
       },
       {
+        text: "ネットワーク下層",
+        items: [{ text: "HTTPサーバ", link: "/parts/http-server" }],
+      },
+      {
         text: "データの持ち方",
         items: [
           { text: "ID Generation", link: "/parts/id-generation" },
