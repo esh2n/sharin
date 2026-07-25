@@ -9,7 +9,7 @@ import SamplingDemo from '../components/SamplingDemo.vue'
 ::: info 「サンプリング」の同名別分野に注意
 この章は **LLM がテキストを生成するときのトークンサンプリング**の話。
 分散トレーシングの head-based / tail-based sampling(「全リクエストを記録できない中で
-どのトレースを残すか」)は別問題なので、trace-sampling 編として独立して扱う。
+どのトレースを残すか」)は別問題なので、[Trace Sampling](./trace-sampling) で独立して扱う。
 :::
 
 ## この章で作るもの

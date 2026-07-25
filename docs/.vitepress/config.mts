@@ -12,7 +12,10 @@ export default defineConfig({
     sidebar: [
       {
         text: "トラフィック制御と観測",
-        items: [{ text: "Rate Limiter", link: "/parts/rate-limiter" }],
+        items: [
+          { text: "Rate Limiter", link: "/parts/rate-limiter" },
+          { text: "Trace Sampling", link: "/parts/trace-sampling" },
+        ],
       },
       {
         text: "LLMのなかみ",

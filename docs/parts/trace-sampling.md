@@ -1,0 +1,147 @@
+<script setup>
+import TraceSamplingDemo from '../components/TraceSamplingDemo.vue'
+</script>
+
+# Trace Sampling
+
+> 実装: [`trace-sampling/`](https://github.com/esh2n/sharin/tree/main/trace-sampling) / 実行: `go test ./trace-sampling/`
+
+::: info 「サンプリング」の同名別分野に注意
+この章は**分散トレーシングで「どのトレースを保存するか」を決める**話。
+LLM がテキストを生成するときのトークンサンプリングは [LLM Sampling](./llm-sampling) で扱う。
+:::
+
+## この章で作るもの
+
+「全リクエストのトレースは保存できない」という前提のもとで、何を残すかを決める
+2つの戦略を実装し、同じワークロードに適用して比較する。
+
+1. **head-based sampling** — トレースの開始時に、確率で決める
+2. **tail-based sampling** — トレースの完結後に、中身を見てから決める
+3. **評価器** — 保存量(コスト)とエラー捕捉率を集計する
+
+この章の肝は3つ。
+
+- 問題は「全量は保存できない。**何を残すか**」。rate-limiter 編の「何を通すか」と対になる
+- head は安くて単純だが、判定時点で**エラーになるかという情報がまだ存在しない**。
+  だから低レートではエラートレースもレート通りにしか残らない
+- tail はエラー捕捉率100%にできるが、判定できるまで**全 span をバッファする**
+  インフラの代償を払う
+
+## 問題設定: 全量は保存できない
+
+まともなトラフィックのあるサービスでは、1リクエストが数十 span のトレースになり、
+秒間数千リクエストなら1日で数億 span になる。全部保存するとストレージ費用が
+本体のインフラ費用を追い越しかねない。一方で、トレースが本当に見たくなるのは
+**障害調査のとき**で、そのとき見たいのはエラーや異常に遅いリクエストのトレースに偏っている。
+
+つまりこれは「ランダムに間引けばいい」問題ではなく、
+**価値の高いトレース(エラー・遅延)をどれだけ効率よく残せるか**の問題になる。
+
+トレースは実物では span の木だが、サンプリング判定に必要な情報だけに縮約して扱う:
+
+```go
+type Trace struct {
+	ID       int
+	Duration time.Duration
+	Err      bool
+}
+```
+
+## head-based: 開始時に決める
+
+リクエストが入ってきた瞬間、まだ何も起きていない時点で「このトレースは記録する/しない」を
+確率で決めてしまう方式。
+
+<<< ../../trace-sampling/sampler.go#head{go}
+
+`Keep(_ Trace)` — 引数を**受け取るのに見ていない**のがこの実装の要点。
+開始時点では Duration も Err もまだ存在しない情報なので、見たくても見られない。
+テストでは「エラートレースを渡しても関係なく落とす」ことを固定してある。
+
+**メリット**
+
+- 判定が一瞬で終わりオーバーヘッドがほぼゼロ。SDK 内で完結する
+- 判定結果をトレースコンテキストの sampled フラグとして下流に伝播するだけで、
+  トレース全体の一貫性(全サービスが同じ判断)が保てる
+- 記録しないと決めたトレースは span 生成自体を省けるので、計測コストごと下がる
+
+**デメリット**
+
+- **エラーになるかをまだ知らない**。1%サンプリングなら、障害の証拠となる
+  エラートレースも1%しか残らない
+- 「あの障害のトレースを見たい」に対して、99%の確率で「残っていません」と答えることになる
+
+**実例**
+
+- OpenTelemetry SDK の `TraceIdRatioBased` + `ParentBased` サンプラー(head の標準形)
+- Jaeger の probabilistic sampler
+- AWS X-Ray(デフォルトは秒間1件 + 5% という head 型のルール)
+
+## tail-based: 完結を見てから決める
+
+トレースが完結して全 span が揃った後に、中身を見てから残すかを決める方式。
+エラーと遅いトレースは必ず残し、正常なトレースは統計用に少しだけ残す。
+
+<<< ../../trace-sampling/sampler.go#tail{go}
+
+**メリット**
+
+- エラー・遅延トレースの捕捉率を**100%**にできる。「あの障害のトレース」が必ずある
+- 「エラー」「遅い」だけでなく、特定顧客・特定エンドポイントなど任意の条件で
+  価値を定義できる
+
+**デメリット**
+
+- 判定できるようになるまで、**全トレースの全 span をバッファに保持**する必要がある。
+  このバッファ(コレクタ)は自前のインフラで、メモリと運用の実費がかかる
+- 「完結した」をどう知るか問題(実務では「最後の span から N 秒待つ」で近似する)
+- 同じトレースの span を同じコレクタに集める必要があり、
+  ロードバランサが traceID ベースのルーティングになる。**計測基盤自体が分散システムになる**
+
+**実例**
+
+- OpenTelemetry Collector の `tail_sampling` プロセッサ(ポリシー式で error / latency / rate を組める)
+- Honeycomb Refinery(tail-based 専用のプロキシ)
+- Grafana Tempo などのベンダーが提供するマネージド tail sampling
+
+## 実験: 同じワークロードで対決させる
+
+Go 実装では評価器でこの比較をテストとして固定している。
+
+<<< ../../trace-sampling/sampler.go#evaluate{go}
+
+下のデモは同じシミュレーションのブラウザ版。5000件のトレースに両方式を適用する
+(公平のため、tail のベースレートには head と同じサンプリング率を使っている)。
+
+**試してみる**: サンプリング率を 10% にしたとき、保存量はほぼ同じなのに、
+エラー捕捉率は head が約10%、tail が100%になる。
+サンプリング率を上げていくと head の捕捉率も上がるが、100%にするには
+全量保存(サンプリングの放棄)が必要——これが head の構造的な限界。
+
+<TraceSamplingDemo />
+
+## 2方式の比較
+
+| 方式 | 決めるタイミング | 必要なもの | エラー捕捉率 | 実例 |
+|---|---|---|---|---|
+| head-based | トレース開始時 | 乱数と伝播だけ | サンプリング率と同じ | OTel SDK、Jaeger、X-Ray |
+| tail-based | トレース完結後 | 全 span のバッファ + traceID ルーティング | 100%にできる | OTel Collector `tail_sampling`、Honeycomb Refinery |
+
+実務ではどちらか一方ではなく、**head で母数を減らしてから tail で選別する**二段構えや、
+「エラー時だけ SDK 側で強制記録する」ハイブリッドもよく使われる。
+
+## 簡略化したこと
+
+- **トレースを完結済みの要約に縮約**: span の木、複数サービスにまたがるコンテキスト伝播、
+  sampled フラグの実際の伝わり方(W3C `traceparent` ヘッダ)は実装していない
+- **tail のバッファは実装していない**: 「完結後に中身が見える」という結果だけをモデル化した。
+  未完トレースの保持・タイムアウト・traceID ルーティングこそが tail の実装コストの本体
+- **レート制御なし**: X-Ray の reservoir のような「秒間N件は必ず」や、
+  トラフィック変動に追従する適応型サンプリングは扱わない
+
+## 参考資料
+
+- [OpenTelemetry: Sampling](https://opentelemetry.io/docs/concepts/sampling/) — head/tail の公式整理。図がわかりやすい
+- [OTel Collector tail_sampling processor](https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/processor/tailsamplingprocessor) — 実物のポリシー定義が読める
+- [Honeycomb: Refinery](https://docs.honeycomb.io/manage-data-volume/refinery/) — tail-based 専用プロキシの設計
