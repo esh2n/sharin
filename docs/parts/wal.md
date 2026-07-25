@@ -2,6 +2,7 @@
 import WalDemo from '../components/WalDemo.vue'
 import FigureBox from '../components/figures/FigureBox.vue'
 import LaneSteps from '../components/figures/LaneSteps.vue'
+import Summary from '../components/Summary.vue'
 
 const naiveLanes = ['データファイル']
 const naiveSteps = [
@@ -22,6 +23,10 @@ const walSteps = [
 # WAL
 
 > 実装: [`db/wal/`](https://github.com/esh2n/sharin/tree/main/db/wal) / 実行: `go test ./db/wal/`
+
+<Summary>
+「口座Aから引いてBに足す」のように複数箇所を書き換える処理を、途中でクラッシュしても中途半端にならないよう守る。コツは、ページを書き換える前に「これからやること」をログに書いておくこと。ログに commit を書き終えた瞬間が「やる」の確定線で、そこより前に死ねば無かったことに、後なら必ずやり切る。半分だけ実行、が起きない。
+</Summary>
 
 ## この章で作るもの
 

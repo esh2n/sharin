@@ -3,6 +3,7 @@ import BTreeDemo from '../components/BTreeDemo.vue'
 import BTreeNodeView from '../components/BTreeNodeView.vue'
 import FigureBox from '../components/figures/FigureBox.vue'
 import BarScale from '../components/figures/BarScale.vue'
+import Summary from '../components/Summary.vue'
 
 // 図: 1億件を探すときのページ読み回数
 const pageReads = [
@@ -25,6 +26,10 @@ const afterSplit = {
 # B-Tree
 
 > 実装: [`data-structures/btree/`](https://github.com/esh2n/sharin/tree/main/data-structures/btree) / 実行: `go test ./data-structures/btree/`
+
+<Summary>
+ほとんどのデータベースのインデックスの中身、B-Tree を作る。二分探索木を「ディスク向けに太らせた」木で、1つのノードに数百のキーを詰めて枝分かれを増やすと、数十億件あってもページを数回読むだけで目当てに届く。二分探索木とディスクとページ、2つの前提の上に立つ章。
+</Summary>
 
 ## この章で作るもの
 

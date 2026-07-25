@@ -2,6 +2,7 @@
 import BufferPoolDemo from '../components/BufferPoolDemo.vue'
 import FigureBox from '../components/figures/FigureBox.vue'
 import LaneSteps from '../components/figures/LaneSteps.vue'
+import Summary from '../components/Summary.vue'
 
 const evictLanes = ['キャッシュ', 'ディスク']
 const evictSteps = [
@@ -15,6 +16,10 @@ const evictSteps = [
 # バッファプール
 
 > 実装: [`db/bufferpool/`](https://github.com/esh2n/sharin/tree/main/db/bufferpool) / 実行: `go test ./db/bufferpool/`
+
+<Summary>
+ディスクのページとメモリの間に立つ、たった1つの窓口を作る。読み書きは全部ここを通し、よく使うページはメモリに留めておく。どれだけディスクを読まずに済むか(ヒット率)がデータベースの実速度を決めて、そのヒット率はアクセスの偏りで決まる。B-Tree の昇順挿入がなぜ速いのか、その答えがここで数字になって出る。
+</Summary>
 
 ## この章で作るもの
 

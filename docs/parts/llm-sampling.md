@@ -1,10 +1,15 @@
 <script setup>
 import SamplingDemo from '../components/SamplingDemo.vue'
+import Summary from '../components/Summary.vue'
 </script>
 
 # LLM Sampling
 
 > 実装: [`llm-sampling/`](https://github.com/esh2n/sharin/tree/main/llm-sampling) / 実行: `go test ./llm-sampling/`
+
+<Summary>
+LLM が次の1トークンを選ぶところを、モデルが吐く生スコア(logits)から自分で計算する。softmax で確率にして、temperature で尖らせたり平らにしたり、top-p などで候補を絞って、最後に1つ抽選する。ChatGPT の応答の「性格」は、実はモデル本体と同じくらいこの選び方で決まっている。
+</Summary>
 
 ::: info 「サンプリング」の同名別分野に注意
 この章は **LLM がテキストを生成するときのトークンサンプリング**の話。

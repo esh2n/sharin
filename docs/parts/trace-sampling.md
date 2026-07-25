@@ -2,6 +2,7 @@
 import TraceSamplingDemo from '../components/TraceSamplingDemo.vue'
 import FigureBox from '../components/figures/FigureBox.vue'
 import FlowRow from '../components/figures/FlowRow.vue'
+import Summary from '../components/Summary.vue'
 
 const headFlow = [
   { label: 'アプリ (SDK)', note: 'ここで判定する', state: 'hot' },
@@ -18,6 +19,10 @@ const tailFlow = [
 # Trace Sampling
 
 > 実装: [`trace-sampling/`](https://github.com/esh2n/sharin/tree/main/trace-sampling) / 実行: `go test ./trace-sampling/`
+
+<Summary>
+リクエストの通り道を記録したトレースは、量が多すぎて全部は保存できない。ではどれを残すか。開始時に決め打ちする head-based と、終わってから中身を見て決める tail-based の2つを作って比べる。障害のときに見たいのはエラーや遅いトレースなので、無作為に間引くと肝心なものが消える、というのがこの話の勘所。
+</Summary>
 
 ::: info 「サンプリング」の同名別分野に注意
 この章は**分散トレーシングで「どのトレースを保存するか」を決める**話。

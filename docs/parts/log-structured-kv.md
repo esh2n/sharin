@@ -2,6 +2,7 @@
 import KvLogDemo from '../components/KvLogDemo.vue'
 import FigureBox from '../components/figures/FigureBox.vue'
 import PageRow from '../components/figures/PageRow.vue'
+import Summary from '../components/Summary.vue'
 
 // 図: レコードのバイトレイアウト
 const recordLayout = [
@@ -25,6 +26,10 @@ const logCells = [
 # ログ構造KV
 
 > 実装: [`db/kvlog/`](https://github.com/esh2n/sharin/tree/main/db/kvlog) / 実行: `go test ./db/kvlog/`
+
+<Summary>
+ファイルには追記しかしない、という縛りだけで KV ストアを作る。値の上書きも削除も、全部「新しいレコードを末尾に足す」で表す。既存の場所を書き換えないので、クラッシュで壊れうるのは書きかけの末尾だけ。今どの値が最新かはメモリ側のインデックスが覚えていて、再起動したらログを頭から読み直して復元する。
+</Summary>
 
 ## この章で作るもの
 

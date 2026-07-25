@@ -2,6 +2,7 @@
 import BstDemo from '../components/BstDemo.vue'
 import BstNodeView from '../components/BstNodeView.vue'
 import FigureBox from '../components/figures/FigureBox.vue'
+import Summary from '../components/Summary.vue'
 
 // 図: バランスの取れた木
 const balanced = {
@@ -27,6 +28,10 @@ const degenerate = {
 # 二分探索木
 
 > 実装: [`data-structures/bst/`](https://github.com/esh2n/sharin/tree/main/data-structures/bst) / 実行: `go test ./data-structures/bst/`
+
+<Summary>
+「左の子は自分より小さく、右の子は大きい」というルールだけの木を作る。この約束のおかげで、比較するたびに候補が半分に減って、log(件数)回で目当てを見つけられる。ただし木の形は入れた順番で決まってしまい、昇順に入れると一本の鎖に崩れる。この弱点が、次の B-Tree が必要な理由になる。
+</Summary>
 
 ## この章で作るもの
 

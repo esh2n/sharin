@@ -1,11 +1,16 @@
 <script setup>
 import LruDemo from '../components/LruDemo.vue'
 import FigureBox from '../components/figures/FigureBox.vue'
+import Summary from '../components/Summary.vue'
 </script>
 
 # LRUキャッシュ
 
 > 実装: [`data-structures/lru/`](https://github.com/esh2n/sharin/tree/main/data-structures/lru) / 実行: `go test ./data-structures/lru/`
+
+<Summary>
+決まった数しか入らないキャッシュで、いっぱいになったら「一番長く使っていないもの」から捨てる作戦を作る。map で場所を一発で引き、双方向リストで使った順番を保つ、という二段構えがLRUの正体。次のバッファプールが、これをそのまま「どのページを捨てるか」に使う。
+</Summary>
 
 ## この章で作るもの
 

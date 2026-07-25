@@ -2,6 +2,7 @@
 import FigureBox from '../components/figures/FigureBox.vue'
 import PageRow from '../components/figures/PageRow.vue'
 import BarScale from '../components/figures/BarScale.vue'
+import Summary from '../components/Summary.vue'
 
 // 図: 1バイト読みたくてもページごと
 const wantOneByte = [
@@ -41,6 +42,10 @@ const latency = [
 </script>
 
 # ディスクとページ
+
+<Summary>
+ディスクは1バイトずつではなく「ページ」というまとまり単位でしか読み書きできない。この一点から、ディスク上のデータ構造の速さは「ページを何回読むか」で測る、という物差しが生まれる。B-Tree も WAL もバッファプールも、この物理的な事情への対処として出てくる。コードは書かない、前提を掴むための章。
+</Summary>
 
 ## この章で知ること
 
