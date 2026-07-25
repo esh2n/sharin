@@ -26,6 +26,7 @@ export default defineConfig({
           { text: "WAL", link: "/parts/wal" },
           { text: "バッファプール", link: "/parts/buffer-pool" },
           { text: "B-Treeページストア", link: "/parts/btree-page-store" },
+          { text: "B-Tree + WAL", link: "/parts/btree-wal" },
         ],
       },
       {
