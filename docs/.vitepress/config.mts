@@ -11,11 +11,12 @@ export default defineConfig({
     ],
     sidebar: [
       {
-        text: "Tier 1: 小さく完結する",
-        items: [
-          { text: "Rate Limiter", link: "/parts/rate-limiter" },
-          { text: "LLM Sampling", link: "/parts/llm-sampling" },
-        ],
+        text: "トラフィック制御と観測",
+        items: [{ text: "Rate Limiter", link: "/parts/rate-limiter" }],
+      },
+      {
+        text: "LLMのなかみ",
+        items: [{ text: "LLM Sampling", link: "/parts/llm-sampling" }],
       },
     ],
     socialLinks: [{ icon: "github", link: "https://github.com/esh2n/sharin" }],
