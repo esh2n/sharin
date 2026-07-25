@@ -46,6 +46,7 @@ export default defineConfig({
         items: [
           { text: "暗号", link: "/parts/crypto" },
           { text: "認証と認可", link: "/parts/auth" },
+          { text: "ブロックチェーン", link: "/parts/blockchain" },
         ],
       },
       {
