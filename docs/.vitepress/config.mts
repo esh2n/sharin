@@ -25,6 +25,7 @@ export default defineConfig({
           { text: "ログ構造KV", link: "/parts/log-structured-kv" },
           { text: "WAL", link: "/parts/wal" },
           { text: "バッファプール", link: "/parts/buffer-pool" },
+          { text: "B-Treeページストア", link: "/parts/btree-page-store" },
         ],
       },
       {
