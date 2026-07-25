@@ -18,6 +18,8 @@ import RateLimitDemo from '../components/RateLimitDemo.vue'
 各方式の説明の下には**ライブデモ**を置いてある。Cloudflare Workers 上で動いている
 本物のレートリミッター([実装](https://github.com/esh2n/sharin/tree/main/rate-limiter/demo))を
 その場で叩いて、説明した挙動をすぐ確かめられる。判定はあなたの IP ごとなので、遠慮なく連打してほしい。
+デモで返ってくる **429** は "Too Many Requests"(リクエストが多すぎる)を表す
+HTTP ステータスコードで、レートリミッターが拒否したときの標準の返事。**200** は成功。
 
 この章の肝は3つ。
 

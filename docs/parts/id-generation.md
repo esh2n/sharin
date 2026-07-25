@@ -1,5 +1,28 @@
 <script setup>
 import IdGenDemo from '../components/IdGenDemo.vue'
+import FigureBox from '../components/figures/FigureBox.vue'
+import BitsFigure from '../components/figures/BitsFigure.vue'
+
+const bitRows = [
+  { name: 'UUIDv4', segments: [
+    { label: '乱数', bits: 122, cls: 'rand' },
+    { label: '', bits: 6, cls: 'meta' },
+  ]},
+  { name: 'UUIDv7', segments: [
+    { label: '時刻 (ms)', bits: 48, cls: 'time' },
+    { label: '', bits: 6, cls: 'meta' },
+    { label: '乱数', bits: 74, cls: 'rand' },
+  ]},
+  { name: 'ULID', segments: [
+    { label: '時刻 (ms)', bits: 48, cls: 'time' },
+    { label: '乱数', bits: 80, cls: 'rand' },
+  ]},
+  { name: 'Snowflake', segments: [
+    { label: '時刻 (ms)', bits: 41, cls: 'time' },
+    { label: 'ノード', bits: 10, cls: 'node' },
+    { label: '連番', bits: 12, cls: 'seq' },
+  ]},
+]
 </script>
 
 # ID Generation
@@ -29,7 +52,11 @@ import IdGenDemo from '../components/IdGenDemo.vue'
 ボトルネックと単一障害点になる。
 
 そこで「**各サーバーが誰にも聞かずにその場で発番して、それでも衝突しない**」方式が欲しくなる。
-以降の4方式はすべてこの問題への答えで、違いは材料の配合だけ。
+以降の4方式はすべてこの問題への答えで、違いは材料の配合だけ。先に全体を1枚で見ておく:
+
+<FigureBox caption="4方式のビット配置。帯の幅はビット数に比例(Snowflake だけ64bitで半分)。「時刻を先頭に置くか」「乱数に頼るか」が一目でわかる">
+  <BitsFigure :rows="bitRows" />
+</FigureBox>
 
 ## 1. UUIDv4: 全部乱数
 
@@ -218,8 +245,10 @@ DBの主キーインデックス(B-Tree)は、キーの順序で並んだペー�
   触るページが局所化してキャッシュに乗り、ページは順に満杯になっていく
 
 「ランダムな主キーで挿入が遅い」は実務で本当に踏む問題で、
-これが v4 から v7 への移行が進む最大の理由。B-Tree を自作する
-data-structures 編・db 編で、この現象を自分の実装で再現する予定。
+これが v4 から v7 への移行が進む最大の理由。この現象は
+[B-Tree の章](./btree)のデモで実際に見られる(昇順挿入は右端だけが光り、
+ランダム挿入は毎回違う場所が光る)。ページとキャッシュの理屈は
+[ディスクとページ](./disk-and-pages)で扱っている。
 
 ## 4方式の比較
 

@@ -1,5 +1,18 @@
 <script setup>
 import TraceSamplingDemo from '../components/TraceSamplingDemo.vue'
+import FigureBox from '../components/figures/FigureBox.vue'
+import FlowRow from '../components/figures/FlowRow.vue'
+
+const headFlow = [
+  { label: 'アプリ (SDK)', note: 'ここで判定する', state: 'hot' },
+  { label: 'コレクタ', note: '素通し' },
+  { label: 'ストレージ' },
+]
+const tailFlow = [
+  { label: 'アプリ (SDK)', note: '全 span を送る' },
+  { label: 'コレクタ', note: 'バッファして完結後に判定', state: 'hot' },
+  { label: 'ストレージ' },
+]
 </script>
 
 # Trace Sampling
@@ -80,6 +93,10 @@ type Trace struct {
 
 <<< ../../trace-sampling/sampler.go#head{go}
 
+<FigureBox caption="head-based の判定位置。リクエストが入った瞬間、アプリ内の SDK が決める。捨てると決めたトレースは計測もされずに消える">
+  <FlowRow :steps="headFlow" />
+</FigureBox>
+
 `Keep(_ Trace)` — 引数を**受け取るのに見ていない**のがこの実装の要点。
 開始時点では Duration も Err もまだ存在しない情報なので、見たくても見られない。
 テストでは「エラートレースを渡しても関係なく落とす」ことを固定してある。
@@ -107,6 +124,10 @@ type Trace struct {
 
 トレースが完結して全 span が揃った後に、中身を見てから残すかを決める方式。
 エラーと遅いトレースは必ず残し、正常なトレースは統計用に少しだけ残す。
+
+<FigureBox caption="tail-based の判定位置。アプリは全 span を送り、コレクタが溜めてから決める。判定が下流に移った分、バッファのコストをコレクタが払う">
+  <FlowRow :steps="tailFlow" />
+</FigureBox>
 
 <<< ../../trace-sampling/sampler.go#tail{go}
 
