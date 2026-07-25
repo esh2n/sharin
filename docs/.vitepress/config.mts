@@ -18,6 +18,10 @@ export default defineConfig({
         ],
       },
       {
+        text: "データの持ち方",
+        items: [{ text: "ID Generation", link: "/parts/id-generation" }],
+      },
+      {
         text: "LLMのなかみ",
         items: [{ text: "LLM Sampling", link: "/parts/llm-sampling" }],
       },
