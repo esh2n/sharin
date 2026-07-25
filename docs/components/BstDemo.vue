@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, ref } from "vue";
 import BstNodeView, { type BstViewNode } from "./BstNodeView.vue";
+import DemoShell from "./DemoShell.vue";
 
 // Go 版 data-structures/bst の JS ミラー。
 interface BNode {
@@ -85,16 +86,21 @@ const view = computed<BstViewNode | null>(() => {
 </script>
 
 <template>
-  <div class="bsd-demo">
-    <div class="bsd-controls">
-      <button class="bsd-btn brand" type="button" :disabled="full" @click="addSequential">
+  <DemoShell
+    title="二分探索木の挿入"
+    :badge="stats.n > 0 ? `高さ ${stats.height} / 理想 ${ideal}` : undefined"
+    :badge-tone="stats.n > 0 && stats.height > ideal + 2 ? 'ng' : 'neutral'"
+  >
+    <div class="sd-controls">
+      <button class="sd-btn sd-btn--primary" type="button" :disabled="full" @click="addSequential">
         昇順で1件挿入
       </button>
-      <button class="bsd-btn brand" type="button" :disabled="full" @click="addRandom(1)">
+      <button class="sd-btn sd-btn--primary" type="button" :disabled="full" @click="addRandom(1)">
         ランダムに1件挿入
       </button>
-      <button class="bsd-btn" type="button" :disabled="full" @click="addRandom(5)">ランダム×5</button>
-      <button class="bsd-btn" type="button" @click="reset">リセット</button>
+      <button class="sd-btn" type="button" :disabled="full" @click="addRandom(5)">ランダム×5</button>
+      <span class="spacer"></span>
+      <button class="sd-btn" type="button" @click="reset">リセット</button>
     </div>
     <p class="bsd-stats">
       件数 {{ stats.n }} / 高さ <strong>{{ stats.height }}</strong>
@@ -105,42 +111,12 @@ const view = computed<BstViewNode | null>(() => {
       <BstNodeView v-if="view" :node="view" />
       <p v-else class="bsd-empty">まだ空です。挿入してみてください。</p>
     </div>
-  </div>
+  </DemoShell>
 </template>
 
 <style scoped>
-.bsd-demo {
-  margin: 16px 0 24px;
-  padding: 16px;
-  border: 1px solid var(--vp-c-divider);
-  border-radius: 8px;
-  background-color: var(--vp-c-bg-soft);
-}
-.bsd-controls {
-  display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
-}
-.bsd-btn {
-  padding: 6px 14px;
-  border-radius: 6px;
-  font-size: 13px;
-  color: var(--vp-c-text-1);
-  background-color: var(--vp-c-default-soft);
-}
-.bsd-btn.brand {
-  font-weight: 600;
-  color: var(--vp-button-brand-text);
-  background-color: var(--vp-button-brand-bg);
-}
-.bsd-btn.brand:hover {
-  background-color: var(--vp-button-brand-hover-bg);
-}
-.bsd-btn:disabled {
-  opacity: 0.5;
-}
 .bsd-stats {
-  margin: 10px 0;
+  margin: 12px 0;
   font-size: 13px;
   color: var(--vp-c-text-2);
 }

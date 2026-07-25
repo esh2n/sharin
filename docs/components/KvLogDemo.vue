@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, ref } from "vue";
+import DemoShell from "./DemoShell.vue";
 
 // Go 版 db/kvlog の動きをブラウザ内で再現するシミュレータ。
 interface Rec {
@@ -57,17 +58,18 @@ function reset() {
 </script>
 
 <template>
-  <div class="kv-demo">
-    <div class="kv-controls">
-      <button v-for="k in ['a', 'b', 'c']" :key="k" class="kv-btn brand" type="button" @click="put(k)">
+  <DemoShell title="追記ログとインデックス" :badge="`${log.length} レコード`" badge-tone="neutral">
+    <div class="sd-controls">
+      <button v-for="k in ['a', 'b', 'c']" :key="k" class="sd-btn sd-btn--primary" type="button" @click="put(k)">
         {{ k }} に書く
       </button>
-      <button class="kv-btn" type="button" @click="del('a')">a を消す</button>
-      <button class="kv-btn danger" type="button" @click="crash">クラッシュして再起動</button>
-      <button class="kv-btn" type="button" @click="reset">リセット</button>
+      <button class="sd-btn" type="button" @click="del('a')">a を消す</button>
+      <button class="sd-btn" type="button" @click="crash">クラッシュして再起動</button>
+      <span class="spacer"></span>
+      <button class="sd-btn" type="button" @click="reset">リセット</button>
     </div>
 
-    <p v-if="message" class="kv-msg">{{ message }}</p>
+    <p v-if="message" class="sd-msg">{{ message }}</p>
 
     <p class="kv-label">ログファイル(追記のみ。何も上書きされない)</p>
     <div class="kv-log">
@@ -96,45 +98,10 @@ function reset() {
       </tbody>
     </table>
     <p v-else class="kv-empty">空(キーなし)</p>
-  </div>
+  </DemoShell>
 </template>
 
 <style scoped>
-.kv-demo {
-  margin: 16px 0 24px;
-  padding: 16px;
-  border: 1px solid var(--vp-c-divider);
-  border-radius: 8px;
-  background-color: var(--vp-c-bg-soft);
-}
-.kv-controls {
-  display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
-}
-.kv-btn {
-  padding: 6px 14px;
-  border-radius: 6px;
-  font-size: 13px;
-  color: var(--vp-c-text-1);
-  background-color: var(--vp-c-default-soft);
-}
-.kv-btn.brand {
-  font-weight: 600;
-  color: var(--vp-button-brand-text);
-  background-color: var(--vp-button-brand-bg);
-}
-.kv-btn.brand:hover {
-  background-color: var(--vp-button-brand-hover-bg);
-}
-.kv-btn.danger {
-  color: var(--vp-c-danger-1);
-}
-.kv-msg {
-  margin: 10px 0 0;
-  font-size: 13px;
-  color: var(--vp-c-text-2);
-}
 .kv-label {
   margin: 14px 0 6px;
   font-size: 12px;

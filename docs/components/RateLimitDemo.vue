@@ -1,9 +1,17 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import { computed, ref } from "vue";
+import DemoShell from "./DemoShell.vue";
 
 const props = defineProps<{ algo: string }>();
 
 const DEMO_BASE = "https://sharin-ratelimit-demo.esh2n.workers.dev/check";
+
+const ALGO_LABEL: Record<string, string> = {
+  "token-bucket": "Token Bucket",
+  "leaky-bucket": "Leaky Bucket",
+  "fixed-window": "Fixed Window",
+  "sliding-window-log": "Sliding Window Log",
+};
 
 interface Entry {
   at: string;
@@ -15,6 +23,9 @@ interface Entry {
 const log = ref<Entry[]>([]);
 const remaining = ref<number | null>(null);
 const busy = ref(false);
+
+const badge = computed(() => (remaining.value === null ? undefined : `残り ${remaining.value}`));
+const badgeTone = computed(() => (remaining.value === null ? "neutral" : remaining.value > 0 ? "ok" : "ng"));
 
 async function fire() {
   busy.value = true;
@@ -36,14 +47,13 @@ async function fire() {
 </script>
 
 <template>
-  <div class="rl-demo">
-    <div class="rl-head">
-      <button class="rl-fire" type="button" :disabled="busy" @click="fire">
+  <DemoShell :title="ALGO_LABEL[algo] ?? algo" :badge="badge" :badge-tone="badgeTone">
+    <div class="sd-controls">
+      <button class="sd-btn sd-btn--primary" type="button" :disabled="busy" @click="fire">
         リクエストを送る
       </button>
       <div v-if="remaining !== null" class="rl-meter" aria-hidden="true">
         <span v-for="i in 5" :key="i" class="rl-dot" :class="{ on: i <= (remaining ?? 0) }" />
-        <span class="rl-meter-label">残り {{ remaining }}</span>
       </div>
     </div>
     <table v-if="log.length" class="rl-log">
@@ -66,37 +76,10 @@ async function fire() {
         </tr>
       </tbody>
     </table>
-  </div>
+  </DemoShell>
 </template>
 
 <style scoped>
-.rl-demo {
-  margin: 16px 0 24px;
-  padding: 16px;
-  border: 1px solid var(--vp-c-divider);
-  border-radius: 8px;
-  background-color: var(--vp-c-bg-soft);
-}
-.rl-head {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  flex-wrap: wrap;
-}
-.rl-fire {
-  padding: 8px 20px;
-  border-radius: 6px;
-  font-weight: 600;
-  color: var(--vp-button-brand-text);
-  background-color: var(--vp-button-brand-bg);
-  transition: background-color 0.2s;
-}
-.rl-fire:hover {
-  background-color: var(--vp-button-brand-hover-bg);
-}
-.rl-fire:disabled {
-  opacity: 0.6;
-}
 .rl-meter {
   display: flex;
   align-items: center;
@@ -113,11 +96,6 @@ async function fire() {
   background-color: var(--vp-c-brand-1);
   border-color: var(--vp-c-brand-1);
 }
-.rl-meter-label {
-  margin-left: 6px;
-  font-size: 13px;
-  color: var(--vp-c-text-2);
-}
 .rl-log {
   margin: 12px 0 0;
   font-size: 13px;
@@ -127,6 +105,12 @@ async function fire() {
 .rl-log th,
 .rl-log td {
   padding: 4px 12px;
+  text-align: left;
+}
+.rl-log th {
+  color: var(--vp-c-text-2);
+  font-weight: 600;
+  border-bottom: 1px solid var(--vp-c-divider);
 }
 .rl-ok {
   color: var(--vp-c-green-1);

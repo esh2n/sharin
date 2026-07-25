@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, ref } from "vue";
 import BTreeNodeView, { type ViewNode } from "./BTreeNodeView.vue";
+import DemoShell from "./DemoShell.vue";
 
 // Go 版 data-structures/btree の JS ミラー。t=2 (1ノード最大3キー) で可視化する。
 const T = 2;
@@ -114,16 +115,17 @@ const view = computed<ViewNode>(() => {
 </script>
 
 <template>
-  <div class="btd-demo">
-    <div class="btd-controls">
-      <button class="btd-btn brand" type="button" :disabled="full" @click="addSequential(1)">
+  <DemoShell title="B-Tree の挿入" :badge="`高さ ${stats.height}`" badge-tone="neutral">
+    <div class="sd-controls">
+      <button class="sd-btn sd-btn--primary" type="button" :disabled="full" @click="addSequential(1)">
         昇順で1件挿入
       </button>
-      <button class="btd-btn brand" type="button" :disabled="full" @click="addRandom(1)">
+      <button class="sd-btn sd-btn--primary" type="button" :disabled="full" @click="addRandom(1)">
         ランダムに1件挿入
       </button>
-      <button class="btd-btn" type="button" :disabled="full" @click="addRandom(10)">ランダム×10</button>
-      <button class="btd-btn" type="button" @click="reset">リセット</button>
+      <button class="sd-btn" type="button" :disabled="full" @click="addRandom(10)">ランダム×10</button>
+      <span class="spacer"></span>
+      <button class="sd-btn" type="button" @click="reset">リセット</button>
     </div>
     <p class="btd-stats">
       キー {{ stats.keys }} / 高さ {{ stats.height }} / 分割 {{ stats.splits }}回 /
@@ -133,42 +135,12 @@ const view = computed<ViewNode>(() => {
     <div class="btd-tree">
       <BTreeNodeView :node="view" :touched="touched" />
     </div>
-  </div>
+  </DemoShell>
 </template>
 
 <style scoped>
-.btd-demo {
-  margin: 16px 0 24px;
-  padding: 16px;
-  border: 1px solid var(--vp-c-divider);
-  border-radius: 8px;
-  background-color: var(--vp-c-bg-soft);
-}
-.btd-controls {
-  display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
-}
-.btd-btn {
-  padding: 6px 14px;
-  border-radius: 6px;
-  font-size: 13px;
-  color: var(--vp-c-text-1);
-  background-color: var(--vp-c-default-soft);
-}
-.btd-btn.brand {
-  font-weight: 600;
-  color: var(--vp-button-brand-text);
-  background-color: var(--vp-button-brand-bg);
-}
-.btd-btn.brand:hover {
-  background-color: var(--vp-button-brand-hover-bg);
-}
-.btd-btn:disabled {
-  opacity: 0.5;
-}
 .btd-stats {
-  margin: 10px 0;
+  margin: 12px 0;
   font-size: 13px;
   color: var(--vp-c-text-2);
 }

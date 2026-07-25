@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, ref } from "vue";
+import DemoShell from "./DemoShell.vue";
 
 // 「明日の天気は◯◯」の次トークンを予測している、という体の手作り logits。
 const VOCAB = [
@@ -85,8 +86,8 @@ function reset() {
 </script>
 
 <template>
-  <div class="sp-demo">
-    <p class="sp-context">「明日の天気は<span class="sp-blank">◯◯</span>」の次トークン分布</p>
+  <DemoShell title="次トークンのサンプリング">
+    <p class="sp-context">「明日の天気は<span class="sp-blank">◯◯</span>」の次に来るトークンの確率分布</p>
 
     <div class="sp-controls">
       <label v-if="has('temperature')" class="sp-control">
@@ -118,21 +119,14 @@ function reset() {
       </div>
     </div>
 
-    <div class="sp-actions">
-      <button class="sp-fire" type="button" @click="sampleOnce">1トークン抽選する</button>
-      <button class="sp-clear" type="button" @click="reset">集計をクリア</button>
+    <div class="sd-controls sp-actions">
+      <button class="sd-btn sd-btn--primary" type="button" @click="sampleOnce">1トークン抽選する</button>
+      <button class="sd-btn" type="button" @click="reset">集計をクリア</button>
     </div>
-  </div>
+  </DemoShell>
 </template>
 
 <style scoped>
-.sp-demo {
-  margin: 16px 0 24px;
-  padding: 16px;
-  border: 1px solid var(--vp-c-divider);
-  border-radius: 8px;
-  background-color: var(--vp-c-bg-soft);
-}
 .sp-context {
   margin: 0 0 12px;
   font-size: 14px;
@@ -193,26 +187,6 @@ function reset() {
   color: var(--vp-c-text-2);
 }
 .sp-actions {
-  display: flex;
-  gap: 12px;
-  margin-top: 12px;
-}
-.sp-fire {
-  padding: 6px 16px;
-  border-radius: 6px;
-  font-weight: 600;
-  font-size: 13px;
-  color: var(--vp-button-brand-text);
-  background-color: var(--vp-button-brand-bg);
-}
-.sp-fire:hover {
-  background-color: var(--vp-button-brand-hover-bg);
-}
-.sp-clear {
-  padding: 6px 16px;
-  border-radius: 6px;
-  font-size: 13px;
-  color: var(--vp-c-text-1);
-  background-color: var(--vp-c-default-soft);
+  margin-top: 14px;
 }
 </style>

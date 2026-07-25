@@ -1,8 +1,16 @@
 <script setup lang="ts">
 import { computed, ref } from "vue";
+import DemoShell from "./DemoShell.vue";
 
 // Go 版 id-generation と同じロジックの JS ミラー。
 const props = defineProps<{ kind: "uuidv4" | "uuidv7" | "ulid" | "snowflake" }>();
+
+const KIND_LABEL: Record<string, string> = {
+  uuidv4: "UUIDv4",
+  uuidv7: "UUIDv7",
+  ulid: "ULID",
+  snowflake: "Snowflake",
+};
 
 interface Part {
   text: string;
@@ -93,12 +101,13 @@ const sorted = computed(() => {
 </script>
 
 <template>
-  <div class="ig-demo">
-    <div class="ig-head">
-      <button class="ig-fire" type="button" @click="fire">生成する</button>
-      <span v-if="rows.length >= 2" class="ig-verdict" :class="sorted ? 'ok' : 'ng'">
-        生成順と辞書順が{{ sorted ? "一致" : "不一致" }}
-      </span>
+  <DemoShell
+    :title="KIND_LABEL[kind] ?? kind"
+    :badge="rows.length >= 2 ? (sorted ? '生成順=辞書順' : '順序不一致') : undefined"
+    :badge-tone="rows.length >= 2 ? (sorted ? 'ok' : 'ng') : 'neutral'"
+  >
+    <div class="sd-controls">
+      <button class="sd-btn sd-btn--primary" type="button" @click="fire">生成する</button>
     </div>
     <ul v-if="rows.length" class="ig-list">
       <li v-for="(row, i) in rows" :key="i">
@@ -109,46 +118,12 @@ const sorted = computed(() => {
       <span class="ig-time">時刻</span> / <span class="ig-node">ノードID</span> /
       <span class="ig-seq">連番</span> / <span class="ig-rand">乱数・その他</span>
     </p>
-  </div>
+  </DemoShell>
 </template>
 
 <style scoped>
-.ig-demo {
-  margin: 16px 0 24px;
-  padding: 16px;
-  border: 1px solid var(--vp-c-divider);
-  border-radius: 8px;
-  background-color: var(--vp-c-bg-soft);
-}
-.ig-head {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  flex-wrap: wrap;
-}
-.ig-fire {
-  padding: 6px 16px;
-  border-radius: 6px;
-  font-weight: 600;
-  font-size: 13px;
-  color: var(--vp-button-brand-text);
-  background-color: var(--vp-button-brand-bg);
-}
-.ig-fire:hover {
-  background-color: var(--vp-button-brand-hover-bg);
-}
-.ig-verdict {
-  font-size: 13px;
-  font-weight: 600;
-}
-.ig-verdict.ok {
-  color: var(--vp-c-green-1);
-}
-.ig-verdict.ng {
-  color: var(--vp-c-danger-1);
-}
 .ig-list {
-  margin: 10px 0 0;
+  margin: 12px 0 0;
   padding: 0;
   list-style: none;
   font-family: var(--vp-font-family-mono);

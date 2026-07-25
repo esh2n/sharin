@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, ref } from "vue";
+import DemoShell from "./DemoShell.vue";
 
 // Go 版 trace-sampling と同じロジックの JS ミラーによるシミュレーション。
 const TOTAL = 5000;
@@ -67,11 +68,11 @@ function reroll() {
 </script>
 
 <template>
-  <div class="ts-demo">
-    <p class="ts-context">
-      {{ TOTAL.toLocaleString() }} 件のトレース(うちエラー {{ result.errors }} 件)に両方式を適用
-    </p>
-
+  <DemoShell
+    title="head vs tail シミュレータ"
+    :badge="`${TOTAL.toLocaleString()}件中エラー${result.errors}件`"
+    badge-tone="neutral"
+  >
     <div class="ts-controls">
       <label class="ts-control">
         <span>サンプリング率: {{ (headRate * 100).toFixed(0) }}%</span>
@@ -81,7 +82,8 @@ function reroll() {
         <span>エラー率: {{ (errRate * 100).toFixed(1) }}%</span>
         <input v-model.number="errRate" type="range" min="0.001" max="0.05" step="0.001" />
       </label>
-      <button class="ts-reroll" type="button" @click="reroll">乱数を引き直す</button>
+      <span class="spacer"></span>
+      <button class="sd-btn" type="button" @click="reroll">乱数を引き直す</button>
     </div>
 
     <div v-for="r in rows" :key="r.name" class="ts-block">
@@ -101,28 +103,15 @@ function reroll() {
         <span class="ts-value">{{ (r.capture * 100).toFixed(1) }}% ({{ r.errKept }}/{{ result.errors }})</span>
       </div>
     </div>
-  </div>
+  </DemoShell>
 </template>
 
 <style scoped>
-.ts-demo {
-  margin: 16px 0 24px;
-  padding: 16px;
-  border: 1px solid var(--vp-c-divider);
-  border-radius: 8px;
-  background-color: var(--vp-c-bg-soft);
-}
-.ts-context {
-  margin: 0 0 12px;
-  font-size: 14px;
-  color: var(--vp-c-text-2);
-}
 .ts-controls {
   display: flex;
   gap: 24px;
   flex-wrap: wrap;
   align-items: flex-end;
-  margin-bottom: 8px;
 }
 .ts-control {
   display: flex;
@@ -134,15 +123,8 @@ function reroll() {
 .ts-control input {
   accent-color: var(--vp-c-brand-1);
 }
-.ts-reroll {
-  padding: 6px 16px;
-  border-radius: 6px;
-  font-size: 13px;
-  color: var(--vp-c-text-1);
-  background-color: var(--vp-c-default-soft);
-}
 .ts-block {
-  margin-top: 10px;
+  margin-top: 14px;
 }
 .ts-name {
   margin: 0 0 4px;
