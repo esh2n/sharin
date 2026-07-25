@@ -43,7 +43,10 @@ export default defineConfig({
       },
       {
         text: "暗号と認証",
-        items: [{ text: "暗号", link: "/parts/crypto" }],
+        items: [
+          { text: "暗号", link: "/parts/crypto" },
+          { text: "認証と認可", link: "/parts/auth" },
+        ],
       },
       {
         text: "LLMのなかみ",
