@@ -1,3 +1,28 @@
+<script setup>
+import { ref } from 'vue'
+
+const DEMO_URL = 'https://sharin-ratelimit-demo.esh2n.workers.dev/check'
+const log = ref([])
+const busy = ref(false)
+
+async function fire() {
+  busy.value = true
+  const at = new Date().toLocaleTimeString('ja-JP', { hour12: false })
+  try {
+    const res = await fetch(DEMO_URL)
+    const body = await res.json()
+    log.value = [
+      { at, status: res.status, remaining: body.remaining, retryAfterMs: body.retryAfterMs },
+      ...log.value,
+    ].slice(0, 15)
+  } catch {
+    log.value = [{ at, status: 'error', remaining: '-', retryAfterMs: '-' }, ...log.value].slice(0, 15)
+  } finally {
+    busy.value = false
+  }
+}
+</script>
+
 # Rate Limiter
 
 > 実装: [`rate-limiter/`](https://github.com/esh2n/sharin/tree/main/rate-limiter) / 実行: `go test ./rate-limiter/`
@@ -135,6 +160,71 @@ limit が大きい・キーが多い環境では効いてくる。
 **読み取り、計算、書き込みを Lua スクリプトで原子的に実行する**こと。
 アルゴリズム自体はこの章と同じで、変わるのは原子性の担保方法だけ。
 これは db 編・proxy 編をやった後に戻ってくると解像度が上がるテーマ。
+
+## ライブデモ: 本物のレートリミッターを叩く
+
+下のボタンは Cloudflare Workers 上で動いている本物のエンドポイント
+([実装](https://github.com/esh2n/sharin/tree/main/rate-limiter/demo))を叩く。
+中身はこの章の token bucket と同じ lazy refill 方式で、**容量5、補充0.5個/秒(2秒に1個)、あなたのIPごと**に判定される。
+
+連打してみてほしい。6発目から 429 が返り、`retryAfterMs`(次に通るまでの待ち時間)が
+案内される。2秒待てば1発ぶん回復する。
+
+<div class="rl-demo">
+  <button class="rl-fire" :disabled="busy" @click="fire">リクエストを送る</button>
+  <table v-if="log.length" class="rl-log">
+    <thead>
+      <tr><th>時刻</th><th>結果</th><th>残りトークン</th><th>次に通るまで</th></tr>
+    </thead>
+    <tbody>
+      <tr v-for="(e, i) in log" :key="log.length - i">
+        <td>{{ e.at }}</td>
+        <td><span :class="e.status === 200 ? 'rl-ok' : 'rl-ng'">{{ e.status }}</span></td>
+        <td>{{ e.remaining }}</td>
+        <td>{{ e.retryAfterMs > 0 ? e.retryAfterMs + ' ms' : '-' }}</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<style scoped>
+.rl-demo { margin: 16px 0; }
+.rl-fire {
+  padding: 8px 20px;
+  border-radius: 6px;
+  font-weight: 600;
+  color: var(--vp-button-brand-text);
+  background-color: var(--vp-button-brand-bg);
+  transition: background-color 0.2s;
+}
+.rl-fire:hover { background-color: var(--vp-button-brand-hover-bg); }
+.rl-fire:disabled { opacity: 0.6; }
+.rl-log { margin-top: 12px; font-size: 13px; }
+.rl-ok { color: var(--vp-c-green-1); font-weight: 600; }
+.rl-ng { color: var(--vp-c-danger-1); font-weight: 600; }
+</style>
+
+curl でも同じことができる:
+
+```sh
+for i in $(seq 7); do
+  curl -s -o /dev/null -w '%{http_code} ' \
+    https://sharin-ratelimit-demo.esh2n.workers.dev/check
+done
+# 200 200 200 200 200 429 429
+```
+
+### 状態はどこにあるのか
+
+このデモの残量は、Redis ではなく **Durable Object** に置いてある。
+Durable Object は「キーごとに世界で1つだけ存在するインスタンス」で、
+同じIPからのリクエストは世界中どの経路から来ても同じインスタンスに集められる。
+つまり read-modify-write が**勝手に直列化される**ので、mutex も Lua スクリプトも書かずに
+原子性が手に入る。前節の「分散環境では原子性の担保方法が変わる」の、これが実答の1つ。
+
+バケツの計算自体は Go 版と同じロジックを純粋関数
+([bucket.ts](https://github.com/esh2n/sharin/blob/main/rate-limiter/demo/src/bucket.ts))
+に切り出してあり、「状態をどこに置くか」と「どう計算するか」が分離されている。
 
 ## 簡略化したこと
 
