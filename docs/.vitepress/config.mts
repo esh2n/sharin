@@ -4,7 +4,6 @@ export default defineConfig({
   lang: "ja",
   title: "sharin",
   description: "車輪の再発明で学び直す教科書",
-  base: "/sharin/",
   themeConfig: {
     nav: [
       { text: "教科書", link: "/parts/rate-limiter" },

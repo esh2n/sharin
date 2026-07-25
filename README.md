@@ -25,13 +25,16 @@ rate limiter を1から書く、サンプリングを logits から計算する�
 
 ## 教科書サイト
 
-実装と並行して docs/ に教科書を書き、GitHub Pages で公開する。
+実装と並行して docs/ に教科書を書き、Cloudflare Pages で公開する。
+公開URL: https://sharin-2a1.pages.dev
 
 - スタックは VitePress を想定。`<<< @/../rate-limiter/token_bucket.go#region` 形式で
   実コードをスニペットとして埋め込めるため、教科書のコードと動くコードが乖離しない。
 - 章構成はバックログのパーツと1対1。本文(なぜそう動くか、図、落とし穴)は docs/ 側に書き、
   各パーツの README.md は「肝 / 簡略化したこと / 章へのリンク」の要約に留める。
-- デプロイは GitHub Actions で main への push 時に Pages へ。
+- デプロイは GitHub Actions から wrangler で Cloudflare Pages へ。main は本番、PR はプレビューURL。
+- Cloudflare を選んだ理由: PR ごとのプレビューと、章に添える「実際に叩けるライブデモ」を
+  Workers で同居させられるため。
 
 ## バックログ
 
