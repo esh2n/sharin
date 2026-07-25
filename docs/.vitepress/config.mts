@@ -19,6 +19,7 @@ export default defineConfig({
         items: [
           { text: "HTTPサーバ", link: "/parts/http-server" },
           { text: "DNSリゾルバ", link: "/parts/dns" },
+          { text: "プロキシ", link: "/parts/proxy" },
         ],
       },
       {
