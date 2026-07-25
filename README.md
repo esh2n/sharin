@@ -46,7 +46,8 @@ rate limiter を1から書く、サンプリングを logits から計算する�
 |---|---|---|---|
 | rate-limiter | token bucket / leaky bucket / fixed window / sliding window log の比較実装 | バーストの許し方と平滑化のトレードオフ。時計と原子性 | S |
 | id-generation | UUIDv4 / UUIDv7 / ULID / Snowflake を自作、衝突確率も計算 | 時刻 + 乱数 + ノードIDの配合。ソート可能性がなぜ効くか | S |
-| sampling | logits 配列から greedy / temperature / top-k / top-p / min-p を実装 | softmax の温度が分布をどう歪めるか。生成は毎トークン確率実験 | S |
+| llm-sampling | logits 配列から greedy / temperature / top-k / top-p / min-p を実装 | softmax の温度が分布をどう歪めるか。生成は毎トークン確率実験 | S |
+| trace-sampling | 簡易トレーサー + head-based / tail-based サンプラー、エラートレース捕捉率の比較 | 全量保存できない中で何を残すか。tail は「完結を待つバッファ」の代償を払って価値の高いトレースを確実に残す | S〜M |
 | data-structures | hash map(衝突・リサイズ) / B-Tree / LRU / bloom filter / skip list | 計算量の理屈を「自分で書いたから」で説明できる状態にする。DB編の下ごしらえ | S×複数 |
 
 ### Tier 2: サーバー側の仕組み
@@ -72,7 +73,7 @@ rate limiter を1から書く、サンプリングを logits から計算する�
 
 | パーツ | 作るもの | 肝 | サイズ |
 |---|---|---|---|
-| llm | Go で自作 tensor(float32 slice + shape)、matmul / layernorm / GELU、BPE トークナイザ、GPT-2 相当の forward pass、KV cache。Python は検算のみ | attention は行列積の塊。生成が逐次で遅い理由と KV cache が効く理由。sampling 編と接続 | L |
+| llm | Go で自作 tensor(float32 slice + shape)、matmul / layernorm / GELU、BPE トークナイザ、GPT-2 相当の forward pass、KV cache。Python は検算のみ | attention は行列積の塊。生成が逐次で遅い理由と KV cache が効く理由。llm-sampling 編と接続 | L |
 | lang | lexer、Pratt parser、AST インタプリタ、(余力で bytecode VM) | 再帰下降パースと評価器。Monkey 言語(Writing an Interpreter in Go)系 | L |
 | os | RISC-V のトイOS: ブート、割り込み、ページング、コンテキストスイッチ、簡易syscall | 特権レベルとハードウェアとの契約。「OSは割り込みで駆動されるイベントループ」 | L |
 
@@ -83,7 +84,8 @@ Tier 内は自由順だが、依存関係として以下だけ意識する。
 
 - data-structures の B-Tree は db の前に
 - crypto は auth と blockchain の前に
-- sampling は llm の前に(どちらが先でも成立はする)
+- llm-sampling は llm の前に(どちらが先でも成立はする)
+- trace-sampling は rate-limiter の後だと「何を通すか/何を残すか」の対比が効く
 - vdom は mini-next の前に
 
 このリストは固定ではない。やりたいものが増えたらバックログに足す。

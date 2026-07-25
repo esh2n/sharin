@@ -14,7 +14,7 @@ export default defineConfig({
         text: "Tier 1: 小さく完結する",
         items: [
           { text: "Rate Limiter", link: "/parts/rate-limiter" },
-          { text: "Sampling", link: "/parts/sampling" },
+          { text: "LLM Sampling", link: "/parts/llm-sampling" },
         ],
       },
     ],

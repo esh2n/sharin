@@ -2,9 +2,15 @@
 import SamplingDemo from '../components/SamplingDemo.vue'
 </script>
 
-# Sampling
+# LLM Sampling
 
-> 実装: [`sampling/`](https://github.com/esh2n/sharin/tree/main/sampling) / 実行: `go test ./sampling/`
+> 実装: [`llm-sampling/`](https://github.com/esh2n/sharin/tree/main/llm-sampling) / 実行: `go test ./llm-sampling/`
+
+::: info 「サンプリング」の同名別分野に注意
+この章は **LLM がテキストを生成するときのトークンサンプリング**の話。
+分散トレーシングの head-based / tail-based sampling(「全リクエストを記録できない中で
+どのトレースを残すか」)は別問題なので、trace-sampling 編として独立して扱う。
+:::
 
 ## この章で作るもの
 
@@ -37,7 +43,7 @@ Transformer が1ステップで出すのは、語彙の全トークンに対す�
 
 ## softmax: logits を確率にする
 
-<<< ../../sampling/sampling.go#softmax{go}
+<<< ../../llm-sampling/sampling.go#softmax{go}
 
 見どころは `maxLogit` を引いている部分。logits が 1000 を超えると `exp(1000)` が
 overflow して全部 `+Inf` になるが、softmax は「差」しか見ないので、
@@ -50,7 +56,7 @@ overflow して全部 `+Inf` になるが、softmax は「差」しか見ない�
 
 ## temperature: 分布の尖りを操作する
 
-<<< ../../sampling/filters.go#temperature{go}
+<<< ../../llm-sampling/filters.go#temperature{go}
 
 やっていることは割り算1つだが、softmax が exp(指数関数)を通すため効果は劇的で、
 
@@ -66,7 +72,7 @@ overflow して全部 `+Inf` になるが、softmax は「差」しか見ない�
 
 なお `t = 0` は0除算なので、実装では受け付けずに greedy(argmax)を使う。
 
-<<< ../../sampling/sampling.go#greedy{go}
+<<< ../../llm-sampling/sampling.go#greedy{go}
 
 ## top-k: 上位k個しか見ない
 
@@ -74,7 +80,7 @@ overflow して全部 `+Inf` になるが、softmax は「差」しか見ない�
 確率が漏れる。そこで**抽選の前に候補を絞る**のがフィルタ系の役割。
 最も素朴な top-k は、logit の上位 k 個だけ残して残りを -Inf に落とす。
 
-<<< ../../sampling/filters.go#topk{go}
+<<< ../../llm-sampling/filters.go#topk{go}
 
 **試してみる**: k を下げていくと下位のトークンから順に消え、
 残った候補だけで確率が再分配(renormalize)される。k=1 は greedy と同じ。
@@ -90,7 +96,7 @@ k=40 は緩すぎ、分布が平らな(どう続けてもいい)場面では k=4
 top-k の「個数固定」問題への答えが top-p。確率の大きい順に足していき、
 累積が p に達するまでの最小の集合(nucleus)だけを残す。
 
-<<< ../../sampling/filters.go#topp{go}
+<<< ../../llm-sampling/filters.go#topp{go}
 
 **試してみる**: p を下げると尻尾から消えていくのは top-k と似ているが、
 残る**個数**が分布次第で変わるのが違い。temperature と組み合わせたとき、
@@ -103,7 +109,7 @@ top-k の「個数固定」問題への答えが top-p。確率の大きい順�
 比較的新しい流儀。「最大確率の minP 倍未満のトークンは切る」という相対閾値で、
 top-p の累積計算より単純なのに、分布の尖り具合に適応する性質は保たれる。
 
-<<< ../../sampling/filters.go#minp{go}
+<<< ../../llm-sampling/filters.go#minp{go}
 
 **試してみる**: min-p = 0.1 なら「1位の10分の1未満の泡沫候補は切る」という意味になる。
 top-p と見比べると、切れ方が「累積」ではなく「個々の確率」で決まることがわかる。
@@ -115,7 +121,7 @@ top-p と見比べると、切れ方が「累積」ではなく「個々の確�
 フィルタを通した最終分布から実際に1トークン選ぶのが inverse CDF 法。
 [0,1) の乱数を引き、累積確率が乱数を超えた位置のトークンを返す。
 
-<<< ../../sampling/sampling.go#sample{go}
+<<< ../../llm-sampling/sampling.go#sample{go}
 
 テストでは乱数生成器を「固定値を返す関数」に差し替えて、
 境界(累積0.2ちょうど、など)で正しいトークンが選ばれることを確認している。

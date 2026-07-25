@@ -1,4 +1,7 @@
-# sampling
+# llm-sampling
+
+LLM のトークンサンプリング。トレーシングの head/tail-based sampling は
+別パーツ(trace-sampling)で扱う。
 
 ## 肝
 
@@ -13,4 +16,4 @@
 - repetition penalty や frequency penalty などの履歴依存の補正は扱わない
 - beam search のような「複数候補を保持する」探索は扱わない
 
-本文: [教科書の章](../docs/parts/sampling.md) / 実行: `go test ./sampling/`
+本文: [教科書の章](../docs/parts/llm-sampling.md) / 実行: `go test ./llm-sampling/`
