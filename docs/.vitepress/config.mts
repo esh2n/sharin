@@ -19,7 +19,10 @@ export default defineConfig({
       },
       {
         text: "データの持ち方",
-        items: [{ text: "ID Generation", link: "/parts/id-generation" }],
+        items: [
+          { text: "ID Generation", link: "/parts/id-generation" },
+          { text: "B-Tree", link: "/parts/btree" },
+        ],
       },
       {
         text: "LLMのなかみ",
