@@ -56,6 +56,7 @@ export default defineConfig({
           { text: "行列演算", link: "/parts/tensor" },
           { text: "Attention", link: "/parts/attention" },
           { text: "mini-GPT", link: "/parts/mini-gpt" },
+          { text: "アーキテクチャ図鑑", link: "/parts/llm-architecture" },
         ],
       },
     ],
