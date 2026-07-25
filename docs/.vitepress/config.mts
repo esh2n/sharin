@@ -29,6 +29,7 @@ export default defineConfig({
           { text: "B-Tree + WAL", link: "/parts/btree-wal" },
           { text: "ミニSQL", link: "/parts/mini-sql" },
           { text: "ハッシュマップ", link: "/parts/hash-map" },
+          { text: "ブルームフィルタ", link: "/parts/bloom-filter" },
         ],
       },
       {
