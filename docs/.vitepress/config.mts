@@ -12,7 +12,10 @@ export default defineConfig({
     sidebar: [
       {
         text: "Tier 1: 小さく完結する",
-        items: [{ text: "Rate Limiter", link: "/parts/rate-limiter" }],
+        items: [
+          { text: "Rate Limiter", link: "/parts/rate-limiter" },
+          { text: "Sampling", link: "/parts/sampling" },
+        ],
       },
     ],
     socialLinks: [{ icon: "github", link: "https://github.com/esh2n/sharin" }],
