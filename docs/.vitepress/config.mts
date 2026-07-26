@@ -51,6 +51,10 @@ export default defineConfig({
         ],
       },
       {
+        text: "メッセージングとRPC",
+        items: [{ text: "メッセージキュー", link: "/parts/message-queue" }],
+      },
+      {
         text: "暗号と認証",
         items: [
           { text: "暗号", link: "/parts/crypto" },
