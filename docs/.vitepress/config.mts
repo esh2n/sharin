@@ -49,6 +49,7 @@ export default defineConfig({
           { text: "Raft — 分散合意", link: "/parts/raft" },
           { text: "レプリケーション", link: "/parts/replication" },
           { text: "コンシステントハッシュ", link: "/parts/consistent-hashing" },
+          { text: "分散ロック", link: "/parts/distributed-lock" },
         ],
       },
       {
