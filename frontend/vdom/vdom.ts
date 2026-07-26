@@ -75,8 +75,9 @@ function setProp(el: HTMLElement, key: string, value: unknown): void {
   }
 }
 
-const isEventProp = (key: string): boolean => key.startsWith("on") && key.length > 2;
-const eventName = (key: string): string => key.slice(2).toLowerCase(); // onClick → click
+// on* を判定/変換するヘルパ。次章 mini-next のハイドレーションでも使うので公開する。
+export const isEventProp = (key: string): boolean => key.startsWith("on") && key.length > 2;
+export const eventName = (key: string): string => key.slice(2).toLowerCase(); // onClick → click
 // #endregion mount{ts}
 
 // #region diff{ts}

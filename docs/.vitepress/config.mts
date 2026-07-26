@@ -60,7 +60,10 @@ export default defineConfig({
       },
       {
         text: "画面が出るまで / フロント",
-        items: [{ text: "仮想DOM", link: "/parts/vdom" }],
+        items: [
+          { text: "仮想DOM", link: "/parts/vdom" },
+          { text: "mini-next(SSR/ルーティング)", link: "/parts/mini-next" },
+        ],
       },
       {
         text: "暗号と認証",
