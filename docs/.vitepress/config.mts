@@ -91,7 +91,13 @@ export default defineConfig({
         items: [
           { text: "暗号", link: "/parts/crypto" },
           { text: "認証と認可", link: "/parts/auth" },
-          { text: "ブロックチェーン", link: "/parts/blockchain" },
+        ],
+      },
+      {
+        text: "ブロックチェーンのなかみ",
+        items: [
+          { text: "ブロックチェーン(鎖 + PoW)", link: "/parts/blockchain" },
+          { text: "UTXO モデル", link: "/parts/utxo" },
         ],
       },
       {
