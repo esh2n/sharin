@@ -75,6 +75,10 @@ export default defineConfig({
         ],
       },
       {
+        text: "ランタイム内部",
+        items: [{ text: "ガベージコレクタ", link: "/parts/gc" }],
+      },
+      {
         text: "暗号と認証",
         items: [
           { text: "暗号", link: "/parts/crypto" },
