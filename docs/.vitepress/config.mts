@@ -59,6 +59,10 @@ export default defineConfig({
         ],
       },
       {
+        text: "画面が出るまで / フロント",
+        items: [{ text: "仮想DOM", link: "/parts/vdom" }],
+      },
+      {
         text: "暗号と認証",
         items: [
           { text: "暗号", link: "/parts/crypto" },

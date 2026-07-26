@@ -1,0 +1,18 @@
+{
+  "name": "sharin-frontend",
+  "private": true,
+  "type": "module",
+  "description": "フロント編: 仮想DOM・mini-next・ブラウザ をTypeScriptでフルスクラッチ",
+  "scripts": {
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "cov": "vitest run --coverage",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@vitest/coverage-v8": "^3.2.7",
+    "happy-dom": "^15.11.7",
+    "typescript": "^5.7.3",
+    "vitest": "^3.2.7"
+  }
+}

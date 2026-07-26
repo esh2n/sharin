@@ -1,4 +1,7 @@
 node_modules/
 docs/.vitepress/dist/
 docs/.vitepress/cache/
+frontend/coverage/
+docs/vrt/__screenshots__/
+docs/vrt/diffs/
 .DS_Store

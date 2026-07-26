@@ -169,10 +169,16 @@ React/Storybook 前提の部分だけ Vue/VitePress 向けに読み替える。
 | llm-sampling | ✅ | |
 | llm | ⬜ | tensor 自作 → attention → GPT-2 forward。L サイズ |
 
-### 画面が出るまで / 計算機の土台
+### 画面が出るまで / フロント（TypeScript実装）
 | パーツ | 状態 | 備考 |
 |---|---|---|
-| vdom / mini-next / browser | ⬜ | フロント編 |
+| vdom | ✅ | 仮想DOM + diff/patch。h/mount/diff、パッチ関数方式。TS初パーツ。96.6%cov・型strict |
+| mini-next | ⬜ | SSR/ルーティング/ハイドレーション |
+| browser | ⬜ | レンダリング経路 |
+
+### 計算機の土台
+| パーツ | 状態 | 備考 |
+|---|---|---|
 | lang / container / os | ⬜ | 土台編 |
 
 ## 直近の作業キュー(この順で)
