@@ -81,6 +81,7 @@ export default defineConfig({
           { text: "イベントループ", link: "/parts/event-loop" },
           { text: "バイトコードVM", link: "/parts/bytecode" },
           { text: "スケジューラ(M:N)", link: "/parts/scheduler" },
+          { text: "WebAssembly", link: "/parts/wasm" },
         ],
       },
       {
