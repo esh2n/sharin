@@ -189,6 +189,7 @@ React/Storybook 前提の部分だけ Vue/VitePress 向けに読み替える。
 | gc | ✅ | mark-sweep GC。到達可能性=生死、tricolor(white/gray/black)、循環回収、black→white不変条件。100%cov・-race |
 | event-loop | ✅ | epoll風 I/O多重化。ノンブロッキングFD(EAGAIN)+readiness一括問い合わせ(epoll_wait)+1スレッドのreactor。level-triggered/バックプレッシャ。100%cov・-race |
 | bytecode | ✅ | バイトコードVM。lang のAST→平らな命令列+定数プール、スタックマシン(fetch-decode-execute)、if=条件ジャンプ+back-patching。langフロントエンド再利用。93.7%cov・-race |
+| scheduler | ✅ | M:N スケジューラ(GMP)+work-stealing。P毎ローカルキュー・暇なPが忙しいPから半分横取り・グローバルキューへspill。負荷が均衡。100%cov・-race |
 
 ## 直近の作業キュー(この順で)
 
