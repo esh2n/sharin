@@ -139,7 +139,7 @@ React/Storybook 前提の部分だけ Vue/VitePress 向けに読み替える。
 | raft | ✅ | フルRaft(選挙/複製/snapshot/メンバ変更)+2章。コミット済み |
 | replication | ✅ | 単一リーダー ログシッピング(async/quorum/sync・ラグ・失敗時損失)+章。コミット済み |
 | consistent-hashing | ✅ | リング + 仮想ノード(CRC32)。GetN で複製先。+章。コミット済み |
-| distributed-lock | ⬜ | |
+| distributed-lock | ✅ | リース(失効ロック)+フェンシングトークン。GC停止による二重取得を資源側のトークン検査で防ぐ。Redlock論争。100%cov・-race |
 
 ### メッセージングとRPC
 | パーツ | 状態 | 備考 |
