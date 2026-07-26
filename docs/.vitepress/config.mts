@@ -47,6 +47,7 @@ export default defineConfig({
           { text: "分散はなぜ難しいか", link: "/parts/distributed-intro" },
           { text: "Raft — 分散合意", link: "/parts/raft" },
           { text: "レプリケーション", link: "/parts/replication" },
+          { text: "コンシステントハッシュ", link: "/parts/consistent-hashing" },
         ],
       },
       {
