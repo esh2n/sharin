@@ -46,6 +46,7 @@ export default defineConfig({
         items: [
           { text: "分散はなぜ難しいか", link: "/parts/distributed-intro" },
           { text: "Raft — 分散合意", link: "/parts/raft" },
+          { text: "レプリケーション", link: "/parts/replication" },
         ],
       },
       {
