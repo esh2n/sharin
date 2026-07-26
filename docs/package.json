@@ -5,9 +5,19 @@
   "scripts": {
     "docs:dev": "vitepress dev",
     "docs:build": "vitepress build",
-    "docs:preview": "vitepress preview"
+    "docs:preview": "vitepress preview",
+    "vrt": "vitest run --config vitest.config.mts",
+    "vrt:update": "UPDATE_VRT=1 vitest run --config vitest.config.mts"
   },
   "devDependencies": {
-    "vitepress": "^1.6.3"
+    "@types/pngjs": "^6.0.5",
+    "@vitejs/plugin-vue": "^5.2.1",
+    "@vitest/browser": "^3.2.7",
+    "pixelmatch": "^7.2.0",
+    "playwright": "^1.61.1",
+    "pngjs": "^7.0.0",
+    "vitepress": "^1.6.3",
+    "vitest": "^3.2.7",
+    "vue": "^3.5.13"
   }
 }
