@@ -180,7 +180,7 @@ React/Storybook 前提の部分だけ Vue/VitePress 向けに読み替える。
 | パーツ | 状態 | 備考 |
 |---|---|---|
 | lang | ✅ | 字句→Pratt構文→ツリーウォーク評価。整数/真偽/let/if式/第一級関数/クロージャ。90.5%cov・-race |
-| container | ⬜ | namespace/cgroup 風の隔離 |
+| container | ✅ | namespace(PID/net/mount/UTS)+ cgroup(mem/pids、階層・OOM)の隔離モデル。99%cov・-race |
 | os | ⬜ | 最小カーネル/スケジューラ |
 
 ## 直近の作業キュー(この順で)
