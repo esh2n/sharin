@@ -136,9 +136,9 @@ React/Storybook 前提の部分だけ Vue/VitePress 向けに読み替える。
 ### 分散システム
 | パーツ | 状態 | 備考 |
 |---|---|---|
-| raft | 🔜 | 実装+2章済み・未コミット。フルRaft(選挙/複製/snapshot/メンバ変更)。VRT検証済み |
-| replication | 🔜 | 次に着手。WAL を他ノードへ送る(同期/非同期・quorum) |
-| consistent-hashing | ⬜ | シャーディングの土台 |
+| raft | ✅ | フルRaft(選挙/複製/snapshot/メンバ変更)+2章。コミット済み |
+| replication | ✅ | 単一リーダー ログシッピング(async/quorum/sync・ラグ・失敗時損失)+章。コミット済み |
+| consistent-hashing | ✅ | リング + 仮想ノード(CRC32)。GetN で複製先。+章。コミット済み |
 | distributed-lock | ⬜ | |
 
 ### メッセージングとRPC
