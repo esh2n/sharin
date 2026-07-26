@@ -173,8 +173,8 @@ React/Storybook 前提の部分だけ Vue/VitePress 向けに読み替える。
 | パーツ | 状態 | 備考 |
 |---|---|---|
 | vdom | ✅ | 仮想DOM + diff/patch。h/mount/diff、パッチ関数方式。TS初パーツ。96.6%cov・型strict |
-| mini-next | ⬜ | SSR/ルーティング/ハイドレーション |
-| browser | ⬜ | レンダリング経路 |
+| mini-next | ✅ | SSR(renderToString)/ルーティング(:id)/ハイドレーション。vdomの上。100%cov |
+| browser | ✅ | parse(HTML/CSS)→style(カスケード+継承)→layout(ブロック)→paint。robinson移植。99%cov |
 
 ### 計算機の土台
 | パーツ | 状態 | 備考 |
