@@ -71,6 +71,7 @@ export default defineConfig({
         items: [
           { text: "小さな言語", link: "/parts/lang" },
           { text: "コンテナ", link: "/parts/container" },
+          { text: "OS/スケジューラ", link: "/parts/os" },
         ],
       },
       {
