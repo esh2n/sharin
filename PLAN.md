@@ -183,6 +183,11 @@ React/Storybook 前提の部分だけ Vue/VitePress 向けに読み替える。
 | container | ✅ | namespace(PID/net/mount/UTS)+ cgroup(mem/pids、階層・OOM)の隔離モデル。99%cov・-race |
 | os | ✅ | 協調スケジューラ(round-robin/yield/sleep/idle空転)。文脈=pc、非プリエンプティブ。96.9%cov・-race |
 
+### ランタイム内部
+| パーツ | 状態 | 備考 |
+|---|---|---|
+| gc | ✅ | mark-sweep GC。到達可能性=生死、tricolor(white/gray/black)、循環回収、black→white不変条件。100%cov・-race |
+
 ## 直近の作業キュー(この順で)
 
 1. **既存デモ7つを DemoShell に一括移行**: rate-limiter / trace / llm-sampling / idgen /
