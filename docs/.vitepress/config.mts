@@ -17,6 +17,7 @@ export default defineConfig({
       {
         text: "ネットワーク下層",
         items: [
+          { text: "TCP/IP", link: "/parts/tcp" },
           { text: "HTTPサーバ", link: "/parts/http-server" },
           { text: "DNSリゾルバ", link: "/parts/dns" },
           { text: "プロキシ", link: "/parts/proxy" },
