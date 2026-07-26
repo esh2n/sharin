@@ -54,6 +54,7 @@ export default defineConfig({
         text: "メッセージングとRPC",
         items: [
           { text: "メッセージキュー", link: "/parts/message-queue" },
+          { text: "Pub/Sub", link: "/parts/pubsub" },
           { text: "RPC", link: "/parts/rpc" },
         ],
       },
