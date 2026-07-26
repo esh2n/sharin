@@ -144,7 +144,7 @@ React/Storybook 前提の部分だけ Vue/VitePress 向けに読み替える。
 ### メッセージングとRPC
 | パーツ | 状態 | 備考 |
 |---|---|---|
-| message-queue | ⬜ | at-least-once / 冪等 |
+| message-queue | ✅ | ログ+オフセット・at-most/at-least-once・冪等=実質1回。+章。コミット済み |
 | pubsub | ⬜ | |
 | rpc | ⬜ | protobuf 風シリアライズ + gRPC 風呼び出し |
 
