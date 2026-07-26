@@ -26,14 +26,25 @@
 - **箱を矢印で繋いだだけの図は禁止**。図は「何がどこで起きるか」の構造を持たせる
   (例: LaneSteps = ステップ×ファイルのレーン図)。番号はラベル埋め込みでなくチップで
 
+## AI臭いデザインの禁止パターン(繰り返し指摘。仕組みで防ぐ)
+
+- **角丸カード + 色付き左アクセントボーダーの併用は禁止**。角丸の角をアクセント線が
+  なぞる構図は典型的な AI 生成っぽさ。左レールで状態を示すなら **角を落とす**
+  (`border-radius: 0`)。「左ボーダー自体は良い、角丸なのがダメ」(2026-07-26 指摘)
+- 意味のない装飾カード・テンプレ然としたグラデ/影・過剰な角丸を避ける。
+  迷ったら既存の質素なコンポーネント(Summary の素の文章リード等)に倣う
+- CSS で `border-radius` と `border-left`(色付き) が同じ要素に同居していたら赤信号。
+  VRT 導入前でも `grep -rn "border-left" docs/components` で自己点検する
+
 ## デモ品質規約(2026-07-25 追加)
 
 - 全デモは `DemoShell.vue` に載せる(タイトル + 状態バッジ + 整理されたコントロール行)
 - コントロールは「入力(選択) → 実行(primary) → 補助(ghost)」の順で1行に。選択肢は
   select でなくセグメントコントロール
 - 状態は裸のテキストで置かない。カード/バッジ/ログ行など、意味に合う器に入れる
-- **ビルド後に Playwright スクリーンショットで必ず目視確認**してからコミットする
-  (scratchpad の shot.mjs。dev サーバー + `node shot.mjs <url> <prefix>`)
+- **ビルド後に必ず目視確認**してからコミットする。方式は下記「VRT の仕組み」に移行。
+  それまでの暫定は scratchpad の使い捨て Playwright スクリプト(壊れやすい。playwright が
+  グローバルから消える/node20対22 で動かなくなる事故あり)
 
 ## 全章に入れる必須要素(2026-07-25 夜 追加。既存章にも遡及適用)
 
@@ -46,6 +57,45 @@
 4. **実行可能 Go リンク**: 各章に「その場で動かす」導線。各パーツに `example/` の
    self-contained な `main.go` を置き、`go run` の手順 + Go Playground 共有リンクを載せる
    (共有リンクは play.golang.org/share への POST で採番)
+
+## VRT の仕組み(arekore packages/ui/vrt を sharin/VitePress 向けに移植) — **実装済み(2026-07-26)**
+
+`docs/vrt/`(vrt.test.ts / commands.ts / setup.ts)+ `docs/vitest.config.mts` に実装済み。
+`pnpm run vrt`(比較) / `pnpm run vrt:update`(基準採り直し)。使い方は `docs/vrt/README.md`。
+基準画像は `docs/vrt/reference/<Demo>--<variant>--<theme>--<platform>.png`(74枚, darwin)。
+`components/*Demo.vue` を glob 自動収集(登録漏れ防止)、variant 対応、必須 prop 未登録は
+warn ガードで落ちる、light/dark、pixelmatch 差分0。RaftDemo は `vrt` prop で決定化。
+**RaftDemo の角落とし修正は VRT で目視確認済み(角丸なし・状態色の左レール)**。
+Docker 化(Linux 基準)は CI 導入時の follow-up(platform 軸は実装済みなので別基準を採るだけ)。
+
+以下は移植時の設計メモ(参照用に残す)。
+
+arekore の実績ある方式(vitest browser mode + pixelmatch, Docker で描画固定)を踏襲する。
+React/Storybook 前提の部分だけ Vue/VitePress 向けに読み替える。
+
+**参照元(arekore packages/ui/vrt/vrt.test.tsx + commands.ts)の4段構え:**
+1. **拾い方**: `import.meta.glob("**/*.stories.tsx")` で全 stories を集め composeStories で実体化。
+   部品を足せば自動で対象になり登録漏れが起きない
+2. **描き方**: vitest browser mode(playwright chromium, viewport 720px 固定)で `#vrt-stage` に描く。
+   台の幅は既定 320px、例外は table と diagram-group の 640px。アニメ・キャレットは CSS で止めて決定化
+3. **撮り方**: `ctx.iframe.locator("#vrt-stage").screenshot()`。Modal と Toast は top-layer/fixed で
+   台の外に出るので viewport 全体を撮る
+4. **比べ方**: `<部品>/reference/<Story>--<theme>--<platform>.png` と pixelmatch。差分ピクセル 0 が条件。
+   落ちたら `vrt/diffs/` に差分画像。**Docker で実行**(フォント描画を固定し pixel 完全一致を成立させる)
+
+**sharin への移植方針(要検討・次セッションで着手):**
+- 拾い方: sharin は stories が無い。`import.meta.glob("../components/*Demo.vue")` で全デモを自動収集
+  (登録漏れ防止の思想は同じ)。props/variant が要るデモは小さな manifest を添える
+- 描き方: vitest browser mode(`@vitest/browser` + playwright provider) + Vue で各デモを `#vrt-stage` に mount。
+  VitePress のテーマ CSS 変数(`--vp-c-*`)を読み込ませないと色が出ないので、テーマ CSS を注入する。
+  台幅は sharin のコンテンツ幅(≈688px)基準。アニメは CSS(`*{animation:none!important}`)で殺す
+- 決定化: RaftDemo 等アニメするデモは `vrt` prop で自動 tick 停止+固定ステップ描画にする
+  (RaftDemo は seed 固定 LCG なので tick 数さえ固定すれば完全再現)
+- theme: light/dark を html の `.dark` クラス切替で2通り撮る。platform 軸は sharin では不要(web のみ)
+- 比べ方: pixelmatch, 差分 0、`reference/<Demo>--<theme>.png`、落ちたら `diffs/`。Docker で描画固定
+- スクリプト: `pnpm vrt` / `vrt:update`(reference更新) / ローカルで diffs を開いて閲覧
+
+これを組んだら、まず RaftDemo の角落とし修正(角丸+左アクセント禁止対応)を再検証する。
 
 ## ロードマップ(対応ページ一覧)
 
@@ -86,8 +136,8 @@
 ### 分散システム
 | パーツ | 状態 | 備考 |
 |---|---|---|
-| raft | ⬜ | 分散合意。レプリケーションの核 |
-| replication | ⬜ | WAL を他ノードへ送る |
+| raft | 🔜 | 実装+2章済み・未コミット。フルRaft(選挙/複製/snapshot/メンバ変更)。VRT検証済み |
+| replication | 🔜 | 次に着手。WAL を他ノードへ送る(同期/非同期・quorum) |
 | consistent-hashing | ⬜ | シャーディングの土台 |
 | distributed-lock | ⬜ | |
 
