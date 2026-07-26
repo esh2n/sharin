@@ -52,7 +52,10 @@ export default defineConfig({
       },
       {
         text: "メッセージングとRPC",
-        items: [{ text: "メッセージキュー", link: "/parts/message-queue" }],
+        items: [
+          { text: "メッセージキュー", link: "/parts/message-queue" },
+          { text: "RPC", link: "/parts/rpc" },
+        ],
       },
       {
         text: "暗号と認証",
