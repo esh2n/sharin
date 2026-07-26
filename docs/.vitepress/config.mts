@@ -67,6 +67,10 @@ export default defineConfig({
         ],
       },
       {
+        text: "計算機の土台",
+        items: [{ text: "小さな言語", link: "/parts/lang" }],
+      },
+      {
         text: "暗号と認証",
         items: [
           { text: "暗号", link: "/parts/crypto" },
