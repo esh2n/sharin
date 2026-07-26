@@ -179,7 +179,9 @@ React/Storybook 前提の部分だけ Vue/VitePress 向けに読み替える。
 ### 計算機の土台
 | パーツ | 状態 | 備考 |
 |---|---|---|
-| lang / container / os | ⬜ | 土台編 |
+| lang | ✅ | 字句→Pratt構文→ツリーウォーク評価。整数/真偽/let/if式/第一級関数/クロージャ。90.5%cov・-race |
+| container | ⬜ | namespace/cgroup 風の隔離 |
+| os | ⬜ | 最小カーネル/スケジューラ |
 
 ## 直近の作業キュー(この順で)
 
