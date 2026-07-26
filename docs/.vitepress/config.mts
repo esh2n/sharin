@@ -79,6 +79,7 @@ export default defineConfig({
         items: [
           { text: "ガベージコレクタ", link: "/parts/gc" },
           { text: "イベントループ", link: "/parts/event-loop" },
+          { text: "バイトコードVM", link: "/parts/bytecode" },
         ],
       },
       {
