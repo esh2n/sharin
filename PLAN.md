@@ -146,7 +146,7 @@ React/Storybook 前提の部分だけ Vue/VitePress 向けに読み替える。
 |---|---|---|
 | message-queue | ✅ | ログ+オフセット・at-most/at-least-once・冪等=実質1回。+章。コミット済み |
 | pubsub | ⬜ | |
-| rpc | ⬜ | protobuf 風シリアライズ + gRPC 風呼び出し |
+| rpc | ✅ | protobuf風シリアライズ+フレーミング+ID相関+ctx timeout。+章。コミット済み |
 
 ### 暗号と認証
 | パーツ | 状態 | 備考 |
