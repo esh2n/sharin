@@ -42,6 +42,13 @@ export default defineConfig({
         ],
       },
       {
+        text: "分散システム",
+        items: [
+          { text: "分散はなぜ難しいか", link: "/parts/distributed-intro" },
+          { text: "Raft — 分散合意", link: "/parts/raft" },
+        ],
+      },
+      {
         text: "暗号と認証",
         items: [
           { text: "暗号", link: "/parts/crypto" },
