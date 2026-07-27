@@ -8,7 +8,7 @@ import Summary from '../components/Summary.vue'
 > 実装: [`llm/tensor/`](https://github.com/esh2n/sharin/tree/main/llm/tensor) / 実行: `go test ./llm/tensor/`
 
 <Summary>
-LLM を作る、その第一歩。[LLM Sampling](./llm-sampling) では「logits から先」を作ったが、今度は「入力から logits まで」——つまり Transformer 本体に向かう。ただしその前に、numpy に頼らず行列積・softmax・layernorm を自分で書く。派手さはないが、この数本の関数が Transformer のほぼ全て。「attention は行列積の塊」を、土台から自分の手で確かめる回。
+LLM を作る、その第一歩。llm-sampling 編では「logits から先」を作ったが、今度は「入力から logits まで」、つまり Transformer 本体に向かう。ただしその前に、numpy に頼らず行列積・softmax・layernorm を自分で書く。派手さはないが、この数本の関数が Transformer のほぼ全てだ。attention は行列積の塊であることを、土台から自分の手で確かめる回。
 </Summary>
 
 ## この章で作るもの

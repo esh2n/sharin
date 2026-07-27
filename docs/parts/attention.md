@@ -8,7 +8,7 @@ import Summary from '../components/Summary.vue'
 > 実装: [`llm/attention/`](https://github.com/esh2n/sharin/tree/main/llm/attention) / 実行: `go test ./llm/attention/`
 
 <Summary>
-Transformer の心臓。"attention is all you need" の attention を、前章の行列演算だけで1ヘッド組む。各トークンが「他のどのトークンにどれだけ注目するか」を計算し、注目度に応じて情報を混ぜる——それだけ。式にすると softmax(Q·Kᵀ/√d)·V で、まさに行列積の塊。GPT が文脈を理解する仕組みと、"未来を見ない"因果マスクが、行列の絵で腑に落ちる。
+Transformer の心臓。"attention is all you need" の attention を、前章の行列演算だけで1ヘッド組む。各トークンが「他のどのトークンにどれだけ注目するか」を計算し、注目度に応じて情報を混ぜる。やっていることはそれだけだ。式にすると softmax(Q·Kᵀ/√d)·V で、まさに行列積の塊。GPT が文脈を理解する仕組みと、"未来を見ない"因果マスクが、行列の絵で腑に落ちる。
 </Summary>
 
 ## この章で作るもの

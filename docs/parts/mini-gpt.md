@@ -18,7 +18,7 @@ const dataflow = [
 > 実装: [`llm/gpt/`](https://github.com/esh2n/sharin/tree/main/llm/gpt) / 実行: `go test ./llm/gpt/`
 
 <Summary>
-LLM 編の集大成。attention の1ヘッドを Transformer ブロックに仕立て、それを重ねて、実際に「次のトークンを予測する」forward pass を完成させる。埋め込み → ブロック → logits が動けば、あとは llm-sampling 編に繋ぐだけでテキストが生成される。そして最後に——あなたが書いたこの200行と GPT-4 を隔てているものは何か、フロンティアモデルの地図を広げる。
+LLM 編の集大成。attention の1ヘッドを Transformer ブロックに仕立て、それを重ねて、実際に「次のトークンを予測する」forward pass を完成させる。埋め込み → ブロック → logits が動けば、あとは llm-sampling 編に繋ぐだけでテキストが生成される。最後に、あなたが書いたこの200行と GPT-4 を隔てているものは何かを考え、フロンティアモデルの地図を広げる。
 </Summary>
 
 ## この章で作るもの
