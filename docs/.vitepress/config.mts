@@ -12,6 +12,7 @@ export default defineConfig({
         items: [
           { text: "Rate Limiter", link: "/parts/rate-limiter" },
           { text: "サーキットブレーカー", link: "/parts/circuit-breaker" },
+          { text: "リトライとバックオフ", link: "/parts/retry-backoff" },
           { text: "Trace Sampling", link: "/parts/trace-sampling" },
         ],
       },
