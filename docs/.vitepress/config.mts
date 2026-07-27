@@ -127,6 +127,7 @@ export default defineConfig({
           { text: "attention変種(MQA/GQA)", link: "/parts/attention-variants" },
           { text: "推論高速化", link: "/parts/inference" },
           { text: "RMSNormとSwiGLU", link: "/parts/rmsnorm-swiglu" },
+          { text: "MoE", link: "/parts/moe" },
         ],
       },
     ],
