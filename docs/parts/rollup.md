@@ -45,7 +45,7 @@ L1 は安全な代わりに遅く、手数料も高い。ロールアップは�
 
 <<< ../../chain/rollup/state.go#state{go}
 
-`Root` が鍵だ。L1 はこの 16 文字を記録するだけで「L2 が今どういう状態と主張しているか」を指させる。そして `Execute` は「正直に実行したらどうなるか」を返す——fraud proof も validity proof も、最終的にはこの**正直な結果**と sequencer の**主張**を突き合わせる作業に帰着する。
+`Root` が鍵だ。L1 はこの 16 文字を記録するだけで「L2 が今どういう状態と主張しているか」を指させる。そして `Execute` は「正直に実行したらどうなるか」を返す。fraud proof も validity proof も、最終的にはこの正直な結果と sequencer の主張を突き合わせる作業に帰着する。
 
 ## ② バッチと 2 種類の「正しさの担保」
 
@@ -53,7 +53,7 @@ sequencer が L1 に投稿する単位が `Batch` だ。「PrevRoot から始め
 
 <<< ../../chain/rollup/batch.go#batch{go}
 
-`Proof` が ZK ロールアップの validity proof を模したものだ。本物は「PostRoot が正しい結果である」ことを状態を明かさずに検証できる暗号学的証明だが、その暗号自体は [crypto 編](/parts/crypto)の領域なのでここでは自作しない。代わりに **「正直な prover だけが、正しい PostRoot に対して有効な証明を作れる」**という性質だけをモデル化する。嘘の PostRoot を主張すると `Prove` は `Valid=false` を返す——これが後で ZK の門番になる。
+`Proof` が ZK ロールアップの validity proof を模したものだ。本物は「PostRoot が正しい結果である」ことを状態を明かさずに検証できる暗号学的証明だが、その暗号自体は [crypto 編](/parts/crypto)の領域なのでここでは自作しない。代わりに「正直な prover だけが、正しい PostRoot に対して有効な証明を作れる」という性質だけをモデル化する。嘘の PostRoot を主張すると `Prove` は `Valid=false` を返す。これが後で ZK の門番になる。
 
 ## ③ L1 コントラクト: 受理・告発・確定
 
@@ -61,9 +61,9 @@ L1 側が本章の中心だ。`Commit` はモードで挙動が分かれる。Op
 
 <<< ../../chain/rollup/rollup.go#rollup{go}
 
-`Challenge` の中身が fraud proof の本質だ。L1 は状態を持たないので、告発者が **witness(そのバッチの開始状態そのもの)**を提示する。L1 は「witness が PrevRoot と一致するか」「witness に Txs を適用した正しい PostRoot が主張値と一致するか」を確かめ、食い違えば不正確定——そのバッチ**以降を全部巻き戻し**、sequencer の**保証金を没収**する。この没収(slashing)が、不正のコストを攻撃者に負わせる経済的な抑止になる。
+`Challenge` の中身が fraud proof の本質だ。L1 は状態を持たないので、告発者が **witness(そのバッチの開始状態そのもの)**を提示する。L1 は「witness が PrevRoot と一致するか」「witness に Txs を適用した正しい PostRoot が主張値と一致するか」を確かめ、食い違えば不正確定となる。そのバッチ以降を全部巻き戻し、sequencer の保証金を没収する。この没収(slashing)が、不正のコストを攻撃者に負わせる経済的な抑止になる。
 
-対して ZK の `Commit` は `!b.Proof.Valid` を commit の瞬間に弾く。**不正はそもそも入れない**。Optimistic が「入れてしまってから暴く」のと対照的だ。
+対して ZK の `Commit` は `!b.Proof.Valid` を commit の瞬間に弾く。不正はそもそも入れない。Optimistic が「入れてしまってから暴く」のと対照的だ。
 
 ### 動かす
 
