@@ -52,6 +52,7 @@ export default defineConfig({
           { text: "レプリケーション", link: "/parts/replication" },
           { text: "コンシステントハッシュ", link: "/parts/consistent-hashing" },
           { text: "分散ロック", link: "/parts/distributed-lock" },
+          { text: "分散トランザクション", link: "/parts/distributed-txn" },
         ],
       },
       {
