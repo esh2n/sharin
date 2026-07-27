@@ -71,6 +71,7 @@ export default defineConfig({
           { text: "Pub/Sub", link: "/parts/pubsub" },
           { text: "RPC", link: "/parts/rpc" },
           { text: "イベントソーシング", link: "/parts/event-sourcing" },
+          { text: "CQRS", link: "/parts/cqrs" },
         ],
       },
       {
