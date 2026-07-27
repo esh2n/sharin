@@ -142,6 +142,7 @@ export default defineConfig({
               { text: "Claude(Constitutional AI)", link: "/parts/claude-lineage" },
               { text: "Gemini(マルチモーダル)", link: "/parts/gemini-lineage" },
               { text: "オープンモデル", link: "/parts/open-models" },
+              { text: "Mamba / SSM", link: "/parts/ssm" },
               { text: "アーキテクチャ図鑑", link: "/parts/llm-architecture" },
             ],
           },
