@@ -37,6 +37,7 @@ export default defineConfig({
           { text: "B-Treeページストア", link: "/parts/btree-page-store" },
           { text: "B-Tree + WAL", link: "/parts/btree-wal" },
           { text: "ミニSQL", link: "/parts/mini-sql" },
+          { text: "MVCC / 分離レベル", link: "/parts/mvcc" },
           { text: "ハッシュマップ", link: "/parts/hash-map" },
           { text: "ブルームフィルタ", link: "/parts/bloom-filter" },
           { text: "スキップリスト", link: "/parts/skip-list" },
