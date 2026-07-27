@@ -135,6 +135,7 @@ export default defineConfig({
               { text: "量子化", link: "/parts/quantization" },
               { text: "LoRA", link: "/parts/lora" },
               { text: "埋め込みとベクトル検索", link: "/parts/embedding-search" },
+              { text: "マルチモーダル入口(パッチ化)", link: "/parts/patchify" },
             ],
           },
           {
