@@ -151,9 +151,18 @@ React/Storybook 前提の部分だけ Vue/VitePress 向けに読み替える。
 ### 暗号と認証
 | パーツ | 状態 | 備考 |
 |---|---|---|
-| crypto | ⬜ | 共通鍵/公開鍵/ハッシュ/署名 |
-| auth | ⬜ | crypto の応用 |
-| blockchain | ⬜ | crypto の応用 |
+| crypto | ✅ | 共通鍵/公開鍵/ハッシュ/署名 |
+| auth | ✅ | crypto の応用 |
+
+### ブロックチェーンのなかみ
+| パーツ | 状態 | 備考 |
+|---|---|---|
+| blockchain | ✅ | ハッシュチェーン + PoW + 署名(crypto/blockchain) |
+| utxo | ✅ | UTXOモデル。送金=消費と生成、残高=集計、二重支払いは一意消費で防ぐ。ed25519署名・お釣り・手数料・coinbase。94.9%cov・-race(chain/utxo) |
+| evm | ✅ | アカウントモデル + スタックVM + gas計量 + リバート(snapshot/restore)。UTXOと対、bytecode/wasm応用。93.3%cov・-race(chain/evm) |
+| rollup | ✅ | Layer2。L1は再実行せずroot記録。optimistic(fraud proof+challenge期間+slashing)/zk(validity proof即確定)対比、DA。96.4%cov・-race(chain/rollup) |
+| lightning | ⬜ | State Channel。commitment更新・ペナルティ・HTLC |
+| substrate | ⬜ | FRAMEランタイム。pallet合成・forkless upgrade(wasm の応用) |
 
 ### ランタイム内部
 | パーツ | 状態 | 備考 |
