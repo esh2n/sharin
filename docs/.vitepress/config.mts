@@ -122,6 +122,7 @@ export default defineConfig({
         text: "Transformerの部品",
         items: [
           { text: "Transformer全体像", link: "/parts/transformer" },
+          { text: "BPEトークナイザ", link: "/parts/bpe" },
         ],
       },
     ],
