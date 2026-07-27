@@ -80,6 +80,7 @@ export default defineConfig({
           { text: "仮想DOM", link: "/parts/vdom" },
           { text: "リアクティビティ(signal)", link: "/parts/reactivity" },
           { text: "状態管理(store)", link: "/parts/store" },
+          { text: "バンドラ(依存解決)", link: "/parts/bundler" },
           { text: "mini-next(SSR/ルーティング)", link: "/parts/mini-next" },
           { text: "browser(レンダリング)", link: "/parts/browser" },
         ],
