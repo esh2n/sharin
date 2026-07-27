@@ -123,6 +123,7 @@ export default defineConfig({
         items: [
           { text: "Transformer全体像", link: "/parts/transformer" },
           { text: "BPEトークナイザ", link: "/parts/bpe" },
+          { text: "位置エンコーディングとRoPE", link: "/parts/rope" },
         ],
       },
     ],
