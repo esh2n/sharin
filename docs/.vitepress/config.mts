@@ -72,6 +72,7 @@ export default defineConfig({
         text: "計算機の土台",
         items: [
           { text: "小さな言語", link: "/parts/lang" },
+          { text: "正規表現(NFA/DFA)", link: "/parts/regex" },
           { text: "コンテナ", link: "/parts/container" },
           { text: "OS/スケジューラ", link: "/parts/os" },
         ],
