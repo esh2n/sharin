@@ -7,7 +7,7 @@ import FigureBox from '../components/figures/FigureBox.vue'
 # mini-next(SSR + ルーティング + ハイドレーション)
 
 <Summary>
-サーバで HTML を組み、URL でページを選び、届いた静的HTMLにイベントを後付けして動かす——Next.js のようなフレームワークの核だけを、<a href="./vdom">仮想DOM</a>の上に作る。肝は3つ。<strong>同じ木を3通りに使う</strong>——1つの仮想DOM木を、実DOM化(vdom)・文字列化(SSR)・イベント付け(hydrate)に回す。<strong>ハイドレーション = 作り直さない</strong>——サーバ描画済みの実DOMは既にある。捨てて mount し直すのは無駄。既存ノードを使い回し、文字列に載らなかったイベントだけを付ける。<strong>SSR は Node で動く</strong>——文字列を組むだけで実DOMを触らないので、ブラウザの無いサーバでも走る。
+サーバで HTML を組み、URL でページを選び、届いた静的 HTML にイベントを後付けして動かす。Next.js のようなフレームワークの核だけを、仮想DOM の上に作る。鍵は 1 つの仮想DOM 木を実 DOM 化・文字列化(SSR)・イベント付け(hydrate)の 3 通りに使うことだ。ハイドレーションは作り直さず、サーバ描画済みの実 DOM を使い回して、文字列に載らなかったイベントだけを付ける。SSR は文字列を組むだけなので、ブラウザの無いサーバでも走る。
 </Summary>
 
 ## この章で作るもの
@@ -45,7 +45,7 @@ import FigureBox from '../components/figures/FigureBox.vue'
 
 </FigureBox>
 
-`mount`(前章)と `hydrate` の使い分けが要。**DOM がまだ無い**なら `mount` で作る。**DOM が既にある**(サーバが描いた)なら、作り直さず `hydrate` でイベントだけ足す。
+`mount`(前章)と `hydrate` の使い分けが要。DOM がまだ無いなら `mount` で作る。DOM が既にある(サーバが描いた)なら、作り直さず `hydrate` でイベントだけ足す。
 
 ## SSR: 木を HTML文字列にする
 
@@ -53,11 +53,11 @@ import FigureBox from '../components/figures/FigureBox.vue'
 
 <<< ../../frontend/mini-next/ssr.ts#render{ts}
 
-要点は2つ。**イベント(on\*)は出力しない**——関数は文字列にできないので、ここで欠ける。この欠けをクライアントの hydrate が埋める、という対称性が後で効く。もう一つは**エスケープ**:
+要点は2つ。1 つ目はイベント(on\*)を出力しないこと。関数は文字列にできないので、ここで欠ける。この欠けをクライアントの hydrate が埋める、という対称性が後で効く。もう一つはエスケープだ:
 
 <<< ../../frontend/mini-next/ssr.ts#escape{ts}
 
-テキストに `<script>` が混ざったとき、エスケープしないとそれが**タグとして解釈される**(XSS)。SSR は「文字列を組む」ので、この危険と常に隣り合わせ。テキストは `< > &`、属性値は `" &` を実体参照にするのが最初の防御。
+テキストに `<script>` が混ざったとき、エスケープしないとそれがタグとして解釈される(XSS)。SSR は「文字列を組む」ので、この危険と常に隣り合わせ。テキストは `< > &`、属性値は `" &` を実体参照にするのが最初の防御。
 
 ## ルーティング: URL → ページ
 
@@ -71,7 +71,7 @@ import FigureBox from '../components/figures/FigureBox.vue'
 
 ここが SSR とセットの肝。サーバが返した HTML はブラウザで**実DOMとして既に描かれている**。でもイベントは載っていないので、ボタンを押しても動かない。ここで木を `mount` し直したら、同じDOMをもう一度作ることになり無駄で、一瞬ちらつく。
 
-代わりに、**既存のDOMをたどりながら、木の on\* をリスナとして付けていく**:
+代わりに、既存のDOMをたどりながら、木の on\* をリスナとして付けていく:
 
 <<< ../../frontend/mini-next/hydrate.ts#hydrate{ts}
 
