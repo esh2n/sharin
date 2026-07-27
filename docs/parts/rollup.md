@@ -7,14 +7,14 @@ import FigureBox from '../components/figures/FigureBox.vue'
 # rollup(Layer2 と fraud proof / validity proof)
 
 <Summary>
-[evm 編](/parts/evm)で見たように、コントラクトの実行は全ノードがなぞる。だから L1(メインチェーン)は安全な代わりに遅く、手数料も高い。<strong>ロールアップ</strong>はこの制約を、発想の転換で乗り越える——<strong>実行を L2 に逃がし、結果の要約(state root)と取引データだけを L1 に固める</strong>。1 台の sequencer がオフチェーンで大量にさばき、L1 は取引を<strong>再実行せず</strong>に root の列を記録するだけ。これでスループットは跳ね上がる。だが、ここに致命的な問いが残る: 誰も再実行しないなら、sequencer が「自分の残高を水増しした」嘘の root を投稿しても通ってしまうのでは? この問いへの答えが、ロールアップを 2 つの流派に分ける。<strong>Optimistic</strong> は「とりあえず信じて記録し、challenge 期間だけ異議を受け付ける」。誰かが再実行して不正を証明(<strong>fraud proof</strong>)すれば、そのバッチ以降を巻き戻し、sequencer の保証金を没収する。安いが確定に時間がかかり、1 人でも正直な監視者がいることが前提だ。<strong>ZK</strong> は「計算が正しいことの証明(<strong>validity proof</strong>)」をバッチに添える。L1 は証明を検証するだけで正しさを確信でき、異議期間なしで即確定、監視者もいらない。代わりに証明の生成は重い。<strong>「事後に暴くか、事前に証明するか」</strong>——このトレードオフが Layer2 設計の中心にある。
+L1 は安全な代わりに遅く、手数料も高い。ロールアップは取引の実行を L2 に逃がし、結果の要約(state root)と取引データだけを L1 に記録して速くする。問題は、L1 が再実行しないなら sequencer の嘘をどう見抜くか。答えは 2 つあり、事後に暴く optimistic(fraud proof)と、事前に証明する zk(validity proof)で、確定の速さと検証コストが逆になる。
 </Summary>
 
 ## この章で作るもの
 
-L1 のスループットには天井がある。全ノードが全取引を実行・保存する以上、速くするには「みんなが実行する量」を減らすしかない。ロールアップの答えは大胆だ——**実行を 1 か所(L2)に集約し、L1 は監査役に徹する**。
+[evm 編](/parts/evm)で見たとおり、コントラクトの実行は全ノードがなぞる。だから L1 のスループットには天井がある。速くするには「みんなが実行する量」を減らすしかない。ロールアップは実行を 1 台の sequencer(L2)に集約し、L1 は結果の root を記録する監査役に徹する。
 
-だが監査役が「再実行しない」なら、どうやって不正を見抜くのか。ここが本章の主題だ。答えは 2 通りあり、それぞれ別の哲学に立つ。片方は性善説で走って事後に罰し、もう片方は疑ってかかって事前に証明を要求する。
+問題は、監査役が再実行しないなら不正をどう見抜くか。これが本章の主題で、答えは 2 通りある。optimistic は受理してから事後に fraud proof で罰する。zk は commit のときに validity proof を要求する。
 
 <FigureBox caption="ロールアップの 2 系統。L2 で実行し、バッチ(PrevRoot→PostRoot + 取引)を L1 に投稿する。Optimistic は楽観的に受理し challenge 期間内の fraud proof で覆す。ZK は validity proof を commit 時に検証して即確定する">
 
