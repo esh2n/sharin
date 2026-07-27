@@ -70,6 +70,7 @@ export default defineConfig({
           { text: "メッセージキュー", link: "/parts/message-queue" },
           { text: "Pub/Sub", link: "/parts/pubsub" },
           { text: "RPC", link: "/parts/rpc" },
+          { text: "イベントソーシング", link: "/parts/event-sourcing" },
         ],
       },
       {
