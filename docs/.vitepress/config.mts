@@ -40,6 +40,7 @@ export default defineConfig({
           { text: "ハッシュマップ", link: "/parts/hash-map" },
           { text: "ブルームフィルタ", link: "/parts/bloom-filter" },
           { text: "スキップリスト", link: "/parts/skip-list" },
+          { text: "転置インデックス", link: "/parts/inverted-index" },
         ],
       },
       {
