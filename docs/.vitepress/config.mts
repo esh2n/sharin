@@ -26,6 +26,7 @@ export default defineConfig({
           { text: "HTTPサーバ", link: "/parts/http-server" },
           { text: "HTTP/2 多重化", link: "/parts/http2" },
           { text: "WebSocket", link: "/parts/websocket" },
+          { text: "輻輳制御(AIMD)", link: "/parts/congestion" },
           { text: "DNSリゾルバ", link: "/parts/dns" },
           { text: "プロキシ", link: "/parts/proxy" },
         ],
