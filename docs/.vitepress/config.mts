@@ -100,6 +100,7 @@ export default defineConfig({
         text: "暗号と認証",
         items: [
           { text: "ハッシュとHMAC", link: "/parts/hashing" },
+          { text: "対称暗号とモード", link: "/parts/symmetric-cipher" },
           { text: "暗号(RSA)", link: "/parts/crypto" },
           { text: "認証と認可", link: "/parts/auth" },
         ],
