@@ -101,6 +101,7 @@ export default defineConfig({
           { text: "アカウント & EVM", link: "/parts/evm" },
           { text: "Layer2 / Rollup", link: "/parts/rollup" },
           { text: "Lightning / 決済チャネル", link: "/parts/lightning" },
+          { text: "Substrate / ランタイム", link: "/parts/substrate" },
         ],
       },
       {
