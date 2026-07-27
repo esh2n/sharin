@@ -125,6 +125,7 @@ export default defineConfig({
           { text: "BPEトークナイザ", link: "/parts/bpe" },
           { text: "位置エンコーディングとRoPE", link: "/parts/rope" },
           { text: "attention変種(MQA/GQA)", link: "/parts/attention-variants" },
+          { text: "推論高速化", link: "/parts/inference" },
         ],
       },
     ],
