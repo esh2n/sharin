@@ -14,6 +14,7 @@ export default defineConfig({
           { text: "サーキットブレーカー", link: "/parts/circuit-breaker" },
           { text: "リトライとバックオフ", link: "/parts/retry-backoff" },
           { text: "ロードバランサ", link: "/parts/load-balancer" },
+          { text: "メトリクスとヒストグラム", link: "/parts/metrics" },
           { text: "Trace Sampling", link: "/parts/trace-sampling" },
         ],
       },
