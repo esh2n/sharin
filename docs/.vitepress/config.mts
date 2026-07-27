@@ -99,6 +99,7 @@ export default defineConfig({
           { text: "ブロックチェーン(鎖 + PoW)", link: "/parts/blockchain" },
           { text: "UTXO モデル", link: "/parts/utxo" },
           { text: "アカウント & EVM", link: "/parts/evm" },
+          { text: "Layer2 / Rollup", link: "/parts/rollup" },
         ],
       },
       {
