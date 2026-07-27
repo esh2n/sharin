@@ -11,6 +11,7 @@ export default defineConfig({
         text: "トラフィック制御と観測",
         items: [
           { text: "Rate Limiter", link: "/parts/rate-limiter" },
+          { text: "サーキットブレーカー", link: "/parts/circuit-breaker" },
           { text: "Trace Sampling", link: "/parts/trace-sampling" },
         ],
       },
