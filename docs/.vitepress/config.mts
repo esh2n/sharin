@@ -53,6 +53,7 @@ export default defineConfig({
           { text: "コンシステントハッシュ", link: "/parts/consistent-hashing" },
           { text: "分散ロック", link: "/parts/distributed-lock" },
           { text: "分散トランザクション", link: "/parts/distributed-txn" },
+          { text: "キャパシティ見積もり", link: "/parts/capacity-estimation" },
         ],
       },
       {
@@ -119,18 +120,24 @@ export default defineConfig({
             text: "Transformerの部品",
             items: [
               { text: "Transformer全体像", link: "/parts/transformer" },
-              { text: "BPEトークナイザ", link: "/parts/bpe" },
               { text: "位置エンコーディングとRoPE", link: "/parts/rope" },
               { text: "attention変種(MQA/GQA)", link: "/parts/attention-variants" },
-              { text: "推論高速化", link: "/parts/inference" },
               { text: "RMSNormとSwiGLU", link: "/parts/rmsnorm-swiglu" },
               { text: "MoE", link: "/parts/moe" },
+            ],
+          },
+          {
+            text: "モデルを支える部品",
+            items: [
+              { text: "BPEトークナイザ", link: "/parts/bpe" },
+              { text: "推論高速化", link: "/parts/inference" },
               { text: "学習パイプライン", link: "/parts/llm-training" },
             ],
           },
           {
             text: "モデルの系譜",
             items: [
+              { text: "GPT系譜", link: "/parts/gpt-lineage" },
               { text: "アーキテクチャ図鑑", link: "/parts/llm-architecture" },
             ],
           },
