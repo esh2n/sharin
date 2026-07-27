@@ -132,6 +132,7 @@ export default defineConfig({
               { text: "BPEトークナイザ", link: "/parts/bpe" },
               { text: "推論高速化", link: "/parts/inference" },
               { text: "学習パイプライン", link: "/parts/llm-training" },
+              { text: "量子化", link: "/parts/quantization" },
             ],
           },
           {
