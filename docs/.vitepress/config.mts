@@ -15,6 +15,7 @@ export default defineConfig({
           { text: "リトライとバックオフ", link: "/parts/retry-backoff" },
           { text: "ロードバランサ", link: "/parts/load-balancer" },
           { text: "メトリクスとヒストグラム", link: "/parts/metrics" },
+          { text: "分散トレーシング", link: "/parts/tracing" },
           { text: "Trace Sampling", link: "/parts/trace-sampling" },
         ],
       },
