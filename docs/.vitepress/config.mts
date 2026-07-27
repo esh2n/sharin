@@ -128,6 +128,7 @@ export default defineConfig({
           { text: "推論高速化", link: "/parts/inference" },
           { text: "RMSNormとSwiGLU", link: "/parts/rmsnorm-swiglu" },
           { text: "MoE", link: "/parts/moe" },
+          { text: "学習パイプライン", link: "/parts/llm-training" },
         ],
       },
     ],
