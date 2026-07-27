@@ -121,5 +121,5 @@ import FigureBox from '../components/figures/FigureBox.vue'
 
 - Joseph Poon, Thaddeus Dryja, ["The Bitcoin Lightning Network"](https://lightning.network/lightning-network-paper.pdf)(2016) — 原論文。チャネルとペナルティ、HTLC の定義
 - [BOLT specifications](https://github.com/lightning/bolts) — commitment・リボケーション・HTLC・オニオンの実仕様
-- [utxo 編](/parts/utxo)(土台の取引モデル)・[rollup 編](/parts/rollup)(別方向のスケール)と合わせて読むと、L1 の外へ出す手法の地図が見える
+- [utxo 編](/parts/utxo)(土台の取引モデル)・[rollup 編](/parts/rollup)(別方向のスケール)と合わせて読むと、L1 の外へ出す手法が見渡せる
 - 実装: [chain/lightning](https://github.com/esh2n/sharin/tree/main/chain/lightning)
