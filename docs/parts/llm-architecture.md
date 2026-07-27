@@ -1,151 +1,91 @@
 <script setup>
-import LlmComponentDemo from '../components/LlmComponentDemo.vue'
 import Summary from '../components/Summary.vue'
 import FigureBox from '../components/figures/FigureBox.vue'
 </script>
 
-# LLMアーキテクチャ図鑑
+# LLM全体マップ
 
 <Summary>
-Transformer・GPT・Claude といった名前は聞くが、何がどう違うのかは掴みにくい。この章はコードを書かず、部品から組んだ mini-GPT を広い文脈に置き直す。まず Transformer が RNN の何を解いて主流になったかを説明し、次に LLM を構成する部品(トークナイザ・attention・正規化ほか)の選択肢を並べ、最後に各社モデル(GPT / Claude / Gemini / Llama 系)が何を選んでいるかを対照する。実装した mini-GPT がその中でどこに位置するかが分かる。
+LLM 編は部品の実装から各社モデルの系譜まで多くの章に分かれている。この章はその見取り図で、Transformer という 1 つの土台から、部品の改良と学習・モデルの系統がどう枝分かれするかを 1 枚にまとめ、各章への入口にする。実装した mini-GPT が全体のどこに位置し、そこからフロンティアまでの距離が規模・部品・学習・データの差でできていることを確認する。
 </Summary>
 
-## この章について
+## この章の役割
 
-[行列演算](./tensor)→[attention](./attention)→[mini-GPT](./mini-gpt) で
-Transformer を部品から組んだ。だが「そもそも Transformer とは何で、なぜ主流なのか」
-「Claude や Gemini は GPT と何が違うのか」は、まだ整理していない。
+LLM 編は章数が多い。骨格を組む基礎スパイン、Transformer の部品、モデルを支える部品、各社モデルの系譜。どこから読んでも構わないが、全体の中でその章がどこにあるかは掴んでおきたい。この章はそのための見取り図で、詳細は各章に譲り、ここでは接続だけを示す。
 
-この章はコードを書かず、作ったものをより広い文脈に置き直す解説の章だ。
+## 全体の見取り図
 
-## そもそも Transformer とは何か
-
-Transformer は 2017 年の論文 "Attention Is All You Need" で登場した、
-文章を扱うニューラルネットの設計だ。今の LLM はほぼ全部これがベースになっている。
-なぜ主流になったのかは、その前の主流だった RNN の限界を知ると分かる。
-
-### RNN の限界: 逐次処理
-
-Transformer の前は RNN / LSTM が主流だった。RNN は文章を単語 1 つずつ順番に
-読む。「私は」を読んで状態を更新、「猫が」を読んで更新、と前の単語の処理が
-終わらないと次に進めない。
-
-<FigureBox caption="RNN と Transformer の違い。RNN は1語ずつ順番(逐次)。Transformer は全語を一度に(並列)。GPU は並列計算が得意なので、Transformer は桁違いに速く大量に学習できる">
+<FigureBox caption="LLM 編の全体像。2017 年の Transformer を土台に、部品の改良(大きく・長く・速く)と、モデルの系統(各社の後段学習と設計思想)が枝分かれする">
 
 ```
-RNN:         [私は] → [猫が] → [好き]     1つ終わってから次(逐次)
-              状態    状態     状態         遅い。長い文で最初を忘れる
-
-Transformer: [私は] [猫が] [好き]          全部を一度に見る(並列)
-                ╲    │    ╱                attention で互いに直接注目
-                 全単語が全単語を見る       速い。遠い語も直接繋がる
-```
-
-</FigureBox>
-
-RNN には2つの弱点があった:
-
-1. **遅い**: 逐次処理なので、GPU の並列計算力を活かせない。大規模化できない
-2. **長距離が苦手**: 文が長いと、最初の方の情報が薄れる(状態を1本のベクトルに
-   押し込むので)
-
-Transformer の [attention](./attention) はこれを両方解く。全単語が全単語を
-一度に直接見るので、並列計算できて速く、遠く離れた語も直接繋がる。
-文章を並列で処理できるようになったことが、LLM 拡大の技術的な起点になった。
-
-## Transformer の3系統
-
-同じ Transformer でも、使い方で3系統に分かれる。
-
-| 系統 | 何をする | 代表 | 用途 |
-|---|---|---|---|
-| **decoder-only** | 左から右へ次の語を予測(因果マスク) | GPT, Llama, Claude | **生成**(チャット、文章作成) |
-| **encoder-only** | 文全体を一度に理解(マスクなし) | BERT | 分類・検索(埋め込み) |
-| **encoder-decoder** | 理解して変換 | T5, 初期の翻訳 | 翻訳・要約 |
-
-[mini-GPT](./mini-gpt) で作ったのは decoder-only だ。因果マスクで「未来を見ない」
-のがそれにあたる。今のチャット LLM はほぼ全部 decoder-only になっている。
-質問応答も翻訳も要約もコード生成も、すべて「次の語を予測する」に還元できると分かったからだ。
-
-## LLMコンポーネント図鑑
-
-Transformer 本体は同じでも、各部品には選択肢がある。mini-GPT で使った素朴な部品と、
-実物が使う改良版を並べる。
-
-- **トークナイザ**: 文字列をトークンに切る。**BPE**(GPT系)、**SentencePiece**(多言語)。
-  [llm-sampling](./llm-sampling) 編で触れた「トークン」を作る部分
-- **位置エンコーディング**: mini-GPT は「位置ベクトルを足す」絶対方式。実物は **RoPE**
-  (回転位置埋め込み)で、長い文脈でも位置関係を保てる。長コンテキストの立役者
-- **attention の変種**:
-  - **MHA**(マルチヘッド): mini-GPT のこれ。各ヘッドが独立の Q/K/V
-  - **MQA/GQA**: K,V を複数ヘッドで共有。メモリ(KV cache)を大幅削減。長文生成が現実的に
-  - **MLA**: DeepSeek の圧縮版。さらにメモリ効率が良い
-- **正規化**: mini-GPT は **LayerNorm**。実物は **RMSNorm**(平均を引かない簡略版。速い)
-- **活性化**: mini-GPT は **GELU**。実物は **SwiGLU**(ゲート付き。性能が少し上)
-- **MoE**(Mixture of Experts): FFN を複数の「専門家」に分け、トークンごとに一部だけ使う。
-  総サイズは巨大でも計算は一部で済む(「大きいのに速い」)
-
-**見比べる**: 各社モデルがどの部品を選んでいるかの対応表。オープンモデル(緑)は
-公開情報、GPT-4/Claude/Gemini(灰)は中身が非公開。
-
-<LlmComponentDemo />
-
-RoPE・GQA・RMSNorm・SwiGLU は、GPT-2(mini-GPT と同じ素朴な構成)以降に
-「大きく・長く・速く」するために生まれた改良だ。オープンモデルはほぼ共通してこの構成に
-収束している。土台の Transformer は同じで、その上の部品の磨き上げが進んでいる。
-
-## 各社モデルの系統
-
-<FigureBox caption="LLM の大まかな系統。2017年の Transformer から分岐し、decoder-only(GPT系)が生成の主流に。近年はオープンモデルが猛追">
-
-```
-Transformer (2017)
-   ├─ BERT系(encoder)          … 検索・埋め込みで今も現役
-   ├─ T5系(encoder-decoder)    … 翻訳・要約
-   └─ GPT系(decoder) ─────────── 生成の主流
-        ├─ OpenAI: GPT-2/3/4 → o1/o3(推論)
-        ├─ Anthropic: Claude(Constitutional AI で安全性)
-        ├─ Google: Gemini(マルチモーダル前提)
-        └─ オープン: Llama(Meta) / Mistral / DeepSeek / Qwen
-                     ↑ 重みが公開され、誰でも動かせる・改造できる
+Transformer (2017)  ── decoder-only が生成の主流
+  │
+  ├─ 基礎スパイン(自分の手で組む)
+  │    行列演算 → attention → mini-GPT → sampling
+  │
+  ├─ Transformerの部品(GPT-2 からの改良)
+  │    位置: 絶対 → RoPE
+  │    attention: MHA → GQA/MQA(→ MLA)
+  │    正規化・活性化: LayerNorm/GELU → RMSNorm/SwiGLU
+  │    FFN: dense → MoE
+  │
+  ├─ モデルを支える部品
+  │    トークナイザ(BPE) / 推論高速化(KVキャッシュ・投機) / 学習(事前学習→SFT→RLHF)
+  │
+  └─ モデルの系譜
+       GPT系 → 推論モデル(o1/R1)
+       Claude(Constitutional AI) / Gemini(マルチモーダル)
+       オープン(Llama/Mistral/DeepSeek/Qwen)
+       非Transformer: Mamba/SSM・拡散LM
 ```
 
 </FigureBox>
 
-- **クローズド**(GPT-4 / Claude / Gemini): 最高性能だが中身は非公開。API で使う
-- **オープン**(Llama / Mistral / DeepSeek / Qwen): 重みが公開。自分のマシンで動かせる、
-  改造できる、ファインチューニングできる。性能はクローズドに肉薄
+## 章の一覧
 
-各社の差は、アーキテクチャそのものより **学習データ・学習方法(RLHF の質)・安全性の
-作り込み**([mini-GPT](./mini-gpt) の「学習の3段階」)にある。Claude の
-Constitutional AI、OpenAI の RLHF など、後段の工夫が"性格"を決める。
+**基礎スパイン**（自分の手で Transformer を組む）
 
-## Transformer 以外の潮流
+- [行列演算](/parts/tensor) — numpy に頼らず行列積・softmax・LayerNorm を作る
+- [Attention](/parts/attention) — self-attention の 1 ヘッド
+- [mini-GPT](/parts/mini-gpt) — ブロックを重ねた forward pass
+- [LLM Sampling](/parts/llm-sampling) — logits からトークンを選ぶ
 
-Transformer が主流だが、挑戦者もいる。
+**Transformerの部品**（GPT-2 構成からの改良）
 
-- **Mamba / SSM**(状態空間モデル): attention の「全語が全語を見る」計算は
-  文長の2乗のコストがかかる。SSM はそれを線形にする試み。超長文で有利かもしれない
-- **拡散モデル**(Diffusion): 画像生成(Stable Diffusion, DALL-E)の主流。
-  ノイズから徐々に画像を作る。LLM とは別系統だが、テキストへの応用も研究中
-- **マルチモーダル**: テキスト・画像・音声を同じ Transformer に流す。
-  Gemini や GPT-4V。「全部をトークンにして混ぜる」のが基本発想
+- [Transformer全体像](/parts/transformer) — RNN の限界、3 系統、ブロックの分業
+- [位置エンコーディングとRoPE](/parts/rope) — 足す位置から回す位置へ
+- [attention変種(MQA/GQA)](/parts/attention-variants) — KV キャッシュを縮める共有
+- [RMSNormとSwiGLU](/parts/rmsnorm-swiglu) — 正規化と活性化の世代交代
+- [MoE](/parts/moe) — FFN を専門家に分ける
 
-## まとめ: あなたの mini-GPT は全体のどこにいるか
+**モデルを支える部品**
 
-- **系統**: decoder-only(GPT系)。今のチャット LLM の主流
-- **部品**: GPT-2 相当の素朴な構成(LayerNorm・絶対位置・MHA・GELU)。
-  実物の改良(RoPE・GQA・RMSNorm・SwiGLU・MoE)は入れていない
+- [BPEトークナイザ](/parts/bpe) — 文字列をトークンに切る入口
+- [推論高速化](/parts/inference) — KV キャッシュと speculative decoding
+- [学習パイプライン](/parts/llm-training) — 事前学習 → SFT → RLHF/DPO
+
+**モデルの系譜**
+
+- [GPT系譜](/parts/gpt-lineage) — スケールに賭けた歴史
+- [推論モデル(o1/R1)](/parts/reasoning-models) — 推論時間という第 2 の軸
+- [Claude(Constitutional AI)](/parts/claude-lineage) — 基準を明文化した後段学習
+- [Gemini(マルチモーダル)](/parts/gemini-lineage) — 全部をトークンにして混ぜる
+- [オープンモデル](/parts/open-models) — 公開ゆえに検証できる系譜
+- [Mamba / SSM](/parts/ssm) — attention の二乗に挑む線形時間モデル
+
+## あなたの mini-GPT は全体のどこにいるか
+
+[mini-GPT](/parts/mini-gpt) で作ったのは、decoder-only の GPT-2 相当だ。全体マップの中で位置を確かめると、そこからフロンティアまでの距離が 4 つの差でできていることが分かる。
+
+- **系統**: decoder-only(GPT 系)。今のチャット LLM の主流に乗っている
+- **部品**: GPT-2 相当の素朴な構成(絶対位置・MHA・LayerNorm・GELU・dense FFN)。RoPE・GQA・RMSNorm・SwiGLU・MoE の改良は、それぞれ [Transformerの部品](/parts/rope)の各章で実装した
+- **学習**: なし(重みは乱数)。実物は事前学習 + SFT + RLHF の 3 段([学習パイプライン](/parts/llm-training))
 - **規模**: 数万〜数百万パラメータ。フロンティアは兆単位
-- **学習**: なし(乱数)。フロンティアは事前学習 + SFT + RLHF
 
-つまり、あなたが作ったのは「2019 年の GPT-2 の、うんと小さい未学習版」だ。
-そこから現在のフロンティアまでの距離は、規模・部品の磨き・学習・データの差にある。
-骨格は同じで、特別な魔法があるわけではない。
+土台の Transformer は同じで、そこから先は規模・部品の磨き・学習・データの差でしかない。特別な仕掛けが 1 つあるわけではなく、この教科書で 1 つずつ実装した改良の積み重ねの先に、今のモデルがある。
 
 ## 参考資料
 
-- [Attention Is All You Need (2017)](https://arxiv.org/abs/1706.03762) — Transformer 原論文
-- [The Illustrated Transformer](https://jalammar.github.io/illustrated-transformer/) — 図解の決定版
-- [A Survey of Large Language Models](https://arxiv.org/abs/2303.18223) — LLM 全体像の網羅的サーベイ
-- [Llama / Mistral / DeepSeek の技術レポート](https://arxiv.org/abs/2407.21783) — オープンモデルの中身は論文で読める
+- [Attention Is All You Need (2017)](https://arxiv.org/abs/1706.03762) — すべての起点
+- [The Illustrated Transformer](https://jalammar.github.io/illustrated-transformer/) — 図解の定番
+- [A Survey of Large Language Models](https://arxiv.org/abs/2303.18223) — LLM 全体像のサーベイ
