@@ -100,6 +100,7 @@ export default defineConfig({
           { text: "UTXO モデル", link: "/parts/utxo" },
           { text: "アカウント & EVM", link: "/parts/evm" },
           { text: "Layer2 / Rollup", link: "/parts/rollup" },
+          { text: "Lightning / 決済チャネル", link: "/parts/lightning" },
         ],
       },
       {
