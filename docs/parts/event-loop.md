@@ -71,7 +71,7 @@ import FigureBox from '../components/figures/FigureBox.vue'
 
 <EventLoopDemo />
 
-## アーキテクチャ面接の観点: I/O モデルとトレードオフ
+## 設計の観点: I/O モデルとトレードオフ
 
 - **ブロッキング(スレッド per 接続)vs イベント駆動**: 前者はコードが素直(上から下へ read→処理→write)だが、接続数だけスレッドが要り C10K で破綻する。後者は 1 スレッドで多重化できるが、処理を細切れのコールバック/状態機械に分解する必要があり、コードが「ひっくり返る」(制御の反転)
 - **なぜ select ではなく epoll/kqueue か**: `select`/`poll` は毎回全 FD 集合を渡し直し O(N) で走査する。`epoll`(Linux)/`kqueue`(BSD/macOS)は関心を一度登録して再利用し、準備できた FD だけを返すので、アイドルな接続が大量にあっても効率が落ちない。これが大規模サーバの前提技術
@@ -79,7 +79,7 @@ import FigureBox from '../components/figures/FigureBox.vue'
 - **イベントループを塞ぐな**: ハンドラ内でブロックすると全接続が止まる。重い処理はワーカスレッドプール(libuv の `uv_queue_work`)や別プロセスへ逃がす。CPU バウンドな仕事はイベントループの苦手分野
 - **バックプレッシャ**: 相手が遅くて送信バッファが詰まったら、書けるまで Writable を待ち、掃けたら関心を外す。これを怠るとメモリに送信待ちが溜まり続ける
 
-面接では「大量接続は 1 接続 1 スレッドでは破綻する(C10K)。FD をノンブロッキングにして epoll で readiness を多重化し、1 スレッドの event loop で回す。select ではなく epoll なのは関心を登録して再利用でき ready なものだけ返るから。ハンドラは絶対にブロックさせない」を押さえられるかが要。
+この章の要点は「大量接続は 1 接続 1 スレッドでは破綻する(C10K)。FD をノンブロッキングにして epoll で readiness を多重化し、1 スレッドの event loop で回す。select ではなく epoll なのは関心を登録して再利用でき ready なものだけ返るから。ハンドラは絶対にブロックさせない」に尽きる。
 
 ## メリット・デメリットと実例
 
@@ -100,7 +100,7 @@ import FigureBox from '../components/figures/FigureBox.vue'
 ## 簡略化したこと
 
 - **実ソケット・syscall なし**: FD はバイト列を持つ構造体。`epoll_create`/`epoll_ctl`/`epoll_wait` の意味論だけを取り出す。到着は tick で予定して決定化する
-- **level-triggered のみ**: edge-triggered は扱わない(違いは面接節で説明)。実機の epoll は両対応
+- **level-triggered のみ**: edge-triggered は扱わない(違いは設計の観点の節で説明)。実機の epoll は両対応
 - **単一スレッド固定**: マルチスレッド epoll・`SO_REUSEPORT` による負荷分散・ワーカプールは省略
 - **タイマ/シグナルなし**: `epoll` に混ぜる `timerfd`/`signalfd`/`eventfd` は扱わない。監視対象は read/write の readiness のみ
 - **接続の accept は省略**: リスニングソケットから新接続を受ける流れ(それ自体が「読める」イベント)は割愛し、接続は最初から用意する

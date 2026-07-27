@@ -76,7 +76,7 @@ forward は各トークンについて、選ばれた expert の FFN だけを�
 
 <MoeDemo />
 
-## アーキテクチャ面接の観点
+## 設計の観点
 
 - **何と何を交換しているか**: 計算(FLOPs)を据え置いてメモリと通信を払う。GPU の計算が余りメモリ帯域が逼迫する推論では、この交換が逆に苦しくなる場面もある
 - **capacity factor**: 実物は expert ごとに受け入れ上限を置く。あふれたトークンは捨てる(drop)か次候補へ回す。上限がないと 1 バッチ内の偏りで特定 expert の計算が詰まり、並列効率が崩れる
@@ -103,7 +103,7 @@ forward は各トークンについて、選ばれた expert の FFN だけを�
 ## 簡略化したこと
 
 - **capacity factor なし**: あふれ処理(drop / 再ルーティング)は実装しない
-- **expert 並列なし**: 全 expert が同一プロセスにいる。all-to-all 通信は面接の観点で言及のみ
+- **expert 並列なし**: 全 expert が同一プロセスにいる。all-to-all 通信は設計の観点で言及のみ
 - **学習なし**: 補助損失は値の計算まで。ルータが実際に均されていく過程は扱わない
 - **expert は GELU FFN**: 実物(Mixtral 等)の expert は [SwiGLU](/parts/rmsnorm-swiglu) FFN
 
