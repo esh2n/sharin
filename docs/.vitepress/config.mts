@@ -24,6 +24,7 @@ export default defineConfig({
         items: [
           { text: "TCP/IP", link: "/parts/tcp" },
           { text: "HTTPサーバ", link: "/parts/http-server" },
+          { text: "HTTP/2 多重化", link: "/parts/http2" },
           { text: "DNSリゾルバ", link: "/parts/dns" },
           { text: "プロキシ", link: "/parts/proxy" },
         ],
