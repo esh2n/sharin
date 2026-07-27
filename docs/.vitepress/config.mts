@@ -133,6 +133,7 @@ export default defineConfig({
               { text: "推論高速化", link: "/parts/inference" },
               { text: "学習パイプライン", link: "/parts/llm-training" },
               { text: "量子化", link: "/parts/quantization" },
+              { text: "LoRA", link: "/parts/lora" },
             ],
           },
           {
