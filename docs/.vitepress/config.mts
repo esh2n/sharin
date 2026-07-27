@@ -105,6 +105,7 @@ export default defineConfig({
           { text: "暗号(RSA)", link: "/parts/crypto" },
           { text: "TLSハンドシェイク", link: "/parts/tls-handshake" },
           { text: "認証と認可", link: "/parts/auth" },
+          { text: "OAuthと認可フロー", link: "/parts/oauth" },
         ],
       },
       {
