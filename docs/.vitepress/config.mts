@@ -118,6 +118,12 @@ export default defineConfig({
           { text: "アーキテクチャ図鑑", link: "/parts/llm-architecture" },
         ],
       },
+      {
+        text: "Transformerの部品",
+        items: [
+          { text: "Transformer全体像", link: "/parts/transformer" },
+        ],
+      },
     ],
     socialLinks: [{ icon: "github", link: "https://github.com/esh2n/sharin" }],
     outline: { label: "この章の目次", level: [2, 3] },
