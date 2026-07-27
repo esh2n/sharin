@@ -124,6 +124,7 @@ export default defineConfig({
           { text: "Transformer全体像", link: "/parts/transformer" },
           { text: "BPEトークナイザ", link: "/parts/bpe" },
           { text: "位置エンコーディングとRoPE", link: "/parts/rope" },
+          { text: "attention変種(MQA/GQA)", link: "/parts/attention-variants" },
         ],
       },
     ],
