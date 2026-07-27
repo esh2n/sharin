@@ -138,6 +138,7 @@ export default defineConfig({
             text: "モデルの系譜",
             items: [
               { text: "GPT系譜", link: "/parts/gpt-lineage" },
+              { text: "推論モデル(o1/R1)", link: "/parts/reasoning-models" },
               { text: "アーキテクチャ図鑑", link: "/parts/llm-architecture" },
             ],
           },
