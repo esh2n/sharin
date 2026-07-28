@@ -119,6 +119,7 @@ export default defineConfig({
           { text: "Cluster Autoscaler", link: "/parts/cluster-autoscaler" },
           { text: "Serviceとkube-proxy", link: "/parts/service" },
           { text: "PodDisruptionBudget", link: "/parts/pdb" },
+          { text: "StatefulSetとPVC", link: "/parts/statefulset" },
         ],
       },
       {
