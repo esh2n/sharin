@@ -127,6 +127,7 @@ export default defineConfig({
           { text: "PodDisruptionBudget", link: "/parts/pdb" },
           { text: "PriorityClassとpreemption", link: "/parts/preemption" },
           { text: "StatefulSetとPVC", link: "/parts/statefulset" },
+          { text: "CSIとボリューム", link: "/parts/csi" },
           { text: "JobとCronJob", link: "/parts/job" },
           { text: "DaemonSet", link: "/parts/daemonset" },
           { text: "ConfigMapとSecret", link: "/parts/config" },
