@@ -115,6 +115,7 @@ export default defineConfig({
           { text: "水平オートスケール(HPA)", link: "/parts/autoscaler" },
           { text: "Podの終了(graceful shutdown)", link: "/parts/pod-lifecycle" },
           { text: "ヘルスチェック(probe)", link: "/parts/probe" },
+          { text: "ローリング更新", link: "/parts/rollout" },
         ],
       },
       {
