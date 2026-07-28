@@ -122,6 +122,7 @@ export default defineConfig({
           { text: "topology spread", link: "/parts/topology" },
           { text: "Serviceとkube-proxy", link: "/parts/service" },
           { text: "PodDisruptionBudget", link: "/parts/pdb" },
+          { text: "PriorityClassとpreemption", link: "/parts/preemption" },
           { text: "StatefulSetとPVC", link: "/parts/statefulset" },
           { text: "JobとCronJob", link: "/parts/job" },
           { text: "DaemonSet", link: "/parts/daemonset" },
