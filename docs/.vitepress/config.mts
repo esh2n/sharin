@@ -117,6 +117,7 @@ export default defineConfig({
           { text: "ヘルスチェック(probe)", link: "/parts/probe" },
           { text: "ローリング更新", link: "/parts/rollout" },
           { text: "Cluster Autoscaler", link: "/parts/cluster-autoscaler" },
+          { text: "Serviceとkube-proxy", link: "/parts/service" },
         ],
       },
       {
