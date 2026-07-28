@@ -134,6 +134,7 @@ export default defineConfig({
           { text: "NetworkPolicy", link: "/parts/network-policy" },
           { text: "RBAC", link: "/parts/rbac" },
           { text: "admission webhook", link: "/parts/admission" },
+          { text: "SecurityContextとPSS", link: "/parts/pod-security" },
           { text: "ResourceQuotaとLimitRange", link: "/parts/quota" },
           { text: "leader election", link: "/parts/leader-election" },
           { text: "Operatorパターン", link: "/parts/operator" },
