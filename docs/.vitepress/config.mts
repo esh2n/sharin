@@ -115,6 +115,7 @@ export default defineConfig({
           { text: "スケジューラ(Podの配置)", link: "/parts/pod-scheduler" },
           { text: "水平オートスケール(HPA)", link: "/parts/autoscaler" },
           { text: "Podの終了(graceful shutdown)", link: "/parts/pod-lifecycle" },
+          { text: "init containerとsidecar", link: "/parts/init-container" },
           { text: "ヘルスチェック(probe)", link: "/parts/probe" },
           { text: "ローリング更新", link: "/parts/rollout" },
           { text: "Cluster Autoscaler", link: "/parts/cluster-autoscaler" },
