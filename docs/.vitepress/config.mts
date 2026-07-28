@@ -126,6 +126,7 @@ export default defineConfig({
           { text: "Ingress", link: "/parts/ingress" },
           { text: "NetworkPolicy", link: "/parts/network-policy" },
           { text: "RBAC", link: "/parts/rbac" },
+          { text: "admission webhook", link: "/parts/admission" },
           { text: "Operatorパターン", link: "/parts/operator" },
         ],
       },
