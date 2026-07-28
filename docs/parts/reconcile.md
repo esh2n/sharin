@@ -102,7 +102,7 @@ Pod は作られるとまず Pending(起動待ち)になり、起動すると Ru
 - **ReplicaSet 相当のみ**: Deployment のローリング更新や revision 管理は扱わない([ローリング更新の発想は別途](/parts/store)の単方向フローに近い)
 - **単一コントローラ**: 実物は多数のコントローラが並行に走り、共有 API サーバの状態を watch する
 - **watch でなく明示 Reconcile**: 実物は informer が変更を検知して reconcile を呼ぶ。ここは手で呼ぶ
-- **スケジューリングなし**: Pod をどのノードに置くかは次章(scheduler)
+- **スケジューリングなし**: Pod をどのノードに置くかは次章([スケジューラ](/parts/pod-scheduler))
 
 ## 参考資料
 

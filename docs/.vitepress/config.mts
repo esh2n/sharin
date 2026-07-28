@@ -111,6 +111,7 @@ export default defineConfig({
         text: "Kubernetesのなかみ",
         items: [
           { text: "調整ループ(reconciliation)", link: "/parts/reconcile" },
+          { text: "スケジューラ(Podの配置)", link: "/parts/pod-scheduler" },
         ],
       },
       {
