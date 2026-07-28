@@ -1,33 +1,76 @@
 # quant — 重みの量子化
 
-学習済みの重みを少ないビットの整数に写してメモリを縮める量子化を最小構成で実装する。
+学習済みの重みを少ないビットの整数に写してメモリを縮める。丸めそのものは短く書けて、
+難しさは **scale をどの単位で配るか** に全部出る。
 
-## 肝
+## 丸めるところ
 
-- **対称量子化**: `scale = max|x| / (2^(bits-1)-1)`、`q = round(x/scale)`。0 を厳密にコード 0 へ写す。重み向き。誤差が量子化ステップの半分以内に収まることをテストで固定
+- **対称量子化**: `scale = max|x| / (2^(bits-1)-1)`、`q = round(x/scale)`。0 を厳密にコード 0 へ写す。重み向き。誤差が格子間隔の半分以内に収まることをテストで固定
 - **非対称量子化**: `[min,max]` を `[0, 2^bits-1]` に写す。片側に偏った分布(活性値)で全コード域を使え、対称より誤差が小さい
-- **per-tensor vs per-channel**: 行ごとにスケールが違う行列では、行単位で scale を決める per-channel が per-tensor に勝つ(テストで固定)。実物の重み量子化は per-channel が標準
-- **メモリ会計**: fp32=4byte → int8=1byte(1/4) → int4=0.5byte(1/8)。`MemoryBytes` / `CompressionRatio`
+
+## scale をどの単位で配るか
+
+`scale` は `max|x|` から決まる。**いちばん大きい1つの値が、その範囲すべての格子の細かさを決めている**。
+
+- **per-tensor vs per-channel**: 行ごとにレンジが違う行列では per-channel が勝つ
+- **group-wise**: 1行をさらに 64〜128 要素に区切る。被害はその区切りの中で止まる。
+  ただし scale の数が増えるので、fp16 で持つなら 4bit・64要素で実効 `4 + 16/64 = 4.25` ビット
+- **外れ値の分離**: 桁が違うと、区切りを細かくしても追いつかない
+
+```
+512 要素のうち3個だけ 25、残りは ±1(int8、大多数の平均誤差)
+
+  全体で1つの scale     0.050329
+  64 要素ごと           0.020739   2.4倍
+  外れ値を抜いて別持ち  0.002016  25.0倍  ← 外れ値が無い場合と一致する
+```
+
+抜いた分は全体の 0.586% しかないので、そこを fp16 で持ってもメモリはほとんど増えない。
+LLM.int8() がしているのはこれになる。
+
+- **効きの大きい列を引き伸ばす**: 重みを s 倍、活性を 1/s 倍。積は変わらないが、
+  引き伸ばした列は格子の目盛りを s 倍使うので誤差が 1/s になる(AWQ の考え方)。
+  s=4 で誤差 0.05000 → 0.01454
+
+## scale は積の外に出せる
+
+```
+Σ (a_i·sa)(b_i·sb) = sa·sb · Σ a_i b_i
+```
+
+中は整数の積和だけで済み、浮動小数の掛け算は最後の1回。
+int8 どうしの積は最大 127×127 = 16129 で、4096 項を足しても 6.6×10⁷。int32 に収まる。
 
 ## 使い方
 
 ```go
-q := quant.QuantizeSymmetric(weights, 8)   // int8 対称
-back := q.Dequantize()                       // 復元(丸め誤差あり)
-a := quant.QuantizeAsymmetric(acts, 8)       // 偏った分布向け
-pc := quant.QuantizeMatrixPerChannel(rows, 4) // 行ごとscale
-quant.MemoryBytes(70e9, 4)                    // 4-bit 70B の実バイト数
+q := quant.QuantizeSymmetric(weights, 8)        // int8 対称
+a := quant.QuantizeAsymmetric(acts, 8)          // 偏った分布向け
+pc := quant.QuantizeMatrixPerChannel(rows, 4)   // 行ごと scale
+g := quant.QuantizeGroupwise(w, 4, 64)          // 64 要素ごと scale
+g.BitsPerValue()                                // 4.25
+m := quant.QuantizeWithOutliers(x, 8, 6.0)      // 外れ値だけ元の精度で残す
+s := quant.QuantizeScaled(w, mult, 4)           // 効きの大きい列を引き伸ばす
+quant.Dot(qa, qb)                               // 整数のまま内積
+quant.MemoryBytes(70e9, 4)                      // 4-bit 70B の実バイト数
 ```
 
 ## 簡略化したこと
 
-- **round-to-nearest のみ**: 実物の GPTQ/AWQ は誤差を後続に伝播させて補正する。ここは素朴な最近傍丸め
-- **group-wise なし**: 実物は 1 行をさらに 64〜128 要素のグループに分けて scale を持つ。ここは行単位まで
-- **量子化行列積なし**: int8 のまま積を取る高速化は実装せず、復元して比較する形に留めた
-- **外れ値処理なし**: LLM.int8() の外れ値を fp16 に残す混合精度は章で言及のみ
+- **誤差補正なし**: GPTQ のように丸めた誤差を残りの重みへ配る処理は入れていない(二次情報が要る)
+- **NF4 なし**: 格子点は等間隔。分布に合わせて不等間隔に置く形は扱わない
+- **外れ値の見つけ方が固定しきい値**: 実物は次元ごとの統計を取る
+- **引き伸ばしの倍率が手動**: AWQ は倍率を探索で決める
+- **活性のキャリブレーションなし**: 代表データからレンジを推定する手順は入れていない
+
+## テスト
+
+```
+go test -race -cover ./llm/quant/
+```
+
+カバレッジ 100.0%。
 
 ## 章
 
 教科書: [量子化](https://sharin-2a1.pages.dev/parts/quantization)
-
-実行: `go test ./llm/quant/`
