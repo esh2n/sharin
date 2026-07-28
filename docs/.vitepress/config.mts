@@ -91,6 +91,7 @@ export default defineConfig({
         items: [
           { text: "小さな言語", link: "/parts/lang" },
           { text: "型推論(Hindley–Milner)", link: "/parts/type-inference" },
+          { text: "2の補数とバイト順", link: "/parts/numbers" },
           { text: "メモリアロケータ", link: "/parts/allocator" },
           { text: "仮想メモリ", link: "/parts/virtual-memory" },
           { text: "正規表現(NFA/DFA)", link: "/parts/regex" },
