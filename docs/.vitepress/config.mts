@@ -112,6 +112,7 @@ export default defineConfig({
         items: [
           { text: "調整ループ(reconciliation)", link: "/parts/reconcile" },
           { text: "スケジューラ(Podの配置)", link: "/parts/pod-scheduler" },
+          { text: "水平オートスケール(HPA)", link: "/parts/autoscaler" },
         ],
       },
       {
