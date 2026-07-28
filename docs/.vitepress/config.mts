@@ -115,6 +115,7 @@ export default defineConfig({
           { text: "調整ループ(reconciliation)", link: "/parts/reconcile" },
           { text: "スケジューラ(Podの配置)", link: "/parts/pod-scheduler" },
           { text: "水平オートスケール(HPA)", link: "/parts/autoscaler" },
+          { text: "カスタム指標とKEDA", link: "/parts/custom-metrics" },
           { text: "Podの終了(graceful shutdown)", link: "/parts/pod-lifecycle" },
           { text: "init containerとsidecar", link: "/parts/init-container" },
           { text: "ヘルスチェック(probe)", link: "/parts/probe" },
