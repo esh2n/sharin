@@ -62,6 +62,7 @@ export default defineConfig({
           { text: "レプリケーション", link: "/parts/replication" },
           { text: "CRDT", link: "/parts/crdt" },
           { text: "コンシステントハッシュ", link: "/parts/consistent-hashing" },
+          { text: "ゴシップと障害検知", link: "/parts/gossip" },
           { text: "分散ロック", link: "/parts/distributed-lock" },
           { text: "分散トランザクション", link: "/parts/distributed-txn" },
           { text: "キャパシティ見積もり", link: "/parts/capacity-estimation" },
