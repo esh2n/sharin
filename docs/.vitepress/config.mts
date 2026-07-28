@@ -57,6 +57,7 @@ export default defineConfig({
         text: "分散システム",
         items: [
           { text: "分散はなぜ難しいか", link: "/parts/distributed-intro" },
+          { text: "論理時計とベクタークロック", link: "/parts/logical-clock" },
           { text: "Raft — 分散合意", link: "/parts/raft" },
           { text: "レプリケーション", link: "/parts/replication" },
           { text: "コンシステントハッシュ", link: "/parts/consistent-hashing" },
