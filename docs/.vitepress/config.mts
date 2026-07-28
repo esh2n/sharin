@@ -60,6 +60,7 @@ export default defineConfig({
           { text: "論理時計とベクタークロック", link: "/parts/logical-clock" },
           { text: "Raft — 分散合意", link: "/parts/raft" },
           { text: "レプリケーション", link: "/parts/replication" },
+          { text: "CRDT", link: "/parts/crdt" },
           { text: "コンシステントハッシュ", link: "/parts/consistent-hashing" },
           { text: "分散ロック", link: "/parts/distributed-lock" },
           { text: "分散トランザクション", link: "/parts/distributed-txn" },
