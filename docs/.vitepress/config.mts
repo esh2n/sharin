@@ -124,6 +124,7 @@ export default defineConfig({
           { text: "ConfigMapとSecret", link: "/parts/config" },
           { text: "Ingress", link: "/parts/ingress" },
           { text: "NetworkPolicy", link: "/parts/network-policy" },
+          { text: "RBAC", link: "/parts/rbac" },
           { text: "Operatorパターン", link: "/parts/operator" },
         ],
       },
