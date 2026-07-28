@@ -116,6 +116,7 @@ export default defineConfig({
           { text: "Podの終了(graceful shutdown)", link: "/parts/pod-lifecycle" },
           { text: "ヘルスチェック(probe)", link: "/parts/probe" },
           { text: "ローリング更新", link: "/parts/rollout" },
+          { text: "Cluster Autoscaler", link: "/parts/cluster-autoscaler" },
         ],
       },
       {
