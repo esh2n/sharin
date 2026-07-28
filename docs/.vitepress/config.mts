@@ -132,6 +132,7 @@ export default defineConfig({
           { text: "RBAC", link: "/parts/rbac" },
           { text: "admission webhook", link: "/parts/admission" },
           { text: "ResourceQuotaとLimitRange", link: "/parts/quota" },
+          { text: "leader election", link: "/parts/leader-election" },
           { text: "Operatorパターン", link: "/parts/operator" },
         ],
       },
