@@ -128,6 +128,7 @@ export default defineConfig({
           { text: "DaemonSet", link: "/parts/daemonset" },
           { text: "ConfigMapとSecret", link: "/parts/config" },
           { text: "Ingress", link: "/parts/ingress" },
+          { text: "Gateway API", link: "/parts/gateway-api" },
           { text: "NetworkPolicy", link: "/parts/network-policy" },
           { text: "RBAC", link: "/parts/rbac" },
           { text: "admission webhook", link: "/parts/admission" },
