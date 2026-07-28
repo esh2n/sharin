@@ -108,6 +108,12 @@ export default defineConfig({
         ],
       },
       {
+        text: "Kubernetesのなかみ",
+        items: [
+          { text: "調整ループ(reconciliation)", link: "/parts/reconcile" },
+        ],
+      },
+      {
         text: "暗号と認証",
         items: [
           { text: "ハッシュとHMAC", link: "/parts/hashing" },
