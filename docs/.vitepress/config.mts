@@ -120,6 +120,7 @@ export default defineConfig({
           { text: "Serviceとkube-proxy", link: "/parts/service" },
           { text: "PodDisruptionBudget", link: "/parts/pdb" },
           { text: "StatefulSetとPVC", link: "/parts/statefulset" },
+          { text: "NetworkPolicy", link: "/parts/network-policy" },
           { text: "Operatorパターン", link: "/parts/operator" },
         ],
       },
