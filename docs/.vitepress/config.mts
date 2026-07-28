@@ -118,6 +118,7 @@ export default defineConfig({
           { text: "ローリング更新", link: "/parts/rollout" },
           { text: "Cluster Autoscaler", link: "/parts/cluster-autoscaler" },
           { text: "Serviceとkube-proxy", link: "/parts/service" },
+          { text: "PodDisruptionBudget", link: "/parts/pdb" },
         ],
       },
       {

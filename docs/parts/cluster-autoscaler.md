@@ -111,7 +111,7 @@ import FigureBox from '../components/figures/FigureBox.vue'
 
 - **ノードは全部同じ**: 実物はノードグループごとに種類が違い、どの種類を足すかも判断の対象になる
 - **退避なし**: 縮小のとき Pod を移すが、実際には終了処理を通して安全に落とす必要がある
-- **PodDisruptionBudget なし**: 実物は自発的な退避で最低何個を保つかを宣言できる
+- **PodDisruptionBudget なし**: 自発的な退避で最低何個を保つかの宣言は別章([PodDisruptionBudget](/parts/pdb))
 - **待ち時間なし**: 実物は使用率が低い状態が一定時間続いてから縮小する。ここは即座に判断する
 - **論理時刻**: 実時間でなく周期で数える
 
