@@ -9,7 +9,7 @@ import FigureBox from '../components/figures/FigureBox.vue'
 > 実装: [`llm/ssm/`](https://github.com/esh2n/sharin/tree/main/llm/ssm) / 実行: `go test ./llm/ssm/`
 
 <Summary>
-attention は全トークンが全トークンを見るので計算量が系列長の二乗になる。状態空間モデル(SSM)は 1 個の状態を系列に沿って更新する線形漸化式で、これを系列長に線形にする。ただし固定の更新則では入力を選り分けられない。Mamba の選択的 SSM は状態への取り込み量を入力ごとに変える工夫でこれを解いた。この章では線形スキャンとゲート付きスキャンを実装し、attention との計算量の差を確かめる。
+attention は全トークンが全トークンを見るので計算量が系列長の二乗になる。状態空間モデル(SSM)は 1 個の状態を系列に沿って更新する線形漸化式で、計算量を系列長に線形化する。ただし固定の更新則では入力を選り分けられない。Mamba の選択的 SSM は状態への取り込み量を入力ごとに変えてこれを解く。線形スキャンとゲート付きスキャンを実装し、attention との計算量の差を確かめる。
 </Summary>
 
 ## この章で作るもの

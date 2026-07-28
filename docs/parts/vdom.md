@@ -7,7 +7,7 @@ import FigureBox from '../components/figures/FigureBox.vue'
 # 仮想DOM(diff / patch)
 
 <Summary>
-「画面をどう変えるか」でなく「画面はどうあるべきか」を毎回まるごと宣言し、前回との差分だけを実 DOM に当てる。React などの心臓部を最小構成で作る。あるべき木を毎回宣言し、差分の算出はライブラリに任せるのが宣言的 UI だ。diff は 2 つの木を再帰的に突き合わせ、種類が違えば差し替え、同じタグなら props と子だけを再帰する。実 DOM を触るのはパッチを当てる瞬間だけで、diff 自体は純粋関数だ。このリポジトリで初めて Go でなく TypeScript で書くパーツ。
+「画面をどう変えるか」でなく「画面はどうあるべきか」を毎回まるごと宣言し、前回との差分だけを実 DOM に当てる。差分の算出はライブラリに任せるのが宣言的 UI で、その仕組みを作る。diff は 2 つの木を再帰的に突き合わせ、種類が違えば差し替え、同じタグなら props と子だけを再帰する。実 DOM を触るのはパッチを当てる瞬間だけで、diff 自体は純粋関数だ。初めて Go でなく TypeScript で書くパーツ。
 </Summary>
 
 ## この章で作るもの
@@ -50,7 +50,7 @@ DOM を手で書き換えるコードは、すぐに破綻する。「カウン�
 
 <<< ../../frontend/vdom/vdom.ts#mount{ts}
 
-テキストなら `createTextNode`、要素なら `createElement` して props を当て、子を再帰的に `mount` して `appendChild`。`on*`(例 `onClick`)で始まる props はイベントリスナに、それ以外は属性にする。値が `false`/`null` の属性は付けない——`disabled: cond` のような条件付き属性がそのまま書ける。
+テキストなら `createTextNode`、要素なら `createElement` して props を当て、子を再帰的に `mount` して `appendChild`。`on*`(例 `onClick`)で始まる props はイベントリスナに、それ以外は属性にする。値が `false`/`null` の属性は付けない。これで `disabled: cond` のような条件付き属性がそのまま書ける。
 
 ## 差分を取る: diff() は「パッチ関数」を返す
 
@@ -103,7 +103,7 @@ DOM を手で書き換えるコードは、すぐに破綻する。「カウン�
 
 ## 宣言的更新のループ
 
-`mount` で初回描画し、状態が変わるたびに新しい木を作って `diff` を当てる——これを繰り返すのが宣言的UIの本体:
+`mount` で初回描画し、状態が変わるたびに新しい木を作って `diff` を当てる。これを繰り返すのが宣言的UIの本体:
 
 ```ts
 let tree = h("div", null, h("span", null, String(count)));
@@ -157,7 +157,7 @@ function update() {
 ## 参考資料
 
 - React: [Reconciliation](https://react.dev/learn/preserving-and-resetting-state) と key の意味
-- Preact のソース(`src/diff/`)——読める規模の実プロダクト実装
-- Rodrigo Pombo, "Build your own React"(didact)——mount/diff を段階的に作る定番
-- Svelte / Solid のドキュメント——「仮想DOMを使わない」側の視点
+- Preact のソース(`src/diff/`)。読める規模の実プロダクト実装
+- Rodrigo Pombo, "Build your own React"(didact)。mount/diff を段階的に作る定番
+- Svelte / Solid のドキュメント。「仮想DOMを使わない」側の視点
 - 実装: [frontend/vdom](https://github.com/esh2n/sharin/tree/main/frontend/vdom)

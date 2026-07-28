@@ -9,7 +9,7 @@ import FigureBox from '../components/figures/FigureBox.vue'
 > 実装: [`llm/quant/`](https://github.com/esh2n/sharin/tree/main/llm/quant) / 実行: `go test ./llm/quant/`
 
 <Summary>
-学習済みの重みを fp32 で持つと 70B パラメータで 280GB になり、手元の GPU に載らない。量子化は各重みを int8 や int4 の整数に写してメモリを 1/4〜1/8 に縮める。仕組みは値の範囲を整数の格子に写す scale を決めて丸めるだけで、丸め誤差と引き換えにメモリを買う。この章では対称・非対称の量子化と、テンソル全体か行ごとかで精度が変わる per-channel を実装し、誤差とメモリの交換を確かめる。
+学習済みの重みを fp32 で持つと 70B パラメータで 280GB になり、GPU に載らない。量子化は各重みを int8 や int4 の整数に写し、メモリを 1/4〜1/8 に縮める。値の範囲を整数の格子に写す scale を決めて丸めるだけの仕組みで、丸め誤差と引き換えにメモリを節約する。この章では対称・非対称の量子化と、行ごとに精度が変わる per-channel を実装し、誤差とメモリの交換を確かめる。
 </Summary>
 
 ## この章で作るもの
