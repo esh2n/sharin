@@ -94,7 +94,7 @@ Pod は作られるとまず Pending(起動待ち)になり、起動すると Ru
 
 - **Kubernetes: Controllers**: 調整ループの公式説明。desired/observed の突き合わせと収束の考え方
 - **level-triggered vs edge-triggered (James Bowes 他)**: Kubernetes が level-triggered を選んだ設計判断の解説。分散環境での堅牢性
-- **Operator パターン**: 調整ループを自作のリソースに広げる仕組み。同じパターンでアプリ固有の運用を自動化する
+- **[Operator パターン](/parts/operator)**: 調整ループを自作のリソースに広げる仕組み。同じパターンでアプリ固有の運用を自動化する
 - **Reconciler (controller-runtime)**: 実装フレームワーク。`Reconcile(req) (Result, error)` の 1 メソッドが本章の Reconcile にあたる
 
 ## 簡略化したこと
