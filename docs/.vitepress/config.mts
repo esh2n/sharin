@@ -122,6 +122,7 @@ export default defineConfig({
           { text: "PodDisruptionBudget", link: "/parts/pdb" },
           { text: "StatefulSetとPVC", link: "/parts/statefulset" },
           { text: "JobとCronJob", link: "/parts/job" },
+          { text: "DaemonSet", link: "/parts/daemonset" },
           { text: "ConfigMapとSecret", link: "/parts/config" },
           { text: "Ingress", link: "/parts/ingress" },
           { text: "NetworkPolicy", link: "/parts/network-policy" },
