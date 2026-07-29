@@ -203,6 +203,7 @@ export default defineConfig({
               { text: "LoRA", link: "/parts/lora" },
               { text: "埋め込みとベクトル検索", link: "/parts/embedding-search" },
               { text: "マルチモーダル入口(パッチ化)", link: "/parts/patchify" },
+              { text: "エージェントの枠組み", link: "/parts/agent-harness" },
             ],
           },
           {
