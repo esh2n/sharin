@@ -20,6 +20,8 @@ type Filter struct {
 	bitset []uint64 // ビットを 64 個ずつ詰めた配列
 	m      uint64   // 総ビット数
 	k      int      // ハッシュ関数の数
+
+	added int // 入れた回数
 }
 
 // New は「n 件入れたときに偽陽性率が約 p になる」フィルタを作る。
@@ -27,7 +29,7 @@ type Filter struct {
 //
 //	m = -n·ln(p) / (ln2)²      k = (m/n)·ln2
 //
-// これがブルームフィルタの美しいところ——欲しい精度からサイズが逆算できる。
+// 欲しい精度からサイズを逆算できるのが、この道具のいちばんの取り柄になる。
 func New(n int, p float64) *Filter {
 	if n <= 0 {
 		panic("bloomfilter: n must be positive")
@@ -68,6 +70,7 @@ func (f *Filter) positions(key string) []uint64 {
 
 // Add は key を追加する。k 個のビットを立てるだけ。
 func (f *Filter) Add(key string) {
+	f.added++
 	for _, p := range f.positions(key) {
 		f.bitset[p/64] |= 1 << (p % 64)
 	}
@@ -87,6 +90,51 @@ func (f *Filter) MayContain(key string) bool {
 // #endregion ops
 
 // bits はビット総数を返す(テスト・可視化用)。
+// #region stats
+
+// Added は入れた回数を返す。
+func (f *Filter) Added() int { return f.added }
+
+// Bits は総ビット数、Hashes は使うハッシュ関数の数を返す。
+func (f *Filter) Bits() uint64 { return f.m }
+func (f *Filter) Hashes() int  { return f.k }
+
+// FillRatio は立っているビットの割合を返す。
+//
+// 詰まり具合がそのまま精度になる。半分埋まれば、k 個すべてが
+// たまたま立っている確率は (1/2)^k になる。
+func (f *Filter) FillRatio() float64 {
+	var on int
+	for _, w := range f.bitset {
+		on += popcount(w)
+	}
+	return float64(on) / float64(f.m)
+}
+
+// EstimatedRate は今の詰まり具合から見込まれる偽陽性率を返す。
+//
+// 立っている割合の k 乗。入れた件数を知らなくても、ビットを見るだけで
+// 「もう効いていない」が分かる。
+func (f *Filter) EstimatedRate() float64 {
+	r := f.FillRatio()
+	out := 1.0
+	for i := 0; i < f.k; i++ {
+		out *= r
+	}
+	return out
+}
+
+func popcount(w uint64) int {
+	n := 0
+	for w != 0 {
+		w &= w - 1
+		n++
+	}
+	return n
+}
+
+// #endregion stats
+
 func (f *Filter) bits() uint64 { return f.m }
 
 // hashes はハッシュ関数の数 k を返す(テスト・可視化用)。

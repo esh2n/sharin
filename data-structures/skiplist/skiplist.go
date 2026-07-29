@@ -30,6 +30,8 @@ type SkipList struct {
 	level int // 現在使われている最大段数
 	count int
 	rng   *rand.Rand
+
+	steps int // Search で進んだ手数の累計
 }
 
 // New は空のスキップリストを返す。
@@ -57,13 +59,15 @@ func (sl *SkipList) randomLevel() int {
 // #region search
 // Search は key の値を返す。上の段から降りていく。
 // 各段で「次が key を超える手前」まで進み、超えたら1段下りる。
-// 上の疎な段で大きく飛ばし、下の段で細かく詰める——これが「飛ばし読み」。
+// 上の疎な段で大きく飛ばし、下の段で細かく詰める。これが飛ばし読みになる。
 func (sl *SkipList) Search(key int) (int, bool) {
 	x := sl.head
 	for i := sl.level - 1; i >= 0; i-- {
 		for x.next[i] != nil && x.next[i].key < key {
+			sl.steps++
 			x = x.next[i]
 		}
+		sl.steps++ // 進めずに1段下りるのも1手として数える
 	}
 	x = x.next[0] // 最下段で1歩進むと候補
 	if x != nil && x.key == key {
@@ -143,6 +147,35 @@ func (sl *SkipList) Delete(key int) bool {
 }
 
 // #endregion delete
+
+// #region stats
+
+// Steps は Search で進んだ手数の累計を返す。
+//
+// 引いた回数で割れば、1回あたり何手たどったかになる。
+// 上の段で飛ばせているなら、件数が増えても対数でしか伸びない。
+func (sl *SkipList) Steps() int { return sl.steps }
+
+// ResetStats は数え直す。
+func (sl *SkipList) ResetStats() { sl.steps = 0 }
+
+// Height は今使われている段数を返す。
+func (sl *SkipList) Height() int { return sl.level }
+
+// LevelCounts は各段に居るノードの数を返す。
+//
+// コイン投げで高さを決めているので、上へ行くほどおよそ半分ずつになる。
+func (sl *SkipList) LevelCounts() []int {
+	out := make([]int, sl.level)
+	for i := 0; i < sl.level; i++ {
+		for x := sl.head.next[i]; x != nil; x = x.next[i] {
+			out[i]++
+		}
+	}
+	return out
+}
+
+// #endregion stats
 
 // Len は要素数を返す。
 func (sl *SkipList) Len() int { return sl.count }

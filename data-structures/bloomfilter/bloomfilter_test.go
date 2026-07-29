@@ -91,3 +91,107 @@ func TestValidation(t *testing.T) {
 		}()
 	}
 }
+
+// この章の中心その2。設計した精度が、実測とほぼ一致する。
+func TestDesignedRateMatchesMeasured(t *testing.T) {
+	const n = 10000
+	for _, want := range []float64{0.1, 0.01, 0.001} {
+		f := New(n, want)
+		for i := 0; i < n; i++ {
+			f.Add("key" + itoa(i))
+		}
+		// 入れていない 100000 件で試す。
+		hits := 0
+		const trials = 100000
+		for i := 0; i < trials; i++ {
+			if f.MayContain("miss" + itoa(i)) {
+				hits++
+			}
+		}
+		got := float64(hits) / trials
+		if got > want*2 {
+			t.Fatalf("設計 %.4f に対して実測 %.4f", want, got)
+		}
+		// ビットの詰まり具合から出した見込みとも合う。
+		est := f.EstimatedRate()
+		if est > want*3 || (got > 0 && est < got/3) {
+			t.Fatalf("見込み %.4f が実測 %.4f と合わない(設計 %.4f)", est, got, want)
+		}
+	}
+}
+
+// この章の中心その3。入れすぎると効かなくなり、しかも黙って効かなくなる。
+func TestOverfillingSilentlyBreaksIt(t *testing.T) {
+	const n = 1000
+	f := New(n, 0.01)
+
+	rate := func() float64 {
+		hits := 0
+		const trials = 50000
+		for i := 0; i < trials; i++ {
+			if f.MayContain("miss" + itoa(i)) {
+				hits++
+			}
+		}
+		return float64(hits) / trials
+	}
+
+	for i := 0; i < n; i++ {
+		f.Add("key" + itoa(i))
+	}
+	asDesigned := rate()
+	if asDesigned > 0.02 {
+		t.Fatalf("設計どおり入れて %.4f", asDesigned)
+	}
+
+	// 5倍まで入れる。エラーも警告も出ない。
+	for i := n; i < 5*n; i++ {
+		f.Add("key" + itoa(i))
+	}
+	overfilled := rate()
+	if overfilled < 0.5 {
+		t.Fatalf("5倍入れても %.4f しか悪化しない", overfilled)
+	}
+	// 入れた件数を数えれば分かるし、ビットの詰まり具合からも分かる。
+	if f.Added() != 5*n {
+		t.Fatalf("数えられていない: %d", f.Added())
+	}
+	if f.FillRatio() < 0.9 {
+		t.Fatalf("詰まり具合 %.3f", f.FillRatio())
+	}
+}
+
+func itoa(n int) string {
+	if n == 0 {
+		return "0"
+	}
+	var buf [20]byte
+	i := len(buf)
+	for n > 0 {
+		i--
+		buf[i] = byte('0' + n%10)
+		n /= 10
+	}
+	return string(buf[i:])
+}
+
+// 作れない設定は最初に止める。
+func TestNewRejectsBadParameters(t *testing.T) {
+	for _, c := range []struct {
+		n int
+		p float64
+	}{{0, 0.01}, {-1, 0.01}, {100, 0}, {100, 1}, {100, 1.5}} {
+		func() {
+			defer func() {
+				if recover() == nil {
+					t.Fatalf("n=%d p=%g で止まらない", c.n, c.p)
+				}
+			}()
+			New(c.n, c.p)
+		}()
+	}
+	// 精度をゆるくすると、ハッシュは最低1本まで減る。
+	if f := New(1, 0.9); f.Hashes() < 1 {
+		t.Fatalf("ハッシュ数 %d", f.Hashes())
+	}
+}
