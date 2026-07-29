@@ -49,6 +49,19 @@ function toChar(b: number) {
 }
 
 const totalBytes = computed(() => segments.value.reduce((a, s) => a + s.bytes.length, 0));
+
+// Go 版 size.go と同じ計算。512 バイトに A レコードが何件入るか。
+const UDP_LIMIT = 512;
+const nameBytes = computed(() => segments.value[1].bytes.length);
+const answerOn = 16; // 名前をポインタで指すと、名前の長さによらず 16 バイト
+const answerOff = computed(() => nameBytes.value + 14);
+const capOn = computed(() => Math.floor((UDP_LIMIT - totalBytes.value) / answerOn));
+const capOff = computed(() => Math.floor((UDP_LIMIT - totalBytes.value) / answerOff.value));
+const caps = computed(() => [
+  { label: "名前を指す(圧縮あり)", per: answerOn, n: capOn.value, hot: true },
+  { label: "名前を書き直す", per: answerOff.value, n: capOff.value, hot: false },
+]);
+const maxCap = computed(() => Math.max(capOn.value, capOff.value, 1));
 </script>
 
 <template>
@@ -73,6 +86,28 @@ const totalBytes = computed(() => segments.value.reduce((a, s) => a + s.bytes.le
           </span>
         </div>
       </div>
+    </div>
+
+    <div class="dn-cap">
+      <div class="dn-cap-head">
+        この問い合わせに対する応答が 512 バイトに収まる件数(A レコード)
+      </div>
+      <div v-for="c in caps" :key="c.label" class="dn-cap-row">
+        <span class="dn-cap-label">{{ c.label }}</span>
+        <span class="dn-cap-bar">
+          <span
+            class="dn-cap-fill"
+            :class="{ hot: c.hot }"
+            :style="{ width: (c.n / maxCap) * 100 + '%' }"
+          ></span>
+        </span>
+        <span class="dn-cap-num mono">
+          <b>{{ c.n }}</b> 件 <span class="dn-cap-per">/ 1件 {{ c.per }}B</span>
+        </span>
+      </div>
+      <p class="dn-cap-note">
+        名前を長くすると差が開く。指すほうは 1 件 16 バイトのまま動かないので、減るのは質問が太ったぶんだけ。書き直すほうは、名前がそのままレコードの大きさになる。
+      </p>
     </div>
   </DemoShell>
 </template>
@@ -153,6 +188,65 @@ const totalBytes = computed(() => segments.value.reduce((a, s) => a + s.bytes.le
 }
 .dn-byte.type {
   background-color: color-mix(in srgb, var(--vp-c-yellow-1) 16%, transparent);
+}
+.dn-cap {
+  margin-top: 16px;
+  padding-top: 12px;
+  border-top: 1px solid var(--vp-c-divider);
+}
+.dn-cap-head {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--vp-c-text-2);
+  margin-bottom: 8px;
+}
+.dn-cap-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 3px 0;
+}
+.dn-cap-label {
+  width: 168px;
+  flex: none;
+  font-size: 11.5px;
+  color: var(--vp-c-text-2);
+}
+.dn-cap-bar {
+  flex: 1 1 auto;
+  height: 10px;
+  background-color: var(--vp-c-default-soft);
+}
+.dn-cap-fill {
+  display: block;
+  height: 100%;
+  background-color: var(--vp-c-text-3);
+}
+.dn-cap-fill.hot {
+  background-color: var(--vp-c-brand-1);
+}
+.dn-cap-num {
+  width: 108px;
+  flex: none;
+  text-align: right;
+  font-size: 11px;
+  color: var(--vp-c-text-3);
+}
+.dn-cap-num b {
+  font-size: 13px;
+  color: var(--vp-c-text-1);
+}
+.dn-cap-per {
+  font-size: 10px;
+}
+.dn-cap-note {
+  margin: 10px 0 0;
+  font-size: 11.5px;
+  line-height: 1.7;
+  color: var(--vp-c-text-3);
+}
+.mono {
+  font-family: var(--vp-font-family-mono);
 }
 .dn-hex {
   font-size: 12px;

@@ -75,3 +75,39 @@ func TestParseResponseTruncated(t *testing.T) {
 		t.Error("短すぎる応答はエラーになるべき")
 	}
 }
+
+// 壊れた応答で落ちないこと。UDP は誰でも投げ込めるので、ここは守りが要る。
+func TestParseResponseMalformed(t *testing.T) {
+	header := []byte{0x12, 0x34, 0x81, 0x80, 0, 1, 0, 1, 0, 0, 0, 0}
+
+	cases := map[string][]byte{
+		// 名前がメッセージの終わりを越えて続いている。
+		"名前が終わらない": append(append([]byte{}, header...), 7, 'e', 'x'),
+		// 質問は読めるが、回答のヘッダが途中で切れている。
+		"回答ヘッダが短い": append(append([]byte{}, header...),
+			7, 'e', 'x', 'a', 'm', 'p', 'l', 'e', 3, 'c', 'o', 'm', 0, 0, 1, 0, 1,
+			0xc0, 0x0c, 0, 1, 0, 1),
+		// RDLENGTH が実際のバイト数より大きい。
+		"rdata が足りない": append(append([]byte{}, header...),
+			7, 'e', 'x', 'a', 'm', 'p', 'l', 'e', 3, 'c', 'o', 'm', 0, 0, 1, 0, 1,
+			0xc0, 0x0c, 0, 1, 0, 1, 0, 0, 0, 60, 0, 4, 93, 184),
+	}
+	for name, msg := range cases {
+		if _, err := ParseResponse(msg, 0x1234); err == nil {
+			t.Errorf("%s: エラーになるべき", name)
+		}
+	}
+
+	// A 以外のレコード(ここでは AAAA)は読み飛ばして、IP には入れない。
+	aaaa := append(append([]byte{}, header...),
+		7, 'e', 'x', 'a', 'm', 'p', 'l', 'e', 3, 'c', 'o', 'm', 0, 0, 1, 0, 1,
+		0xc0, 0x0c, 0, 28, 0, 1, 0, 0, 0, 60, 0, 16)
+	aaaa = append(aaaa, make([]byte, 16)...)
+	ips, err := ParseResponse(aaaa, 0x1234)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(ips) != 0 {
+		t.Errorf("A 以外が混ざった: %v", ips)
+	}
+}
