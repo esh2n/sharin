@@ -45,6 +45,7 @@ export default defineConfig({
           { text: "バッファプール", link: "/parts/buffer-pool" },
           { text: "B-Treeページストア", link: "/parts/btree-page-store" },
           { text: "B-Tree + WAL", link: "/parts/btree-wal" },
+          { text: "セカンダリインデックス", link: "/parts/secondary-index" },
           { text: "ミニSQL", link: "/parts/mini-sql" },
           { text: "MVCC / 分離レベル", link: "/parts/mvcc" },
           { text: "ハッシュマップ", link: "/parts/hash-map" },
