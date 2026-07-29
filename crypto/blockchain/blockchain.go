@@ -41,6 +41,8 @@ func computeHash(b Block) string {
 type Chain struct {
 	Blocks     []Block
 	difficulty int
+
+	attempts int // ハッシュを試した回数の累計(改竄の値段を数えるため)
 }
 
 // New は genesis(最初の)ブロックだけを持つチェーンを作る。
@@ -49,8 +51,10 @@ func New(difficulty int) *Chain {
 		panic("blockchain: difficulty must be >= 1")
 	}
 	genesis := Block{Index: 0, Data: "genesis", PrevHash: ""}
-	remine(&genesis, difficulty)
-	return &Chain{Blocks: []Block{genesis}, difficulty: difficulty}
+	c := &Chain{difficulty: difficulty}
+	c.attempts += remine(&genesis, difficulty)
+	c.Blocks = []Block{genesis}
+	return c
 }
 
 // Add は新しいブロックを作り、マイニングして鎖の末尾に繋ぐ。
@@ -61,7 +65,7 @@ func (c *Chain) Add(data string) {
 		Data:     data,
 		PrevHash: prev.Hash, // 前ブロックのハッシュを取り込む = 鎖
 	}
-	remine(&block, c.difficulty)
+	c.attempts += remine(&block, c.difficulty)
 	c.Blocks = append(c.Blocks, block)
 }
 
@@ -71,13 +75,16 @@ func (c *Chain) Add(data string) {
 // remine は Proof of Work: ハッシュが難易度ぶんの 0 で始まるまで Nonce を総当たりする。
 // ハッシュは予測できないので、条件を満たす Nonce を見つけるには「ひたすら試す」しかない。
 // この計算こそが、改竄を割に合わなくする「コスト」の正体。
-func remine(b *Block, difficulty int) {
+//
+// 戻り値はハッシュを試した回数。16進で 0 が1つ増えるごとに、
+// 当たりを引く確率が16分の1になるので、試行回数はおよそ16倍になる。
+func remine(b *Block, difficulty int) int {
 	prefix := strings.Repeat("0", difficulty)
 	for b.Nonce = 0; ; b.Nonce++ {
 		h := computeHash(*b)
 		if strings.HasPrefix(h, prefix) {
 			b.Hash = h
-			return
+			return b.Nonce + 1
 		}
 	}
 }
@@ -108,3 +115,44 @@ func (c *Chain) Valid() bool {
 }
 
 // #endregion valid
+
+// #region tamper
+
+// Tamper はブロック i の中身をこっそり書き換える。マイニングはしない。
+//
+// この時点でチェーンは壊れる。書き換えた本人のハッシュが中身と食い違い、
+// 次のブロックが持つ「前のハッシュ」とも食い違うためになる。
+func (c *Chain) Tamper(i int, data string) {
+	c.Blocks[i].Data = data
+}
+
+// Repair は i 番目から末尾まで、繋ぎ直しながら再マイニングする。
+//
+// 改竄を隠すにはこれをやるしかない。1つ直すだけでは、その後ろが壊れたまま残る。
+// 戻り値はハッシュを試した回数で、これが改竄の値段になる。
+func (c *Chain) Repair(i int) int {
+	n := 0
+	for ; i < len(c.Blocks); i++ {
+		if i > 0 {
+			c.Blocks[i].PrevHash = c.Blocks[i-1].Hash
+		}
+		n += remine(&c.Blocks[i], c.difficulty)
+	}
+	c.attempts += n
+	return n
+}
+
+// #endregion tamper
+
+// #region stats
+
+// Attempts はハッシュを試した回数の累計を返す。
+func (c *Chain) Attempts() int { return c.attempts }
+
+// ResetStats は数え直す。
+func (c *Chain) ResetStats() { c.attempts = 0 }
+
+// Len はブロック数を返す。
+func (c *Chain) Len() int { return len(c.Blocks) }
+
+// #endregion stats

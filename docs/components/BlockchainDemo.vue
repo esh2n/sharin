@@ -25,16 +25,17 @@ async function computeHash(b: Block): Promise<string> {
   return sha256(`${b.index}${b.data}${b.prevHash}${b.nonce}`);
 }
 
-async function mine(b: Block) {
+// mine は条件を満たす nonce を総当たりし、試した回数を返す。
+async function mine(b: Block): Promise<number> {
   for (b.nonce = 0; ; b.nonce++) {
     const h = await computeHash(b);
     if (h.startsWith(prefix)) {
       b.hash = h;
-      return;
+      return b.nonce + 1;
     }
     if (b.nonce > 200000) {
       b.hash = h;
-      return;
+      return b.nonce + 1;
     } // 安全弁
   }
 }
@@ -43,7 +44,17 @@ async function init() {
   mining.value = true;
   const genesis: Block = { index: 0, data: "genesis", prevHash: "", nonce: 0, hash: "" };
   await mine(genesis);
-  blocks.value = [genesis];
+  const chain = [genesis];
+  // 最初から数ブロック積んでおく。1つでは「後ろが壊れる」が見えない。
+  for (let i = 1; i <= 3; i++) {
+    const prev = chain[chain.length - 1];
+    const b: Block = { index: i, data: `tx-${i}`, prevHash: prev.hash, nonce: 0, hash: "" };
+    await mine(b);
+    chain.push(b);
+  }
+  blocks.value = chain;
+  broken.value = {};
+  lastRepair.value = null;
   mining.value = false;
 }
 
@@ -78,14 +89,35 @@ async function tamper(idx: number) {
   }
 }
 
+// 直した内訳。何個を作り直して、ハッシュを何回試したか。
+const lastRepair = ref<{ blocks: number; tries: number; whole: boolean } | null>(null);
+
 async function remineBlock(idx: number) {
   mining.value = true;
   const b = blocks.value.find((x) => x.index === idx);
   if (b) {
-    await mine(b);
+    const tries = await mine(b);
     blocks.value = [...blocks.value];
     await recheck();
+    lastRepair.value = { blocks: 1, tries, whole: false };
   }
+  mining.value = false;
+}
+
+// Go 版 Repair と同じ。改竄したところから末尾まで、繋ぎ直しながら作り直す。
+async function repairFrom(idx: number) {
+  mining.value = true;
+  let tries = 0;
+  let count = 0;
+  for (let i = idx; i < blocks.value.length; i++) {
+    const b = blocks.value[i];
+    if (i > 0) b.prevHash = blocks.value[i - 1].hash;
+    tries += await mine(b);
+    count++;
+  }
+  blocks.value = [...blocks.value];
+  await recheck();
+  lastRepair.value = { blocks: count, tries, whole: true };
   mining.value = false;
 }
 
@@ -119,21 +151,43 @@ init();
           <div class="bc-actions">
             <button class="bc-mini" type="button" :disabled="mining" @click="tamper(b.index)">中身を改竄</button>
             <button v-if="broken[b.index]" class="bc-mini remine" type="button" :disabled="mining" @click="remineBlock(b.index)">
-              再マイニング
+              この1つだけ作り直す
+            </button>
+            <button v-if="broken[b.index]" class="bc-mini remine" type="button" :disabled="mining" @click="repairFrom(b.index)">
+              ここから後ろを全部作り直す
             </button>
           </div>
         </div>
       </template>
     </div>
 
+    <p v-if="lastRepair" class="bc-cost">
+      <b>{{ lastRepair.blocks }}</b> 個を作り直すのに、ハッシュを <b>{{ lastRepair.tries }}</b> 回試した。
+      <span v-if="!lastRepair.whole">1つ直しても、後ろの prevHash は古いままなので鎖はまだ壊れている。</span>
+    </p>
+
     <p class="bc-note">
       過去のブロックを改竄すると、そのハッシュが変わって後続の prevHash と食い違い、鎖が壊れる(赤)。
-      隠すには再マイニングが要り、難易度が高いほどそのコストが上がる。
+      隠すには改竄したところから末尾まで全部を作り直すしかない。値段は「難易度あたりの試行回数 ×
+      後ろに積まれたブロック数」で決まる。
     </p>
   </DemoShell>
 </template>
 
 <style scoped>
+.bc-cost {
+  margin: 12px 0 0;
+  padding: 8px 12px;
+  background-color: var(--vp-c-bg-soft);
+  border-left: 3px solid var(--vp-c-brand-1);
+  font-size: 12.5px;
+  line-height: 1.6;
+  color: var(--vp-c-text-1);
+}
+.bc-cost b {
+  font-family: var(--vp-font-family-mono);
+  color: var(--vp-c-brand-1);
+}
 .bc-mining {
   font-size: 12px;
   color: var(--vp-c-brand-1);
