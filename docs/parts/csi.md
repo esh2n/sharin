@@ -63,7 +63,7 @@ StatefulSet のボリュームが Pod より長生きなのは、下に別の層
 
 <<< ../../orchestration/csi/csi.go#model{go}
 
-`Claim` に書いてあるのは大きさと使い方だけで、どのディスクかは書かない。`Volume` が実体で、`Class` が作り方の型になる。運用側が `Class` を用意し、アプリ側が `Claim` を書く。[Gateway API](/parts/gateway-api) の章で見た役割の分割と同じ考え方になる。
+`Claim` に書いてあるのは大きさと使い方だけで、どのディスクかは書かない。`Volume` が実体で、`Class` が作り方の型になる。運用側が `Class` を用意し、アプリ側が `Claim` を書く。この役割の分割は、後の [Gateway API](/parts/gateway-api) の章にも同じ形で出てくる。
 
 `Volume` が `Zone` を持っているのが後で効いてくる。ディスクは作った場所から動かせない。この一点が、③の話につながる。
 

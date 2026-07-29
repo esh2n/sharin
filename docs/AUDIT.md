@@ -121,12 +121,12 @@
 | topology | ✅ | 後続の pdb 章への過去形参照を修正 |
 | service | ✅ | 合格 |
 | pdb | ✅ | 合格 |
-| preemption | ⬜ | |
-| statefulset | ⬜ | |
-| csi | ⬜ | |
-| job | ⬜ | |
-| daemonset | ⬜ | |
-| config | ⬜ | |
+| preemption | ✅ | 合格 |
+| statefulset | ✅ | 「ここまでの9章」の古い章数を削除。PVC を初出で展開 |
+| csi | ✅ | 後続の Gateway API 章への過去形参照を修正 |
+| job | ✅ | 合格 |
+| daemonset | ✅ | 合格 |
+| config | ✅ | 合格 |
 | ingress | ⬜ | |
 | gateway-api | ⬜ | |
 | network-policy | ⬜ | |
