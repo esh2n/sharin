@@ -36,12 +36,12 @@
 | timeseries | ✅ | Summary と本文の Pod を「サービスの複製」で定義。p99 を初出で言い直し。「肝は3つ」定型を排除 |
 | tracing | ✅ | Summary から span・クリティカルパスの先出しを排除。「束ねる鍵」定型を排除 |
 | trace-sampling | ✅ | trace/span の前提節を「作るもの」より前に移動(要点リストが span を先出ししていた) |
-| http-server | ⬜ | |
-| http2 | ⬜ | |
-| websocket | ⬜ | |
-| congestion | ⬜ | |
-| dns | ⬜ | |
-| proxy | ⬜ | |
+| http-server | ✅ | Summary の TCP を役割つきで言い直し。「自作 TCP は発展」の古い記述を tcp/http2/tls-handshake 章へのリンクに修正 |
+| http2 | ✅ | ほぼ合格。「肝は3つ」定型のみ排除 |
+| websocket | ✅ | Summary の未定義語(Accept計算/フレーミング/マスク)を現象で言い直し。SHA-1/base64 に1行の説明 |
+| congestion | ✅ | Summary と図の cwnd/ssthresh に言い直しを追加。「肝は3つ」「公平の鍵」定型を排除 |
+| dns | ✅ | UDP の1行説明が章内に無かったのを冒頭で定義。Summary も接続なし1発の言い回しに |
+| proxy | ✅ | SSL終端を TLS 終端として初出で定義。「3章で完結」の古い記述を現構成に合わせ tcp を追加 |
 | id-generation | ⬜ | |
 | binary-search-tree | ⬜ | |
 | lru-cache | ⬜ | |

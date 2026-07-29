@@ -9,7 +9,7 @@ import FigureBox from '../components/figures/FigureBox.vue'
 > 実装: [`network/websocket/`](https://github.com/esh2n/sharin/tree/main/network/websocket) / 実行: `go test ./network/websocket/`
 
 <Summary>
-HTTPは要求と応答が対になり、サーバから勝手にデータを送れない。チャットや通知などサーバ発の即時配信で困る。WebSocketはHTTPとして始まり、Upgradeで接続を昇格させる。以後その1本の接続は要求応答の型を脱ぎ、両側がいつでも送れる全二重になる。UpgradeのAccept計算(SHA-1も自作)とフレーミングを実装し、クライアントのフレームをマスクする理由まで確かめる。
+HTTPは要求と応答が対になり、サーバから勝手にデータを送れない。チャットや通知などサーバ発の即時配信で困る。WebSocketは普通のHTTPとして始まり、「この接続を昇格させてくれ」という合図で切り替わる。以後その1本の接続は要求応答の型を脱ぎ、両側がいつでも送れる全二重になる。この章では昇格を証明する計算と、メッセージを運ぶ枠の形式を実装し、クライアント側だけ中身をかき混ぜて送る決まりの理由まで確かめる。
 </Summary>
 
 ## この章で作るもの
@@ -30,15 +30,15 @@ Client ── フレーム(マスクあり) ──▶  ◀── フレーム(�
 
 </FigureBox>
 
-肝は3つ:
+順に作る。
 
 1. **HTTP から昇格する**: 普通の HTTP で始まり、Upgrade で全二重に切り替える。既存のポート・経路をそのまま使える
-2. **Accept 鍵で昇格を証明**: Key に固定文字列を足して SHA-1 し base64。返せることが WebSocket 理解の証明
+2. **Accept 鍵で昇格を証明**: Key に固定文字列を足してハッシュした値を返す。正しく返せることが WebSocket 理解の証明になる
 3. **クライアントのフレームはマスク**: 鍵で XOR する。中継プロキシのキャッシュ汚染攻撃を防ぐための決まり
 
 ## ① Upgrade: HTTPから全二重へ昇格する
 
-昇格の核心は Accept 計算だ。クライアントはランダムな `Sec-WebSocket-Key` を送る。サーバはそれに固定の magic GUID を連結して SHA-1 でハッシュし、base64 して `Sec-WebSocket-Accept` として返す:
+昇格の核心は Accept 計算だ。クライアントはランダムな `Sec-WebSocket-Key` を送る。サーバはそれに固定の文字列(magic GUID)を連結し、SHA-1(どんな入力からも固定長 20 バイトの値を作るハッシュ関数)にかけ、その結果を base64(バイト列を印字できる文字だけで表す符号化)で文字列にして `Sec-WebSocket-Accept` として返す:
 
 <<< ../../network/websocket/websocket.go#handshake{go}
 
