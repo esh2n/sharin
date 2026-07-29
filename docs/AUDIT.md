@@ -109,12 +109,12 @@
 | apiserver | ✅ | 「ここまでの全章は…」と編終盤の語りなのにサイドバー先頭に居たため、kubelet/etcd-ops と共に編終盤(quota の後)へ移動。本文は合格 |
 | kubelet | ✅ | 合格(サイドバー移動で参照が整合) |
 | etcd-ops | ✅ | 合格(同上) |
-| reconcile | ⬜ | |
-| pod-scheduler | ⬜ | |
-| autoscaler | ⬜ | |
-| custom-metrics | ⬜ | |
-| pod-lifecycle | ⬜ | |
-| init-container | ⬜ | |
+| reconcile | ✅ | 編の先頭章なのに Pod の定義が無かったのを初出で定義 |
+| pod-scheduler | ✅ | ミリコア表記(500m)を初出で定義 |
+| autoscaler | ✅ | 合格 |
+| custom-metrics | ✅ | 後続の Cluster Autoscaler 章への過去形参照を修正 |
+| pod-lifecycle | ✅ | 合格 |
+| init-container | ✅ | 合格 |
 | probe | ⬜ | |
 | rollout | ⬜ | |
 | cluster-autoscaler | ⬜ | |

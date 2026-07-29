@@ -42,7 +42,7 @@ Kubernetesは宣言で動く。「Podは3個であれ」と宣言すれば、コ
 
 ## ① observed state: 今ある状態
 
-まず、調整の対象になる世界を作る。クラスタは Pod の集まりで、各 Pod は状態(Pending / Running / Failed)を持つ。これが observed state、つまり「今まさにある状態」だ:
+まず、調整の対象になる世界を作る。クラスタは Pod の集まりだ。Pod は Kubernetes の実行単位で、1つ以上のコンテナをひとまとめにして起動・停止する箱になる。各 Pod は状態(Pending / Running / Failed)を持つ。これが observed state、つまり「今まさにある状態」だ:
 
 <<< ../../orchestration/reconcile/reconcile.go#types{go}
 

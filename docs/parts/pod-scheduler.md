@@ -46,7 +46,7 @@ import FigureBox from '../components/figures/FigureBox.vue'
 
 ## ① filter: 置けるノードを絞る
 
-まず、Pod を置けないノードを落とす。判定するのは 2 つ。要求した CPU とメモリが空きに収まるか、そしてノードに付いた汚れ(taint)を許容しているか:
+まず、Pod を置けないノードを落とす。判定するのは 2 つ。要求した CPU とメモリ(CPU は `500m` のようなミリコア表記で、1000m = 1 コア)が空きに収まるか、そしてノードに付いた汚れ(taint)を許容しているか:
 
 <<< ../../orchestration/scheduler/scheduler.go#filter{go}
 
