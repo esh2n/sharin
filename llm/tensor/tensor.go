@@ -1,7 +1,7 @@
 // Package tensor は LLM を Go で自作するための最小の行列演算ライブラリ。
 //
-// numpy に逃げず、matmul・softmax・layernorm・GELU を自分で書く——それ自体が
-// 車輪の再発明の主旨。Transformer の forward pass は、結局この数本の関数の組み合わせ。
+// numpy に逃げず、matmul・softmax・layernorm・GELU を自分で書く。それ自体が
+// 車輪の再発明の主旨になる。Transformer の forward pass は、結局この数本の関数の組み合わせ。
 // 「attention は行列積の塊」を実感するための土台。
 //
 // 表現は単純に「float32 のスライス + 行数・列数」の2次元行列に絞る(実物は N 次元)。
@@ -61,6 +61,37 @@ func MatMul(a, b *Tensor) *Tensor {
 	return out
 }
 
+// #endregion matmul
+
+// #region order
+
+// MatMulByDot は結果の1マスごとに内積を取る、教科書どおりの並べ方。
+//
+// 結果は MatMul と同じになる。違うのは内側の回りかただけで、
+// こちらは b を列方向にたどるので、1回進むたびに Cols 個ぶん離れた場所を読む。
+// 連続した場所を読むほうが速いので、同じ計算量でも差が出る。
+func MatMulByDot(a, b *Tensor) *Tensor {
+	if a.Cols != b.Rows {
+		panic("tensor: MatMulByDot shape mismatch")
+	}
+	m, k, n := a.Rows, a.Cols, b.Cols
+	out := New(m, n)
+	for i := 0; i < m; i++ {
+		for j := 0; j < n; j++ {
+			var s float32
+			for p := 0; p < k; p++ {
+				s += a.Data[i*k+p] * b.Data[p*n+j]
+			}
+			out.Data[i*n+j] = s
+		}
+	}
+	return out
+}
+
+// #endregion order
+
+// #region matmul2
+
 // AddRow は各行に同じベクトル(バイアス)を足す(ブロードキャスト)。
 // bias は (1, Cols)。全結合層の +b がこれ。
 func AddRow(x, bias *Tensor) *Tensor {
@@ -73,7 +104,7 @@ func AddRow(x, bias *Tensor) *Tensor {
 	return out
 }
 
-// #endregion matmul
+// #endregion matmul2
 
 // #region softmax
 // SoftmaxRows は各行を確率分布に変換する(行ごとに独立)。

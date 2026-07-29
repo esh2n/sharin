@@ -8,7 +8,7 @@
 //	V(value): 「私の中身はこれ」        各トークンが出す実体
 //
 // トークン i の Q と、全トークンの K の内積で「i が誰にどれだけ注目するか」の重みを出し、
-// その重みで V を混ぜる。式にすると softmax(Q·Kᵀ / √d)·V —— まさに行列積の塊。
+// その重みで V を混ぜる。式にすると softmax(Q·Kᵀ / √d)·V で、まさに行列積の塊になる。
 package attention
 
 import (
@@ -78,6 +78,29 @@ func (h *Head) forwardWithWeights(x *tensor.Tensor, causal bool) (out, weights *
 	v := tensor.MatMul(x, h.Wv)          // (seq, dHead)
 	out = tensor.MatMul(weights, v)      // 重み付きで V を混ぜる
 	return out, weights
+}
+
+// Weights は注目の重み(softmax 後)だけを返す。行が注目する側、列が注目される側。
+func (h *Head) Weights(x *tensor.Tensor, causal bool) *tensor.Tensor {
+	_, w := h.forwardWithWeights(x, causal)
+	return w
+}
+
+// Scores は softmax 前の生のスコアを返す。scaled=false なら √dHead で割らない。
+//
+// 割らないとどうなるかを確かめるための入口になる。
+func (h *Head) Scores(x *tensor.Tensor, scaled bool) *tensor.Tensor {
+	q := tensor.MatMul(x, h.Wq)
+	k := tensor.MatMul(x, h.Wk)
+	scores := tensor.MatMul(q, transpose(k))
+	if !scaled {
+		return scores
+	}
+	scale := float32(1.0 / math.Sqrt(float64(h.dHead)))
+	for i := range scores.Data {
+		scores.Data[i] *= scale
+	}
+	return scores
 }
 
 // Forward は attention の出力だけを返す。

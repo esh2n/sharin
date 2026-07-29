@@ -118,3 +118,92 @@ func TestGELU(t *testing.T) {
 		t.Errorf("GELU(-5) は 0 に近いべき: %v", got.At(0, 2))
 	}
 }
+
+// 並べ方を変えても結果は変わらない。変わるのは速さだけになる。
+func TestLoopOrderDoesNotChangeTheResult(t *testing.T) {
+	a := New(17, 23)
+	b := New(23, 19)
+	// 整数の線形合同法から作る。浮動小数の漸化式は不動点に落ちて、
+	// 全要素がほぼ同じ値になってしまう。
+	var s uint64 = 7
+	fill := func(t *Tensor) {
+		for i := range t.Data {
+			s = s*6364136223846793005 + 1442695040888963407
+			t.Data[i] = float32(int64(s>>40)-(1<<23)) / (1 << 23)
+		}
+	}
+	fill(a)
+	fill(b)
+
+	x := MatMul(a, b)
+	y := MatMulByDot(a, b)
+	for i := range x.Data {
+		if math.Abs(float64(x.Data[i]-y.Data[i])) > 1e-5 {
+			t.Fatalf("%d 番目が違う: %g vs %g", i, x.Data[i], y.Data[i])
+		}
+	}
+
+	// 形が合わなければどちらも止まる。
+	defer func() {
+		if recover() == nil {
+			t.Fatal("形が合わないのに通った")
+		}
+	}()
+	MatMulByDot(a, a)
+}
+
+// 非線形が無ければ、何層重ねても1つの行列積に潰れる。
+func TestWithoutNonlinearityLayersCollapse(t *testing.T) {
+	x := FromRows([][]float32{{1, 2, 3}, {-1, 0.5, 2}})
+	w1 := FromRows([][]float32{{0.1, -0.2}, {0.3, 0.4}, {-0.5, 0.6}})
+	w2 := FromRows([][]float32{{2, -1, 0.5}, {0.25, 1.5, -2}})
+
+	two := MatMul(MatMul(x, w1), w2) // 2層ぶん通す
+	one := MatMul(x, MatMul(w1, w2)) // 重みを先に1つにまとめる
+
+	for i := range two.Data {
+		if math.Abs(float64(two.Data[i]-one.Data[i])) > 1e-5 {
+			t.Fatalf("潰れていない: %g vs %g", two.Data[i], one.Data[i])
+		}
+	}
+
+	// 間に非線形を挟むと、もう1つの行列では書けない。
+	bent := MatMul(GELU(MatMul(x, w1)), w2)
+	same := true
+	for i := range bent.Data {
+		if math.Abs(float64(bent.Data[i]-one.Data[i])) > 1e-5 {
+			same = false
+		}
+	}
+	if same {
+		t.Fatal("非線形を挟んでも同じになっている")
+	}
+}
+
+func benchMats(n int) (*Tensor, *Tensor) {
+	a, b := New(n, n), New(n, n)
+	var s uint64 = 7
+	for i := range a.Data {
+		s = s*6364136223846793005 + 1442695040888963407
+		v := float32(int64(s>>40)-(1<<23)) / (1 << 23)
+		a.Data[i] = v
+		b.Data[i] = -v
+	}
+	return a, b
+}
+
+func BenchmarkMatMul(bch *testing.B) {
+	a, b := benchMats(256)
+	bch.ResetTimer()
+	for i := 0; i < bch.N; i++ {
+		MatMul(a, b)
+	}
+}
+
+func BenchmarkMatMulByDot(bch *testing.B) {
+	a, b := benchMats(256)
+	bch.ResetTimer()
+	for i := 0; i < bch.N; i++ {
+		MatMulByDot(a, b)
+	}
+}
