@@ -127,13 +127,13 @@
 | job | ✅ | 合格 |
 | daemonset | ✅ | 合格 |
 | config | ✅ | 合格 |
-| ingress | ⬜ | |
-| gateway-api | ⬜ | |
-| network-policy | ⬜ | |
-| rbac | ⬜ | |
-| admission | ⬜ | |
-| pod-security | ⬜ | |
-| quota | ⬜ | |
+| ingress | ✅ | 合格 |
+| gateway-api | ✅ | 後続章(NetworkPolicy/RBAC)への「見た」参照を修正 |
+| network-policy | ✅ | 合格 |
+| rbac | ✅ | 合格 |
+| admission | ✅ | 合格 |
+| pod-security | ✅ | 後続の quota 章への「見た」参照を修正 |
+| quota | ✅ | 合格 |
 | leader-election | ⬜ | |
 | operator | ⬜ | |
 | hashing | ⬜ | |
