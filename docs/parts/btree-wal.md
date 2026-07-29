@@ -52,7 +52,7 @@ Insert(10) で split が起きると:
   <LaneSteps :lanes="lanes" :steps="steps" />
 </FigureBox>
 
-鍵は **txn(トランザクション)** という一時置き場。Insert 中の全 `writeNode` は
+中心になるのは **txn(トランザクション)** という一時置き場だ。Insert 中の全 `writeNode` は
 実ページに書かず、まず txn にため込む:
 
 <<< ../../db/btreewal/btreewal.go#tree{go}

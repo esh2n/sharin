@@ -23,8 +23,10 @@
 方法: 1章ずつ全文を読む。基準に触れたら書き直す。済んだら下の表を ✅ にして
 1行で何を直したかを書く。「指摘された章だけ直す」は禁止(feedback_no_pointwise_fixes)。
 
-一括処置済み: 行頭定型「肝は3つ:」「この章の肝は3つ。」(119章に蔓延)は 2026-07-29 に
-全章から機械的に除去した。地の文の「〜が肝で」は通常の日本語なので各章の読解時に個別判断。
+一括処置済み(2026-07-29):
+- 行頭定型「肝は3つ:」「この章の肝は3つ。」(119章)を全章から機械的に除去
+- 章末の丸ごと要約段落「この章の要点は「…」に尽きる。」「〜と言えるかが要。」(25章)を削除
+地の文の「〜が肝で」「〜に尽きる」は内容を持つ通常の日本語なので個別判断。
 この一括置換は ✅ の代わりにはならない(各章の全文読解は別途必要)。
 
 ## 進捗
@@ -54,15 +56,15 @@
 | log-structured-kv | ✅ | 合格 |
 | wal | ✅ | 合格。冪等・原子性とも説明後に使用 |
 | buffer-pool | ✅ | 合格。「前章の LRU」を実際の章順に合わせリンクに修正 |
-| btree-page-store | ⬜ | |
-| btree-wal | ⬜ | |
-| secondary-index | ⬜ | |
-| mini-sql | ⬜ | |
-| mvcc | ⬜ | |
-| hash-map | ⬜ | |
-| bloom-filter | ⬜ | |
-| skip-list | ⬜ | |
-| inverted-index | ⬜ | |
+| btree-page-store | ✅ | 合格 |
+| btree-wal | ✅ | 合格。「鍵は txn」の定型のみ言い換え |
+| secondary-index | ✅ | ミニSQL既読前提だったためサイドバー順を mini-sql→secondary-index に入替。①冒頭に導入文を追加 |
+| mini-sql | ✅ | 合格。Summary の語の重複のみ修正 |
+| mvcc | ✅ | Summary の lost update を現象で言い直し。「に尽きる」要約段落を削除 |
+| hash-map | ✅ | 合格 |
+| bloom-filter | ✅ | 冒頭リスト後に紛れた古い箇条書きの残骸3行を削除。Summary の偽陽性率に言い直し |
+| skip-list | ✅ | 合格 |
+| inverted-index | ✅ | 「に尽きる」要約段落を削除。他は合格 |
 | distributed-intro | ⬜ | |
 | logical-clock | ⬜ | |
 | causal-broadcast | ⬜ | |

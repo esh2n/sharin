@@ -77,8 +77,6 @@ import FigureBox from '../components/figures/FigureBox.vue'
 - **tricolor 不変条件と write barrier**: 並行マーク中にプログラムが「black から white へ」新しい参照を張ると、white が見逃されて誤って回収されうる。これを防ぐのが **write barrier** だ。ポインタ書き込みを GC がフックして、white を gray に格上げする。本章の不変条件がそのまま実務の要になる
 - **世代仮説**: 「ほとんどのオブジェクトは若くして死ぬ」。だから若い世代(nursery)だけを頻繁に GC すれば、少ないコストで大半のゴミを回収できる。Java の G1/ZGC、Go 以外の多くのランタイムが採る
 
-この章の要点は「GC は到達可能性判定。参照カウントは循環を漏らすのでトレース方式が要る。実用 GC は stop-the-world を並行/インクリメンタル/世代別で縮める。並行マークの正しさは tricolor 不変条件 + write barrier が支える」に尽きる。
-
 ## メリット・デメリットと実例
 
 | 方式 | 循環回収 | 停止時間 | 即時性 | 実例 |

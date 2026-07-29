@@ -79,8 +79,6 @@ L1 側が本章の中心だ。`Commit` はモードで挙動が分かれる。Op
 - **data availability が要**: 取引データが L1 に載っていないと、fraud proof も再構築もできない。「root だけ載せてデータは別」にすると、データを隠されて出金不能になりうる(data withholding)。EIP-4844 の blob はこの DA コストを下げる仕組み
 - **なぜ保証金を没収するか**: 不正が「バレても損しない」なら、何度でも試せる。bond の slashing で「不正の期待値をマイナス」にして抑止する。fraud proof は「暴く仕組み」、slashing は「割に合わなくする仕組み」
 
-この章の要点は「ロールアップは実行を L2 に逃がし L1 は root を記録するだけ。正しさの担保が optimistic(fraud proof + challenge 期間 + slashing、安いが遅く監視者前提)と zk(validity proof、即確定・監視者不要だが証明が重い)に分かれる。どちらも data availability が前提」に尽きる。
-
 ## メリット・デメリットと実例
 
 | 方式 | 確定の速さ | commit コスト | 前提 | 実例 |

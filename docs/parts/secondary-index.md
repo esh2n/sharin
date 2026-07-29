@@ -29,6 +29,9 @@ import FigureBox from '../components/figures/FigureBox.vue'
 
 ## ① 木を2回降りる
 
+まず、本体の表と索引を測れる最小の形で持つ。本体は主キー順に行が詰まったページの列、
+索引は「値と主キー」の組の列になる:
+
 <<< ../../db/secondary/secondary.go#model{go}
 
 索引に載るのは「値と主キー」だけなので、**行そのものよりずっと小さい**。
