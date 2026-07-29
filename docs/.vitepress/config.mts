@@ -198,6 +198,7 @@ export default defineConfig({
               { text: "推論高速化", link: "/parts/inference" },
               { text: "学習パイプライン", link: "/parts/llm-training" },
               { text: "量子化", link: "/parts/quantization" },
+              { text: "誤差を配る量子化(GPTQ)", link: "/parts/gptq" },
               { text: "LoRA", link: "/parts/lora" },
               { text: "埋め込みとベクトル検索", link: "/parts/embedding-search" },
               { text: "マルチモーダル入口(パッチ化)", link: "/parts/patchify" },
