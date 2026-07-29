@@ -58,6 +58,7 @@ export default defineConfig({
         items: [
           { text: "分散はなぜ難しいか", link: "/parts/distributed-intro" },
           { text: "論理時計とベクタークロック", link: "/parts/logical-clock" },
+          { text: "因果順序の配送", link: "/parts/causal-broadcast" },
           { text: "Raft — 分散合意", link: "/parts/raft" },
           { text: "レプリケーション", link: "/parts/replication" },
           { text: "CRDT", link: "/parts/crdt" },
