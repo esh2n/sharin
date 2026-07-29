@@ -147,9 +147,9 @@
 | utxo | ✅ | 合格 |
 | evm | ✅ | 合格。格付け表は言葉化済み |
 | rollup | ✅ | 合格 |
-| lightning | ⬜ | |
-| substrate | ⬜ | |
-| bpe | ⬜ | |
+| lightning | ✅ | 「HTLC の肝」の体言止めを言い換え。他は合格 |
+| substrate | ✅ | 合格 |
+| bpe | ✅ | 編の先頭章なのに llm-sampling/mini-gpt 既読前提だった冒頭を書き直し。attention の n² も言い直し |
 | tensor | ⬜ | |
 | attention | ⬜ | |
 | transformer | ⬜ | |
