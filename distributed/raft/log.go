@@ -3,11 +3,13 @@ package raft
 // raftLog はレプリケーションログ。1始まりの通し番号(Index)で並ぶ。
 //
 // スナップショットで前半を畳むので、実体は2つに分かれる:
+//
 //   - snapshot: Index ≤ snapshot.LastIndex を1枚に畳んだもの(実体は捨ててある)
+//
 //   - entries : Index > snapshot.LastIndex の生エントリ
 //
-//	Index:  1 2 3 4 5 6 7 8 9
-//	        └── snapshot ──┘└ entries ┘   (LastIndex=6 のとき)
+//     Index:  1 2 3 4 5 6 7 8 9
+//     └── snapshot ──┘└ entries ┘   (LastIndex=6 のとき)
 //
 // committed = 過半数に複製され「確定」した位置。applied = 状態機械へ渡し終えた位置。
 // 常に applied ≤ committed ≤ lastIndex。

@@ -71,6 +71,7 @@ func Eval(node Node, env *Environment) Object {
 	}
 	return nil
 }
+
 // #endregion eval
 
 // evalProgram は文を順に評価し、return かエラーが出たら即座に打ち切る。
@@ -161,6 +162,7 @@ func evalIntegerInfix(op string, left, right *Integer) Object {
 		return newError("未知の演算子: %s", op)
 	}
 }
+
 // #endregion infix
 
 func evalIf(node *IfExpression, env *Environment) Object {
@@ -215,6 +217,7 @@ func evalCall(node *CallExpression, env *Environment) Object {
 	}
 	return result
 }
+
 // #endregion call
 
 func evalExpressions(exps []Expression, env *Environment) []Object {

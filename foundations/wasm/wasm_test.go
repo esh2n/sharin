@@ -63,10 +63,10 @@ func sect(id byte, content []byte) []byte {
 }
 
 // 命令エンコーダ。
-func i32c(v int32) []byte { return cat([]byte{opI32Const}, encS(v)) }
-func lget(i uint32) []byte { return cat([]byte{opLocalGet}, encU(i)) }
-func lset(i uint32) []byte { return cat([]byte{opLocalSet}, encU(i)) }
-func ltee(i uint32) []byte { return cat([]byte{opLocalTee}, encU(i)) }
+func i32c(v int32) []byte   { return cat([]byte{opI32Const}, encS(v)) }
+func lget(i uint32) []byte  { return cat([]byte{opLocalGet}, encU(i)) }
+func lset(i uint32) []byte  { return cat([]byte{opLocalSet}, encU(i)) }
+func ltee(i uint32) []byte  { return cat([]byte{opLocalTee}, encU(i)) }
 func callf(i uint32) []byte { return cat([]byte{opCall}, encU(i)) }
 func br(i uint32) []byte    { return cat([]byte{opBr}, encU(i)) }
 func brif(i uint32) []byte  { return cat([]byte{opBrIf}, encU(i)) }
@@ -150,14 +150,14 @@ func TestSumToWithLoop(t *testing.T) {
 	// local 0 = n(引数), local 1 = acc。
 	body := cat(
 		i32c(0), lset(1), // acc = 0
-		block, //           ラベル1(脱出先)
-		loop,  //           ラベル0(繰り返し)
+		block,                              //           ラベル1(脱出先)
+		loop,                               //           ラベル0(繰り返し)
 		lget(0), []byte{opI32Eqz}, brif(1), // n==0 なら block を抜ける
 		lget(1), lget(0), []byte{opI32Add}, lset(1), // acc += n
 		lget(0), i32c(1), []byte{opI32Sub}, lset(0), // n -= 1
-		br(0), //           loop の先頭へ戻る
-		end,   //           loop 終わり
-		end,   //           block 終わり
+		br(0),   //           loop の先頭へ戻る
+		end,     //           loop 終わり
+		end,     //           block 終わり
 		lget(1), // return acc
 		end,
 	)

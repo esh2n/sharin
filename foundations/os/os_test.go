@@ -237,8 +237,8 @@ func TestStateString(t *testing.T) {
 // Trace の取得をまとめて確認する。
 func TestBlockedOrderingAndPartialWake(t *testing.T) {
 	k := NewKernel()
-	k.Spawn("A", Run(1), Sleep(2), Run(1))  // clock1 で sleep → wake 3
-	k.Spawn("B", Run(1), Sleep(8), Run(1))  // clock2 で sleep → wake 10
+	k.Spawn("A", Run(1), Sleep(2), Run(1)) // clock1 で sleep → wake 3
+	k.Spawn("B", Run(1), Sleep(8), Run(1)) // clock2 で sleep → wake 10
 	k.Spawn("C", Run(1), Yield(), Run(1), Yield(), Run(1), Yield(), Run(1))
 
 	k.Step() // A: Run(1), Sleep(2)

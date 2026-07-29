@@ -43,10 +43,10 @@ const (
 )
 
 const (
-	i32Type      = 0x7f // i32 の値型タグ
-	funcTypeTag  = 0x60 // 関数型の先頭タグ
-	blockVoid    = 0x40 // 結果なしブロック型
-	exportFunc   = 0x00 // export の種類: 関数
+	i32Type     = 0x7f // i32 の値型タグ
+	funcTypeTag = 0x60 // 関数型の先頭タグ
+	blockVoid   = 0x40 // 結果なしブロック型
+	exportFunc  = 0x00 // export の種類: 関数
 )
 
 // FuncType は関数シグネチャ。本実装は i32 のみ(型は個数だけ意味を持つ)。
@@ -59,10 +59,10 @@ type FuncType struct {
 // 構造化命令(block/loop/if)は、対応する else / end の命令インデックスを持ち、
 // 実行時のジャンプ先計算をコンパイル時に済ませておく(検証プリパスで埋める)。
 type Instr struct {
-	Op    byte
-	Imm   int64 // i32.const の値、または local/br/call のインデックス
-	Else  int   // if の else の命令インデックス(無ければ end と同じ)
-	End   int   // block/loop/if に対応する end の命令インデックス
+	Op   byte
+	Imm  int64 // i32.const の値、または local/br/call のインデックス
+	Else int   // if の else の命令インデックス(無ければ end と同じ)
+	End  int   // block/loop/if に対応する end の命令インデックス
 }
 
 // Func は 1 つの関数: 型・ローカル変数の本数(引数を除く)・デコード済み命令列。
@@ -74,9 +74,9 @@ type Func struct {
 
 // Module はパース済みの WASM モジュール。
 type Module struct {
-	Types    []FuncType
-	Funcs    []Func
-	Exports  map[string]int // export 名 → funcidx
+	Types   []FuncType
+	Funcs   []Func
+	Exports map[string]int // export 名 → funcidx
 }
 
 // FuncType はある関数の型を返す。

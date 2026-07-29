@@ -30,6 +30,7 @@ var precedences = map[TokenType]int{
 	SLASH: PRODUCT, ASTERISK: PRODUCT,
 	LPAREN: CALL, // 関数呼び出しの "(" も中置扱い
 }
+
 // #endregion prec
 
 type (
@@ -106,6 +107,7 @@ func (p *Parser) parseStatement() Statement {
 		return p.parseExpressionStatement() // それ以外は式文
 	}
 }
+
 // #endregion program
 
 func (p *Parser) parseLetStatement() Statement {
@@ -145,8 +147,8 @@ func (p *Parser) parseExpressionStatement() Statement {
 
 // #region pratt
 // parseExpression が Pratt 解析の心臓。
-//   1. 現在トークンの「前置関数」で左辺を作る
-//   2. 次の中置演算子の優先順位が今の precedence より強い限り、左辺を食べて中置式にする
+//  1. 現在トークンの「前置関数」で左辺を作る
+//  2. 次の中置演算子の優先順位が今の precedence より強い限り、左辺を食べて中置式にする
 func (p *Parser) parseExpression(precedence int) Expression {
 	prefix := p.prefixFns[p.curToken.Type]
 	if prefix == nil {
@@ -166,6 +168,7 @@ func (p *Parser) parseExpression(precedence int) Expression {
 	}
 	return left
 }
+
 // #endregion pratt
 
 func (p *Parser) parseIdentifier() Expression {

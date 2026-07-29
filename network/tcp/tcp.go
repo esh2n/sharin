@@ -271,7 +271,7 @@ func (e *Endpoint) emitData() []Segment {
 	return out
 }
 
-func (e *Endpoint) mark()          { e.started = true; e.sinceUp = 0 }
+func (e *Endpoint) mark()              { e.started = true; e.sinceUp = 0 }
 func (e *Endpoint) timerExpired() bool { return e.started && e.sinceUp >= e.rto }
 
 // tick は 1 ステップぶん時間を進める(再送タイマを刻む)。

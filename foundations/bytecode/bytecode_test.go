@@ -110,7 +110,7 @@ func TestArithmetic(t *testing.T) {
 func TestBooleansAndComparison(t *testing.T) {
 	runBool(t, "true", true)
 	runBool(t, "false", false)
-	runBool(t, "1 < 2", true)   // < は > へ読み替えられる
+	runBool(t, "1 < 2", true) // < は > へ読み替えられる
 	runBool(t, "2 < 1", false)
 	runBool(t, "1 > 2", false)
 	runBool(t, "1 == 1", true)
@@ -286,8 +286,8 @@ func TestIfBranchEndingInLetDoesNotCrash(t *testing.T) {
 func TestCompileIfPropagatesErrors(t *testing.T) {
 	// if の 条件 / then / else それぞれのコンパイルエラーが伝播する。
 	for _, src := range []string{
-		"if (foo) { 1 }",           // 条件で未定義
-		"if (true) { foo }",        // then で未定義
+		"if (foo) { 1 }",               // 条件で未定義
+		"if (true) { foo }",            // then で未定義
 		"if (true) { 1 } else { bar }", // else で未定義
 	} {
 		if _, err := Run(src); err == nil || !strings.Contains(err.Error(), "未定義の変数") {

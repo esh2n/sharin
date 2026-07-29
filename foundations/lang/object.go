@@ -32,9 +32,10 @@ func (i *Integer) Inspect() string { return strconv.FormatInt(i.Value, 10) }
 
 // 実行時の真偽値。AST の Boolean(構文上の true/false)とは別物なので BooleanObj にする。
 type BooleanObj struct{ Value bool }
+
 // #endregion object
 
-func (*BooleanObj) Type() ObjectType  { return BOOLEAN_OBJ }
+func (*BooleanObj) Type() ObjectType { return BOOLEAN_OBJ }
 func (b *BooleanObj) Inspect() string {
 	if b.Value {
 		return "true"
@@ -44,13 +45,13 @@ func (b *BooleanObj) Inspect() string {
 
 type Null struct{}
 
-func (*Null) Type() ObjectType  { return NULL_OBJ }
-func (*Null) Inspect() string   { return "null" }
+func (*Null) Type() ObjectType { return NULL_OBJ }
+func (*Null) Inspect() string  { return "null" }
 
 // return は「評価を打ち切って値を持ち上げる」ための包み。
 type ReturnValue struct{ Value Object }
 
-func (*ReturnValue) Type() ObjectType  { return RETURN_OBJ }
+func (*ReturnValue) Type() ObjectType   { return RETURN_OBJ }
 func (rv *ReturnValue) Inspect() string { return rv.Value.Inspect() }
 
 // Error は実行時エラー。以降の評価を止めて持ち上がる。
@@ -76,6 +77,7 @@ func (f *Function) Inspect() string {
 	}
 	return "fn(" + strings.Join(params, ", ") + ") { ... }"
 }
+
 // #endregion function
 
 // #region env
@@ -111,4 +113,5 @@ func (e *Environment) Set(name string, val Object) Object {
 	e.store[name] = val
 	return val
 }
+
 // #endregion env

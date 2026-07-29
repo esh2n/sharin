@@ -18,7 +18,7 @@ const (
 // Event はトレース1行。At はその出来事が起きた論理時刻(ラウンド開始時刻)。
 type Event struct {
 	At   int
-	P    int    // 対象プロセッサ番号(スケジューラ全体の出来事は -1)
+	P    int // 対象プロセッサ番号(スケジューラ全体の出来事は -1)
 	Kind Kind
 	G    string // 対象 goroutine(該当しなければ空)
 	N    int    // run の tick / steal・global の本数

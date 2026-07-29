@@ -8,16 +8,16 @@ package raft
 type MsgType int
 
 const (
-	MsgHup           MsgType = iota // ローカル: 選挙タイマ満了。選挙を始めよ
-	MsgProp                         // ローカル: クライアントからの書き込み提案
-	MsgPreVote                      // 仮投票要求。任期を上げずに「勝てそうか」だけ先に問う
-	MsgPreVoteResp                  // 仮投票応答
-	MsgVote                         // RequestVote 要求(候補者→他ノード)
-	MsgVoteResp                     // RequestVote 応答
-	MsgApp                          // AppendEntries 要求(リーダー→追従者。心拍もこれで兼ねる)
-	MsgAppResp                      // AppendEntries 応答
-	MsgSnap                         // InstallSnapshot 要求(遅れすぎた追従者へ写しを送る)
-	MsgSnapResp                     // InstallSnapshot 応答
+	MsgHup         MsgType = iota // ローカル: 選挙タイマ満了。選挙を始めよ
+	MsgProp                       // ローカル: クライアントからの書き込み提案
+	MsgPreVote                    // 仮投票要求。任期を上げずに「勝てそうか」だけ先に問う
+	MsgPreVoteResp                // 仮投票応答
+	MsgVote                       // RequestVote 要求(候補者→他ノード)
+	MsgVoteResp                   // RequestVote 応答
+	MsgApp                        // AppendEntries 要求(リーダー→追従者。心拍もこれで兼ねる)
+	MsgAppResp                    // AppendEntries 応答
+	MsgSnap                       // InstallSnapshot 要求(遅れすぎた追従者へ写しを送る)
+	MsgSnapResp                   // InstallSnapshot 応答
 )
 
 func (t MsgType) String() string {

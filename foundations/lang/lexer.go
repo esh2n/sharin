@@ -99,6 +99,7 @@ func (l *Lexer) NextToken() Token {
 	l.readChar()
 	return tok
 }
+
 // #endregion lexer
 
 // readIdentifier は識別子を読む。先頭は英字(呼ぶ側が保証)、2文字目以降は英字か数字。

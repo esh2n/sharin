@@ -56,7 +56,7 @@ type Definition struct {
 }
 
 var definitions = map[Opcode]*Definition{
-	OpConstant:      {"OpConstant", []int{2}},      // 2 バイトの定数インデックス
+	OpConstant:      {"OpConstant", []int{2}}, // 2 バイトの定数インデックス
 	OpPop:           {"OpPop", nil},
 	OpTrue:          {"OpTrue", nil},
 	OpFalse:         {"OpFalse", nil},
@@ -70,9 +70,9 @@ var definitions = map[Opcode]*Definition{
 	OpEqual:         {"OpEqual", nil},
 	OpNotEqual:      {"OpNotEqual", nil},
 	OpGreater:       {"OpGreater", nil},
-	OpJump:          {"OpJump", []int{2}},          // 2 バイトの飛び先(命令列内の位置)
+	OpJump:          {"OpJump", []int{2}}, // 2 バイトの飛び先(命令列内の位置)
 	OpJumpNotTruthy: {"OpJumpNotTruthy", []int{2}},
-	OpSetGlobal:     {"OpSetGlobal", []int{2}},     // 2 バイトのグローバル番号
+	OpSetGlobal:     {"OpSetGlobal", []int{2}}, // 2 バイトのグローバル番号
 	OpGetGlobal:     {"OpGetGlobal", []int{2}},
 }
 

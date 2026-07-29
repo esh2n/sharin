@@ -42,8 +42,8 @@ type OpKind int
 
 const (
 	OpRun   OpKind = iota // CPU を Arg tick 使う。この間 yield しない(協調の肝)
-	OpYield              // 自発的に CPU を手放し、run queue の最後尾に並び直す
-	OpSleep              // Arg tick 分ブロックする。時刻が来たら起こされる
+	OpYield               // 自発的に CPU を手放し、run queue の最後尾に並び直す
+	OpSleep               // Arg tick 分ブロックする。時刻が来たら起こされる
 )
 
 // Op はタスクのプログラムの 1 命令。プログラムはこの命令の並びにすぎない。
@@ -70,11 +70,11 @@ func Sleep(ticks int) Op { return Op{Kind: OpSleep, Arg: ticks} }
 type Task struct {
 	Name string
 	prog []Op
-	pc   int   // 保存された文脈: 次に実行する命令の位置
+	pc   int // 保存された文脈: 次に実行する命令の位置
 	st   State
-	cpu  int   // これまでに使った CPU tick の合計
-	wake int   // Blocked のとき、起こされる時刻
-	seq  int   // 生成順。同時起床の決定的な順序づけに使う
+	cpu  int // これまでに使った CPU tick の合計
+	wake int // Blocked のとき、起こされる時刻
+	seq  int // 生成順。同時起床の決定的な順序づけに使う
 }
 
 // State はタスクの現在の状態を返す。

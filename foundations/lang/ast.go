@@ -36,6 +36,7 @@ func (p *Program) String() string {
 	}
 	return out.String()
 }
+
 // #endregion ast
 
 // --- 文(Statement) ---
@@ -46,8 +47,10 @@ type LetStatement struct {
 	Value Expression
 }
 
-func (*LetStatement) statementNode()   {}
-func (ls *LetStatement) String() string { return "let " + ls.Name.String() + " = " + exprStr(ls.Value) + ";" }
+func (*LetStatement) statementNode() {}
+func (ls *LetStatement) String() string {
+	return "let " + ls.Name.String() + " = " + exprStr(ls.Value) + ";"
+}
 
 // return <value>;
 type ReturnStatement struct {
@@ -83,7 +86,7 @@ func (bs *BlockStatement) String() string {
 
 type Identifier struct{ Value string }
 
-func (*Identifier) expressionNode()   {}
+func (*Identifier) expressionNode()  {}
 func (i *Identifier) String() string { return i.Value }
 
 type IntegerLiteral struct{ Value int64 }
@@ -109,7 +112,7 @@ type PrefixExpression struct {
 	Right    Expression
 }
 
-func (*PrefixExpression) expressionNode()    {}
+func (*PrefixExpression) expressionNode()   {}
 func (pe *PrefixExpression) String() string { return "(" + pe.Operator + exprStr(pe.Right) + ")" }
 
 // 中置演算: a + b, a == b。括弧を付けて優先順位が見えるようにする。
