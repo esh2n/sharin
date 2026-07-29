@@ -111,3 +111,75 @@ func BenchmarkPut(b *testing.B) {
 		m.Put(i, i)
 	}
 }
+
+// この章の中心。件数がいくら増えても、1回引くのにたどる数は 1 前後で止まる。
+func TestProbesStayFlatAsItGrows(t *testing.T) {
+	avg := func(n int) float64 {
+		m := New[int, int](HashInt)
+		for i := 0; i < n; i++ {
+			m.Put(i, i)
+		}
+		m.ResetStats()
+		for i := 0; i < n; i++ {
+			m.Get(i)
+		}
+		return float64(m.Probes()) / float64(n)
+	}
+	small, big := avg(1000), avg(100000)
+	// 100倍に増やしても、たどる数はほとんど変わらない。
+	if big > small*1.2 {
+		t.Fatalf("件数で悪化している: %.3f → %.3f", small, big)
+	}
+	if big > 2 {
+		t.Fatalf("1回あたり %.3f 個もたどっている", big)
+	}
+}
+
+// 配り直しは倍々なので、件数の対数ぶんしか起きない。
+func TestResizeCountIsLogarithmic(t *testing.T) {
+	m := New[int, int](HashInt)
+	for i := 0; i < 100000; i++ {
+		m.Put(i, i)
+	}
+	// 8 から倍々で 100000/0.75 を超えるまで。17 回くらいで足りる。
+	if m.Resizes() > 20 {
+		t.Fatalf("配り直しが多すぎる: %d", m.Resizes())
+	}
+	if m.LoadFactor() > 0.75 {
+		t.Fatalf("負荷率が上限を超えている: %.3f", m.LoadFactor())
+	}
+}
+
+// ハッシュが散らばらないと、同じ実装のまま線形探索に落ちる。
+func TestBadHashDegradesToLinearScan(t *testing.T) {
+	// どのキーも同じバケットに落とす、最悪のハッシュ。
+	same := func(int) uint64 { return 42 }
+
+	const n = 2000
+	good := New[int, int](HashInt)
+	bad := New[int, int](same)
+	for i := 0; i < n; i++ {
+		good.Put(i, i)
+		bad.Put(i, i)
+	}
+	good.ResetStats()
+	bad.ResetStats()
+	for i := 0; i < n; i++ {
+		good.Get(i)
+		bad.Get(i)
+	}
+
+	g := float64(good.Probes()) / n
+	b := float64(bad.Probes()) / n
+	if g > 2 {
+		t.Fatalf("良いハッシュで %.1f 個たどっている", g)
+	}
+	// 全部が1つのバケットに並ぶので、平均で件数の半分をたどる。
+	if b < float64(n)/4 {
+		t.Fatalf("悪いハッシュなのに %.1f 個で済んでいる", b)
+	}
+	// 配り直しは起きるが、散らばらないので何の役にも立っていない。
+	if bad.Resizes() == 0 {
+		t.Fatal("配り直しは起きているはず")
+	}
+}

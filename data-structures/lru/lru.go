@@ -22,6 +22,8 @@ type Cache[K comparable, V any] struct {
 	items    map[K]*entry[K, V]
 	head     *entry[K, V] // 最近使った側
 	tail     *entry[K, V] // 一番使われていない側(次に追い出される)
+
+	hits, misses int
 }
 
 // New は容量 capacity (>=1) のキャッシュを返す。
@@ -40,14 +42,39 @@ func New[K comparable, V any](capacity int) (*Cache[K, V], error) {
 func (c *Cache[K, V]) Get(key K) (V, bool) {
 	e, ok := c.items[key]
 	if !ok {
+		c.misses++
 		var zero V
 		return zero, false
 	}
+	c.hits++
 	c.moveToFront(e)
 	return e.value, true
 }
 
 // #endregion get
+
+// #region stats
+
+// Hits と Misses は当たった回数と外れた回数。
+//
+// キャッシュは「入っているか」ではなく「どれくらい当たるか」で評価する。
+// 容量を1つ増やしただけで当たり方が変わるので、数えられるようにしておく。
+func (c *Cache[K, V]) Hits() int   { return c.hits }
+func (c *Cache[K, V]) Misses() int { return c.misses }
+
+// HitRate は当たった割合。1度も引いていなければ 0。
+func (c *Cache[K, V]) HitRate() float64 {
+	n := c.hits + c.misses
+	if n == 0 {
+		return 0
+	}
+	return float64(c.hits) / float64(n)
+}
+
+// ResetStats は数え直す。
+func (c *Cache[K, V]) ResetStats() { c.hits, c.misses = 0, 0 }
+
+// #endregion stats
 
 // #region put
 // Put は値を入れ、容量が溢れたら一番使われていない要素(tail)を追い出す。

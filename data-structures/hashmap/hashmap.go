@@ -25,6 +25,12 @@ type Map[K comparable, V any] struct {
 	hash  func(K) uint64
 	slots [][]entry[K, V]
 	count int
+
+	// probes は Get で「鍵を1つ見比べた」回数の累計。
+	// 平均 O(1) が本当かどうかは、ここを数えれば分かる。
+	probes int
+	// resizes は配り直した回数。
+	resizes int
 }
 
 // New は空のマップを返す。hash にはキーのハッシュ関数を渡す(HashString / HashInt など)。
@@ -66,6 +72,7 @@ func (m *Map[K, V]) Put(key K, value V) {
 func (m *Map[K, V]) Get(key K) (V, bool) {
 	i := m.bucketIndex(key)
 	for _, e := range m.slots[i] {
+		m.probes++
 		if e.key == key {
 			return e.val, true
 		}
@@ -90,6 +97,31 @@ func (m *Map[K, V]) Delete(key K) bool {
 	return false
 }
 
+// #endregion ops
+
+// #region stats
+
+// Probes は Get で鍵を見比べた回数の累計を返す。
+//
+// 引いた回数で割れば、1回あたり何個たどったかになる。
+// 負荷率を守れていれば、件数がいくら増えてもここは 1 前後で止まる。
+func (m *Map[K, V]) Probes() int { return m.probes }
+
+// Resizes は配り直した回数を返す。倍々に増やすので、件数の対数ぶんしか起きない。
+func (m *Map[K, V]) Resizes() int { return m.resizes }
+
+// LoadFactor は「件数 / バケット数」。ここが上限を超えると配り直す。
+func (m *Map[K, V]) LoadFactor() float64 {
+	return float64(m.count) / float64(len(m.slots))
+}
+
+// ResetStats は数え直す。
+func (m *Map[K, V]) ResetStats() { m.probes = 0 }
+
+// #endregion stats
+
+// #region ops2
+
 // Len は要素数を返す。
 func (m *Map[K, V]) Len() int { return m.count }
 
@@ -107,13 +139,14 @@ func (m *Map[K, V]) Keys() []K {
 	return keys
 }
 
-// #endregion ops
+// #endregion ops2
 
 // #region resize
 // resize はバケット数を倍にして、全要素を配り直す(rehash)。
 // バケット数が変わると bucketIndex の余りも変わるので、全要素の引っ越しが必要。
 // 1回の resize は O(n) かかる。この「たまに重い」が、平均 O(1) の裏側にある。
 func (m *Map[K, V]) resize() {
+	m.resizes++
 	old := m.slots
 	m.slots = make([][]entry[K, V], len(old)*2)
 	for _, bucket := range old {
