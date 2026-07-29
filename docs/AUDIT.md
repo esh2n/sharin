@@ -65,11 +65,11 @@
 | bloom-filter | ✅ | 冒頭リスト後に紛れた古い箇条書きの残骸3行を削除。Summary の偽陽性率に言い直し |
 | skip-list | ✅ | 合格 |
 | inverted-index | ✅ | 「に尽きる」要約段落を削除。他は合格 |
-| distributed-intro | ⬜ | |
-| logical-clock | ⬜ | |
-| causal-broadcast | ⬜ | |
-| total-order | ⬜ | |
-| raft | ⬜ | |
+| distributed-intro | ✅ | 合格。部分故障→split brain→過半数の順で説明が積み上がっている |
+| logical-clock | ✅ | Lamport・ベクタークロックの名前を初出で導入。後続章(leader-election/replication)の既読前提を修正 |
+| causal-broadcast | ✅ | 後続章(gossip/Raft)を過去形で参照していた3箇所を修正 |
+| total-order | ✅ | 後続のクォーラム章への既読前提を修正 |
+| raft | ✅ | 「前章」の誤参照3箇所を章名に修正。CAP を初出で定義(未説明のまま「前章のCAP」と参照していた) |
 | replication | ⬜ | |
 | crdt | ⬜ | |
 | consistent-hashing | ⬜ | |
