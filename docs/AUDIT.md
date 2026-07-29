@@ -101,11 +101,11 @@
 | cpu-throttling | ✅ | 合格 |
 | oom | ✅ | 合格 |
 | os | ✅ | 合格。「要点に尽きる」定型は一括処置済み |
-| gc | ⬜ | |
-| event-loop | ⬜ | |
-| bytecode | ⬜ | |
-| scheduler | ⬜ | |
-| wasm | ⬜ | |
+| gc | ✅ | 合格。格付け表は言葉化済み |
+| event-loop | ✅ | FD を Summary・本文初出で言い直し(未展開だった) |
+| bytecode | ✅ | 合格 |
+| scheduler | ✅ | 合格。格付け表は言葉化済み |
+| wasm | ✅ | Summary の「鍵は〜」を言い換え |
 | apiserver | ⬜ | |
 | kubelet | ⬜ | |
 | etcd-ops | ⬜ | |
