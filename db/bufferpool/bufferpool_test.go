@@ -170,3 +170,41 @@ func TestValidation(t *testing.T) {
 		t.Error("容量0はエラーになるべき")
 	}
 }
+
+// FlushAll は dirty ページを書き戻し、ResetStats は数だけ 0 に戻す。
+func TestFlushAllAndResetStats(t *testing.T) {
+	path := filepath.Join(t.TempDir(), "data.db")
+	p, err := New(path, 4)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer p.Close()
+
+	data := make([]byte, PageSize)
+	data[0] = 7
+	if err := p.Write(0, data); err != nil {
+		t.Fatal(err)
+	}
+	if err := p.FlushAll(); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := p.Read(0); err != nil {
+		t.Fatal(err)
+	}
+
+	if h, m, f := p.Stats(); h+m == 0 || f == 0 {
+		t.Errorf("数えていない: %d, %d, %d", h, m, f)
+	}
+	p.ResetStats()
+	if h, m, f := p.Stats(); h != 0 || m != 0 || f != 0 {
+		t.Errorf("数え直せていない: %d, %d, %d", h, m, f)
+	}
+	// 中身は捨てていないので、そのまま読める。
+	got, err := p.Read(0)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if got[0] != 7 {
+		t.Errorf("中身が消えた: %d", got[0])
+	}
+}

@@ -94,6 +94,8 @@ type Tree struct {
 	rootID uint64
 	nextID uint64
 	txn    map[uint64][]byte // pageID -> 新しいページ内容(未確定)
+
+	reads int // readNode を通った回数(問い合わせの代償を数えるため)
 }
 
 // Open はデータファイルと WAL を開き、リカバリしてから返す。
@@ -173,6 +175,7 @@ func (tr *Tree) allocate() uint64 {
 // readNode は txn にあればそれを、なければ実ページを読む。
 // prepareInsert 中に自分が書いた(まだ未確定の)ノードを読み返すために txn を優先する。
 func (tr *Tree) readNode(id uint64) (*node, error) {
+	tr.reads++
 	if buf, ok := tr.txn[id]; ok {
 		return deserialize(buf), nil
 	}
@@ -394,6 +397,41 @@ func (tr *Tree) Get(key uint64) (uint64, bool, error) {
 	}
 }
 
+// Pair は1件ぶんのキーと値。
+type Pair struct{ Key, Value uint64 }
+
+// ScanRows は全件を昇順で、キーと値をそろえて返す。
+//
+// Scan がキーしか返さないと、呼ぶ側は値を取りに行くために
+// 1件ずつ根から降り直すことになる。1回歩くついでに値も持ち帰れば、
+// 読むページは木のノード数で済む。
+func (tr *Tree) ScanRows() ([]Pair, error) {
+	var out []Pair
+	var walk func(id uint64) error
+	walk = func(id uint64) error {
+		n, err := tr.readNode(id)
+		if err != nil {
+			return err
+		}
+		for i := range n.keys {
+			if !n.leaf {
+				if err := walk(n.children[i]); err != nil {
+					return err
+				}
+			}
+			out = append(out, Pair{Key: n.keys[i], Value: n.vals[i]})
+		}
+		if !n.leaf {
+			return walk(n.children[len(n.keys)])
+		}
+		return nil
+	}
+	if err := walk(tr.rootID); err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // Scan は全キーを昇順で返す。
 func (tr *Tree) Scan() ([]uint64, error) {
 	var out []uint64
@@ -423,3 +461,26 @@ func (tr *Tree) Scan() ([]uint64, error) {
 }
 
 // #endregion query
+
+// #region stats
+
+// Reads はノード(ページ)を読んだ回数の累計を返す。
+//
+// 1点引きなら根から葉までの高さぶん、全走査なら木の全ノードぶんになる。
+// 問い合わせの代償はここに出る。
+func (tr *Tree) Reads() int { return tr.reads }
+
+// PoolStats はバッファプールの (ヒット, ミス) を返す。
+// 読んだページのうち、実際にディスクへ取りに行ったのがミスの数になる。
+func (tr *Tree) PoolStats() (hits, misses int) {
+	h, m, _ := tr.pool.Stats()
+	return h, m
+}
+
+// ResetStats は数え直す。
+func (tr *Tree) ResetStats() {
+	tr.reads = 0
+	tr.pool.ResetStats()
+}
+
+// #endregion stats

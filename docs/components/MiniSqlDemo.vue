@@ -87,11 +87,20 @@ function parse(toks: Tok[]): Ast {
   throw new Error(`未対応の文 "${head.text}"`);
 }
 
-const store = ref<Map<number, number>>(new Map());
-const input = ref("INSERT INTO users VALUES (1, 100)");
+// 最初から2行入れておく。空だと engine の段に何も出ず、道の選び方が見えない。
+const seed = (): Map<number, number> => new Map([[1, 100], [2, 200]]);
+
+const store = ref<Map<number, number>>(seed());
+const input = ref("SELECT * FROM users WHERE id = 1");
 const toks = ref<Tok[]>([]);
 const ast = ref<Ast | null>(null);
-const result = ref<{ ok: boolean; text: string; rows?: [number, number][] } | null>(null);
+const result = ref<{
+  ok: boolean;
+  text: string;
+  rows?: [number, number][];
+  // access は engine が選んだ道。Go 版 Plan.Access と同じ判定。
+  access?: "index" | "scan";
+} | null>(null);
 
 const PRESETS = [
   "INSERT INTO users VALUES (1, 100)",
@@ -113,11 +122,11 @@ function run() {
     } else if (a.where !== undefined) {
       const v = store.value.get(a.where);
       result.value = v === undefined
-        ? { ok: true, text: "0行(該当なし)", rows: [] }
-        : { ok: true, text: "1行", rows: [[a.where, v]] };
+        ? { ok: true, text: "0行(該当なし)", rows: [], access: "index" }
+        : { ok: true, text: "1行", rows: [[a.where, v]], access: "index" };
     } else {
       const rows = [...store.value.entries()].sort((x, y) => x[0] - y[0]) as [number, number][];
-      result.value = { ok: true, text: `${rows.length}行(昇順)`, rows };
+      result.value = { ok: true, text: `${rows.length}行(昇順)`, rows, access: "scan" };
     }
   } catch (e) {
     toks.value = [];
@@ -178,6 +187,11 @@ const astText = computed(() => {
       <div class="ms-stage">
         <p class="ms-stage-head">3. engine → 実行</p>
         <p v-if="result" class="ms-result" :class="{ err: !result.ok }">{{ result.text }}</p>
+        <p v-if="result?.access" class="ms-access">
+          <span class="ms-access-tag" :class="result.access">{{ result.access }}</span>
+          {{ result.access === "index" ? "WHERE があるので B-Tree を1点引き。読むのは根から葉までの高さぶん"
+                                       : "WHERE が無いので全走査。読むページは行数とともに増える" }}
+        </p>
         <table v-if="result?.rows?.length" class="ms-rows">
           <thead><tr><th>id</th><th>value</th></tr></thead>
           <tbody>
@@ -280,6 +294,28 @@ const astText = computed(() => {
 .ms-result.err {
   color: var(--vp-c-danger-1);
   font-weight: 600;
+}
+.ms-access {
+  margin: 6px 0 0;
+  font-size: 11px;
+  line-height: 1.6;
+  color: var(--vp-c-text-3);
+}
+.ms-access-tag {
+  display: inline-block;
+  margin-right: 6px;
+  padding: 0 6px;
+  font-family: var(--vp-font-family-mono);
+  font-size: 10.5px;
+  font-weight: 700;
+}
+.ms-access-tag.index {
+  background-color: var(--vp-c-brand-soft);
+  color: var(--vp-c-brand-1);
+}
+.ms-access-tag.scan {
+  background-color: var(--vp-c-default-soft);
+  color: var(--vp-c-text-2);
 }
 .ms-rows {
   font-size: 13px;

@@ -131,3 +131,65 @@ func TestValidation(t *testing.T) {
 		t.Error("次数 < 2 はエラーになるべき")
 	}
 }
+
+// ScanRows は1回歩くだけで、キーと値をそろえて返す。
+func TestScanRowsMatchesGet(t *testing.T) {
+	dir := t.TempDir()
+	tr, err := Open(dir, 4)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer tr.Close()
+
+	const n = 200
+	for i := 1; i <= n; i++ {
+		if err := tr.Insert(uint64(i), uint64(i*10)); err != nil {
+			t.Fatal(err)
+		}
+	}
+
+	tr.ResetStats()
+	pairs, err := tr.ScanRows()
+	if err != nil {
+		t.Fatal(err)
+	}
+	walkReads := tr.Reads()
+
+	if len(pairs) != n {
+		t.Fatalf("件数: %d", len(pairs))
+	}
+	for i, p := range pairs {
+		if p.Key != uint64(i+1) || p.Value != uint64((i+1)*10) {
+			t.Fatalf("%d 番目: %+v", i, p)
+		}
+		if i > 0 && pairs[i-1].Key >= p.Key {
+			t.Fatalf("昇順でない: %d, %d", pairs[i-1].Key, p.Key)
+		}
+	}
+
+	// 1回歩くだけなので、読むのは木のノード数で止まる。件数は超えない。
+	if walkReads > n {
+		t.Errorf("1回歩いて %d ページ読んだ(%d 件)", walkReads, n)
+	}
+
+	// 1件ずつ引き直すと、高さぶんが件数だけ積み上がる。
+	tr.ResetStats()
+	for i := 1; i <= n; i++ {
+		if _, _, err := tr.Get(uint64(i)); err != nil {
+			t.Fatal(err)
+		}
+	}
+	if got := tr.Reads(); got <= walkReads {
+		t.Errorf("引き直しのほうが読まないのはおかしい: %d, %d", got, walkReads)
+	}
+
+	// バッファプールの数え方も動いている。
+	hits, misses := tr.PoolStats()
+	if hits+misses == 0 {
+		t.Error("プールの数が両方 0")
+	}
+	tr.ResetStats()
+	if h, m := tr.PoolStats(); h != 0 || m != 0 || tr.Reads() != 0 {
+		t.Errorf("数え直せていない: %d, %d, %d", h, m, tr.Reads())
+	}
+}

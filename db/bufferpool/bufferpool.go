@@ -151,6 +151,13 @@ func (p *Pool) Stats() (hits, misses, flushes int) {
 	return p.hits, p.misses, p.flushes
 }
 
+// ResetStats は数え直す。ページの中身は捨てない。
+func (p *Pool) ResetStats() {
+	p.mu.Lock()
+	defer p.mu.Unlock()
+	p.hits, p.misses, p.flushes = 0, 0, 0
+}
+
 // Close は dirty ページを書き戻してからファイルを閉じる。
 func (p *Pool) Close() error {
 	p.mu.Lock()
