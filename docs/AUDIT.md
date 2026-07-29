@@ -23,6 +23,10 @@
 方法: 1章ずつ全文を読む。基準に触れたら書き直す。済んだら下の表を ✅ にして
 1行で何を直したかを書く。「指摘された章だけ直す」は禁止(feedback_no_pointwise_fixes)。
 
+一括処置済み: 行頭定型「肝は3つ:」「この章の肝は3つ。」(119章に蔓延)は 2026-07-29 に
+全章から機械的に除去した。地の文の「〜が肝で」は通常の日本語なので各章の読解時に個別判断。
+この一括置換は ✅ の代わりにはならない(各章の全文読解は別途必要)。
+
 ## 進捗
 
 | 章 | 状態 | 直したこと |
@@ -42,14 +46,14 @@
 | congestion | ✅ | Summary と図の cwnd/ssthresh に言い直しを追加。「肝は3つ」「公平の鍵」定型を排除 |
 | dns | ✅ | UDP の1行説明が章内に無かったのを冒頭で定義。Summary も接続なし1発の言い回しに |
 | proxy | ✅ | SSL終端を TLS 終端として初出で定義。「3章で完結」の古い記述を現構成に合わせ tcp を追加 |
-| id-generation | ⬜ | |
-| binary-search-tree | ⬜ | |
-| lru-cache | ⬜ | |
-| disk-and-pages | ⬜ | |
-| btree | ⬜ | |
-| log-structured-kv | ⬜ | |
-| wal | ⬜ | |
-| buffer-pool | ⬜ | |
+| id-generation | ✅ | UUIDv4 節が説明なしでコードから始まっていたのを修正。誕生日のパラドックスに1行の説明 |
+| binary-search-tree | ✅ | 合格。用語の前提節・説明→実装→デモの順とも手本どおり。定型のみ除去 |
+| lru-cache | ✅ | 合格。定型のみ除去 |
+| disk-and-pages | ✅ | 合格。B-Tree デモ言及の既読前提(「見た」)を時制修正 |
+| btree | ✅ | 合格。前提章の明示・順序とも手本どおり |
+| log-structured-kv | ✅ | 合格 |
+| wal | ✅ | 合格。冪等・原子性とも説明後に使用 |
+| buffer-pool | ✅ | 合格。「前章の LRU」を実際の章順に合わせリンクに修正 |
 | btree-page-store | ⬜ | |
 | btree-wal | ⬜ | |
 | secondary-index | ⬜ | |

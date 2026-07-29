@@ -37,7 +37,7 @@ import FigureBox from '../components/figures/FigureBox.vue'
 
 </FigureBox>
 
-肝は3つ:
+順に見ていく。
 
 1. **成功した数を数える**: 目標に達したら終わり。保ち続けるのではない
 2. **量と速さは別の軸**: いくつ要るか(completions)と、同時にいくつ走らせるか(parallelism)

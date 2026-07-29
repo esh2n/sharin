@@ -32,7 +32,7 @@ import FigureBox from '../components/figures/FigureBox.vue'
 
 </FigureBox>
 
-肝は3つ:
+順に見ていく。
 
 1. **2PC = 聞いてから確定**: prepare で全員の Yes を集めてから commit を配る。一部だけ確定は起きない
 2. **2PC の代償 = ブロッキング**: Yes と答えた参加者は決定が届くまでロックを抱える。調整役が落ちると動けない

@@ -34,7 +34,7 @@ import FigureBox from '../components/figures/FigureBox.vue'
 
 </FigureBox>
 
-肝は3つ:
+順に見ていく。
 
 1. **3段に分ける**: 字句・構文・評価。各段は前段の出力だけを入力に取るので、単体で理解・テストできる
 2. **Pratt 解析で優先順位**: トークンごとに前置/中置の解析関数を登録し、優先順位表で結合を決める

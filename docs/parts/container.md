@@ -31,7 +31,7 @@ import FigureBox from '../components/figures/FigureBox.vue'
 
 </FigureBox>
 
-肝は2つ:
+順に見ていく。
 
 1. **namespace = グローバル資源の独立した見え方**: PID・ポート・マウント・ホスト名を、コンテナごとに別インスタンスに見せる
 2. **cgroup = 階層的な資源の予算**: メモリとプロセス数の上限を木で持ち、超えたら全か無かで拒否する

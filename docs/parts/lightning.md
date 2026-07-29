@@ -31,7 +31,7 @@ import FigureBox from '../components/figures/FigureBox.vue'
 
 </FigureBox>
 
-肝は3つ:
+順に見ていく。
 
 1. **ステートチャネル**: funding で一度チェーンにロックし、以降 `Pay` は commitment を差し替えるだけ。チェーンに触れるのは開閉の 2 回だけ
 2. **リボケーションとペナルティ**: 状態を進めるたびに旧 commitment の秘密を相手に渡す。古い状態を提出すると相手に全額没収される

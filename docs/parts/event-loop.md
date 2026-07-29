@@ -31,7 +31,7 @@ import FigureBox from '../components/figures/FigureBox.vue'
 
 </FigureBox>
 
-肝は3つ:
+順に見ていく。
 
 1. **ノンブロッキング I/O = 待たない約束**: `read`/`write` はスレッドを止めず、進められなければ即 `ErrWouldBlock`(EAGAIN)を返す。ブロックした瞬間、他の全接続が巻き添えで止まる
 2. **readiness 多重化 = 一括問い合わせ**: 多数の FD を 1 回の `Wait`(epoll_wait)で走査し、準備できたものだけ返す。関心(Interest)でマスクする

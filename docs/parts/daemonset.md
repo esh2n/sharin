@@ -42,7 +42,7 @@ import FigureBox from '../components/figures/FigureBox.vue'
 
 </FigureBox>
 
-肝は3つ:
+順に見ていく。
 
 1. **数を宣言しない**: 宣言するのは「どこに要るか」。数はそこから導かれる
 2. **集合の差を埋める**: 数でなく、対象ノードの集合と Pod の載っている集合を比べる

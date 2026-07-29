@@ -61,7 +61,7 @@ import FigureBox from '../components/figures/FigureBox.vue'
 
 </FigureBox>
 
-肝は3つ:
+順に見ていく。
 
 1. **3つの性質が順序と重複を無関係にする**: 可換・結合的・冪等
 2. **引けないなら、引く用のものを足す**: 減算を持てないので、減らした量を別に数える

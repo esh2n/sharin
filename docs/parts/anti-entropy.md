@@ -46,7 +46,7 @@ import FigureBox from '../components/figures/FigureBox.vue'
 
 </FigureBox>
 
-肝は3つ:
+順に見ていく。
 
 1. **要約を1つ交換すれば、同じかどうかは分かる**: 一致したら中身は見なくてよい
 2. **木にすると、違う枝だけ降りられる**: 比べる数が、持ち物の数から離れる

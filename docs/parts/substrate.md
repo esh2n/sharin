@@ -34,7 +34,7 @@ Substrate の発想は、その規則(ランタイム)自体をチェーンの�
 
 </FigureBox>
 
-肝は3つ:
+順に見ていく。
 
 1. **pallet 合成(FRAME)**: ランタイムは system・balances などの pallet の合成。各 pallet は dispatchable な呼び出しと weight を持つ
 2. **ランタイム = 状態遷移関数**: extrinsic を pallet に dispatch して共有ストレージを進める。1 ブロックの仕事量は weight で予算化する

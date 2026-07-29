@@ -41,7 +41,7 @@ import FigureBox from '../components/figures/FigureBox.vue'
 
 </FigureBox>
 
-肝は3つ:
+順に見ていく。
 
 1. **Spec と Status を分ける**: 人が書く「あるべき姿」と、コントローラが書き戻す「今の姿」
 2. **手順は差の判定になる**: 順序は if の並び順として現れ、手順としては書かれない

@@ -30,7 +30,7 @@ import FigureBox from '../components/figures/FigureBox.vue'
 
 </FigureBox>
 
-肝は3つ:
+順に見ていく。
 
 1. **free list と first-fit**: 空きブロックの一覧から、要求に足る最初の空きを貸す。大きすぎれば切り分ける
 2. **断片化**: 確保と解放を繰り返すと、空きの総量は足りても連続領域が細切れになり、大きな確保が失敗する

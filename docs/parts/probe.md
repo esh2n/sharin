@@ -37,7 +37,7 @@ import FigureBox from '../components/figures/FigureBox.vue'
 
 </FigureBox>
 
-肝は3つ:
+順に見ていく。
 
 1. **検査は同じ、扱いが違う**: readiness も liveness も同じ検査。落ちたときの処理だけが分かれる
 2. **readiness は取り返しがつく**: 外すだけなので、回復すれば自分で戻る

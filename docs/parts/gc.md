@@ -32,7 +32,7 @@ import FigureBox from '../components/figures/FigureBox.vue'
 
 </FigureBox>
 
-肝は3つ:
+順に見ていく。
 
 1. **到達可能性 = 生死**: 参照カウントではなく「ルートから辿れるか」で決める
 2. **tricolor マーキング**: white / gray / black の3色で到達集合を広げる

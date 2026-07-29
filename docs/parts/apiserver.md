@@ -42,7 +42,7 @@ import FigureBox from '../components/figures/FigureBox.vue'
 
 </FigureBox>
 
-肝は3つ:
+順に見ていく。
 
 1. **一度だけ全件、以降は差分**: 毎回全件は重く、差分だけでは始点が無い
 2. **読みは写しから**: API サーバに触らないので、何度読んでも安い

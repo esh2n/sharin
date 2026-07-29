@@ -33,7 +33,7 @@ import FigureBox from '../components/figures/FigureBox.vue'
 
 </FigureBox>
 
-肝は3つ:
+順に見ていく。
 
 1. **パース**: 正規表現を AST にする。優先順位は選択(`|`)< 連接 < 繰り返し(`* + ?`)
 2. **Thompson 構成**: 各演算子に対応する小さな NFA 断片を ε 遷移で組み合わせ、木全体の NFA を作る

@@ -40,7 +40,7 @@ import FigureBox from '../components/figures/FigureBox.vue'
 
 </FigureBox>
 
-肝は3つ:
+順に見ていく。
 
 1. **写し取るか、見に行くか**: 環境変数は起動時に確定し、ファイルは実体を参照する
 2. **反映するには作り直す**: 環境変数で受け取ったものに、後から届ける手段はない

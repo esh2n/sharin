@@ -38,7 +38,7 @@ import FigureBox from '../components/figures/FigureBox.vue'
 
 </FigureBox>
 
-肝は3つ:
+順に見ていく。
 
 1. **可否と優劣を分ける**: filter は「置けるか」だけ、score は「どこが良いか」だけを見る
 2. **要求(request)で予約する**: 実際の使用量でなく、Pod が申告した要求のぶんを確保する

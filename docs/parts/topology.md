@@ -40,7 +40,7 @@ import FigureBox from '../components/figures/FigureBox.vue'
 
 </FigureBox>
 
-肝は3つ:
+順に見ていく。
 
 1. **区画ごとに数える**: ノードごとではない。数える単位が備える障害を決める
 2. **偏りの許容量を宣言する**: 最も多い区画と最も少ない区画の差の上限

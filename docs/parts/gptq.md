@@ -51,7 +51,7 @@ import FigureBox from '../components/figures/FigureBox.vue'
 
 </FigureBox>
 
-肝は3つ:
+順に見ていく。
 
 1. **小さくしたいのは出力のずれ**: 重みのずれは増やしてよい。増やして出力を守る
 2. **配る先と量は入力の相関が決める**: 相関を無視すると配る先が消え、素朴な丸めに戻る

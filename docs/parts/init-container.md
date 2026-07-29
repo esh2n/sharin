@@ -49,7 +49,7 @@ import FigureBox from '../components/figures/FigureBox.vue'
 
 </FigureBox>
 
-肝は3つ:
+順に見ていく。
 
 1. **並べると並行になる**: 順序は宣言しない限り存在しない
 2. **sidecar は非対称**: 起動は本体より先、停止は本体より後

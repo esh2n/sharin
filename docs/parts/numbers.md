@@ -65,7 +65,7 @@ import FigureBox from '../components/figures/FigureBox.vue'
 
 </FigureBox>
 
-肝は3つ:
+順に見ていく。
 
 1. **2の補数は回路の都合で選ばれた**: 表し方の問題ではなく、引き算を足し算にする仕掛け
 2. **代償は非対称**: 0 が1通りしかないぶん負が1つ多く、その1つは符号を反転できない

@@ -31,7 +31,7 @@ import FigureBox from '../components/figures/FigureBox.vue'
 
 </FigureBox>
 
-肝は3つ:
+順に見ていく。
 
 1. **ハッシュの 3 性質**: 決定性・なだれ効果・一方向性。この 3 つが揃って初めて指紋として使える
 2. **長さ拡張攻撃**: 素朴な構成では指紋が内部状態そのもの。だから H(secret‖msg) は認証符号に使えない

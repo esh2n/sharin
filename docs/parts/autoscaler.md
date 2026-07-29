@@ -40,7 +40,7 @@ import FigureBox from '../components/figures/FigureBox.vue'
 
 </FigureBox>
 
-肝は3つ:
+順に見ていく。
 
 1. **式は比例 1 行**: 使用率が目標の 2 倍なら、レプリカも 2 倍にすれば戻るはず、と当てる
 2. **揺れを無視する**: 目標付近の小さな上下に反応しない。反応すると増減を繰り返す

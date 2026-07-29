@@ -27,7 +27,7 @@ LLM 編の集大成。attention の1ヘッドを Transformer ブロックに仕�
 組み上げ、それを重ねて mini-GPT の forward pass を完成させる。
 [行列演算](./tensor)から始まった LLM 編が、ここで1つに合流する。
 
-この章の肝は3つ。
+先に押さえることが3つある。
 
 - Transformer ブロック = **マルチヘッド attention + フィードフォワード + 残差 + LayerNorm**
 - 埋め込み → ブロック×N → logits で「各位置での次トークンの予測」ができる

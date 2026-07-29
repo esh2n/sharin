@@ -53,7 +53,7 @@ import FigureBox from '../components/figures/FigureBox.vue'
 
 </FigureBox>
 
-肝は3つ:
+順に見ていく。
 
 1. **注目の重みを作って、その割合で混ぜる**: 全体が行列積と softmax だけで書ける
 2. **並びを見ていない**: 入力を入れ替えると出力もそのまま入れ替わる。だから位置情報を別に足す

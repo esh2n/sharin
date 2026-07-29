@@ -28,7 +28,7 @@ Transformer (2017)
 
 </FigureBox>
 
-肝は3つ:
+順に見ていく。
 
 1. **部品はほぼ共通に収束**: 各社独自に見えて、[RoPE](/parts/rope) + [GQA](/parts/attention-variants) + [RMSNorm/SwiGLU](/parts/rmsnorm-swiglu) という土台はオープン系でほぼ一致する
 2. **差は独自の 1 手**: Mistral の SWA、DeepSeek の MLA + 細粒度 MoE のように、各社が 1〜2 箇所で独自の選択をする

@@ -29,7 +29,7 @@ PostgreSQL や MySQL(InnoDB)が採る答えが MVCC(多版型同時実行制御)
 
 </FigureBox>
 
-肝は3つ:
+順に見ていく。
 
 1. **版とスナップショット読み**: key → 版のリスト。開始時点の TS で見える版を選ぶ。読み手はロック無し
 2. **first-committer-wins**: 同じキーへの並行書き込みは先勝ち。後コミットは必ず気づかされる(lost update 防止)

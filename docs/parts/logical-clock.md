@@ -61,7 +61,7 @@ import FigureBox from '../components/figures/FigureBox.vue'
 
 </FigureBox>
 
-肝は3つ:
+順に見ていく。
 
 1. **時刻でなく出来事を数える**: 時計を合わせる必要がなくなる
 2. **約束は片道**: 原因なら小さい。だが小さいからといって原因ではない

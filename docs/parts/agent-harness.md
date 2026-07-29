@@ -57,7 +57,7 @@ import FigureBox from '../components/figures/FigureBox.vue'
 
 </FigureBox>
 
-肝は3つ:
+順に見ていく。
 
 1. **1回きりでは、途中で分かったことを次に使えない**: 観測を返す口が無いと、確かめようがない
 2. **ループは自分では止まれない**: 上限が要る。そして失敗すると最初からになる

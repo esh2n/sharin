@@ -38,7 +38,7 @@ import FigureBox from '../components/figures/FigureBox.vue'
 
 </FigureBox>
 
-肝は3つ:
+順に見ていく。
 
 1. **2つの幅がすべてを決める**: maxSurge は速さ、maxUnavailable は容量の下限
 2. **進行の条件は readiness**: 新しい版が ready にならなければ古い版は消えない

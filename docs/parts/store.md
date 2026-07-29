@@ -35,7 +35,7 @@ import FigureBox from '../components/figures/FigureBox.vue'
 
 </FigureBox>
 
-肝は3つ:
+順に見ていく。
 
 1. **単方向データフロー**: 状態を直接触らず、action → reducer → 新state → 通知の一本道
 2. **純粋な reducer とイミュータブル**: 古い状態は不変。だから予測可能で、時間旅行やデバッグができる

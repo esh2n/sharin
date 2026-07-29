@@ -51,7 +51,7 @@ import FigureBox from '../components/figures/FigureBox.vue'
 
 </FigureBox>
 
-肝は3つ:
+順に見ていく。
 
 1. **誰が決めるかを決める問題になる**: 係を1台置くか、全員で決めるか。決める人は必ず要る
 2. **全員が同じ順で間違えることがある**: 順がそろうことと、順が正しいことは別になる

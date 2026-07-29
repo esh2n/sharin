@@ -50,7 +50,7 @@ import FigureBox from '../components/figures/FigureBox.vue'
 
 </FigureBox>
 
-肝は3つ:
+順に見ていく。
 
 1. **重なりは台数の引き算で作れる**: 古い台は N - W 台しかない。R をそれより多くすればよい
 2. **重なっても、どれが最新かは別に決める**: 重なりは最新を持つ台が居ることまでしか言わない
