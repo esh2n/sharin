@@ -65,6 +65,7 @@ export default defineConfig({
           { text: "CRDT", link: "/parts/crdt" },
           { text: "コンシステントハッシュ", link: "/parts/consistent-hashing" },
           { text: "クォーラム", link: "/parts/quorum" },
+          { text: "差分の突き合わせ", link: "/parts/anti-entropy" },
           { text: "ゴシップと障害検知", link: "/parts/gossip" },
           { text: "分散ロック", link: "/parts/distributed-lock" },
           { text: "分散トランザクション", link: "/parts/distributed-txn" },
