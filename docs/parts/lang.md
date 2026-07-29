@@ -56,7 +56,7 @@ import FigureBox from '../components/figures/FigureBox.vue'
 
 <<< ../../foundations/lang/parser.go#prec{go}
 
-心臓は `parseExpression(precedence)`。まず前置関数で左辺を作り、次の中置演算子が「今の優先順位より強く結びつく」限り、左辺をその中置式に食べさせていく:
+心臓は `parseExpression(precedence)` だ。まず前置関数で左辺を作り、次の中置演算子が「今の優先順位より強く結びつく」限り、左辺をその中置式に食べさせていく:
 
 <<< ../../foundations/lang/parser.go#pratt{go}
 

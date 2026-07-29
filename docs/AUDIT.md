@@ -85,14 +85,14 @@
 | rpc | ✅ | 合格。格付け表は言葉化済み |
 | event-sourcing | ✅ | 合格 |
 | cqrs | ✅ | ③で宙に浮いていたコロン(コード引用漏れの残骸)を既出コードへの言及に修正 |
-| vdom | ⬜ | |
-| reactivity | ⬜ | |
-| store | ⬜ | |
-| bundler | ⬜ | |
-| mini-next | ⬜ | |
-| browser | ⬜ | |
-| lang | ⬜ | |
-| type-inference | ⬜ | |
+| vdom | ✅ | Summary の props に言い直し。「読みやすさの鍵」を言い換え |
+| reactivity | ✅ | 合格 |
+| store | ✅ | 合格 |
+| bundler | ✅ | DFS を初出で「深さ優先探索」と定義 |
+| mini-next | ✅ | Summary の「鍵は〜だ」・体言止め2箇所を言い換え |
+| browser | ✅ | 「肝は詳細度。」の体言止めを言い換え。他は合格 |
+| lang | ✅ | 体言止め1箇所のみ修正。3段の説明→コードの順は手本どおり |
+| type-inference | ✅ | 「〜鍵だ」を言い換え。他は合格 |
 | numbers | ⬜ | |
 | allocator | ⬜ | |
 | virtual-memory | ⬜ | |

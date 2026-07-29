@@ -56,7 +56,7 @@ SSR の逆。文字列を先頭から食べ進む再帰下降パーサで木を�
 
 <<< ../../frontend/browser/css.ts#parse{ts}
 
-肝は**詳細度(specificity)**。`#id` は class より、class は tag より強い。これを `[id数, class数, tag数]` のタプルで表し、比較する。後で同じプロパティが競合したとき、この強さで勝敗を決める:
+決め手は**詳細度(specificity)**だ。`#id` は class より、class は tag より強い。これを `[id数, class数, tag数]` のタプルで表し、比較する。後で同じプロパティが競合したとき、この強さで勝敗を決める:
 
 <<< ../../frontend/browser/css.ts#types{ts}
 

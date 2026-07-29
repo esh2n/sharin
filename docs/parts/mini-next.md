@@ -7,7 +7,7 @@ import FigureBox from '../components/figures/FigureBox.vue'
 # mini-next(SSR + ルーティング + ハイドレーション)
 
 <Summary>
-サーバで HTML を組み、URL でページを選び、届いた静的 HTML にイベントを後付けして動かす。Next.js のようなフレームワークの核だけを仮想DOM の上に作る。鍵は 1 つの仮想DOM 木を実 DOM 化・文字列化(SSR)・イベント付け(hydrate)の 3 通りに使うことだ。ハイドレーションは作り直さず、サーバ描画済みの実 DOM を使い回し、文字列に載らなかったイベントだけを付ける。
+サーバで HTML を組み、URL でページを選び、届いた静的 HTML にイベントを後付けして動かす。Next.js のようなフレームワークの核だけを仮想DOM の上に作る。1 つの仮想DOM 木を、実 DOM 化・文字列化(SSR)・イベント付け(hydrate)の 3 通りに使い回すのが要点だ。ハイドレーションは作り直さず、サーバ描画済みの実 DOM を使い回し、文字列に載らなかったイベントだけを付ける。
 </Summary>
 
 ## この章で作るもの
@@ -45,7 +45,7 @@ import FigureBox from '../components/figures/FigureBox.vue'
 
 </FigureBox>
 
-`mount`(前章)と `hydrate` の使い分けが要。DOM がまだ無いなら `mount` で作る。DOM が既にある(サーバが描いた)なら、作り直さず `hydrate` でイベントだけ足す。
+`mount`(前章)と `hydrate` の使い分けがこの章の中心になる。DOM がまだ無いなら `mount` で作る。DOM が既にある(サーバが描いた)なら、作り直さず `hydrate` でイベントだけ足す。
 
 ## SSR: 木を HTML文字列にする
 
@@ -69,7 +69,7 @@ import FigureBox from '../components/figures/FigureBox.vue'
 
 ## ハイドレーション: 作り直さず、イベントだけ足す
 
-ここが SSR とセットの肝。サーバが返した HTML はブラウザで**実DOMとして既に描かれている**。でもイベントは載っていないので、ボタンを押しても動かない。ここで木を `mount` し直したら、同じDOMをもう一度作ることになり無駄で、一瞬ちらつく。
+ここが SSR と対になる仕組みだ。サーバが返した HTML はブラウザで**実DOMとして既に描かれている**。でもイベントは載っていないので、ボタンを押しても動かない。ここで木を `mount` し直したら、同じDOMをもう一度作ることになり無駄で、一瞬ちらつく。
 
 代わりに、既存のDOMをたどりながら、木の on\* をリスナとして付けていく:
 
