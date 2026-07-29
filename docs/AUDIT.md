@@ -134,8 +134,8 @@
 | admission | ✅ | 合格 |
 | pod-security | ✅ | 後続の quota 章への「見た」参照を修正 |
 | quota | ✅ | 合格 |
-| leader-election | ⬜ | |
-| operator | ⬜ | |
+| leader-election | ✅ | 合格 |
+| operator | ✅ | 合格。編の最終章として調整ループへ回帰する構成も整合 |
 | hashing | ⬜ | |
 | symmetric-cipher | ⬜ | |
 | key-exchange | ⬜ | |
