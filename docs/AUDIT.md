@@ -93,14 +93,14 @@
 | browser | ✅ | 「肝は詳細度。」の体言止めを言い換え。他は合格 |
 | lang | ✅ | 体言止め1箇所のみ修正。3段の説明→コードの順は手本どおり |
 | type-inference | ✅ | 「〜鍵だ」を言い換え。他は合格 |
-| numbers | ⬜ | |
-| allocator | ⬜ | |
-| virtual-memory | ⬜ | |
-| regex | ⬜ | |
-| container | ⬜ | |
-| cpu-throttling | ⬜ | |
-| oom | ⬜ | |
-| os | ⬜ | |
+| numbers | ✅ | 合格 |
+| allocator | ✅ | 後続の GC 章を「見た」と参照する書き出しを前方参照に修正 |
+| virtual-memory | ✅ | segfault / OOM に1行の言い直しを追加 |
+| regex | ✅ | DFA の正式名(決定性有限オートマトン)を初出で定義 |
+| container | ✅ | 体言止め2箇所を言い換え |
+| cpu-throttling | ✅ | 合格 |
+| oom | ✅ | 合格 |
+| os | ✅ | 合格。「要点に尽きる」定型は一括処置済み |
 | gc | ⬜ | |
 | event-loop | ⬜ | |
 | bytecode | ⬜ | |
