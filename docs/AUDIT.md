@@ -80,11 +80,11 @@
 | distributed-lock | ✅ | 「防ぐ鍵は」「鍵になる」を言い換え。格付け表は言葉化済み |
 | distributed-txn | ✅ | 合格 |
 | capacity-estimation | ✅ | 合格。数字→選択の順で説明が積み上がっている |
-| message-queue | ⬜ | |
-| pubsub | ⬜ | |
-| rpc | ⬜ | |
-| event-sourcing | ⬜ | |
-| cqrs | ⬜ | |
+| message-queue | ✅ | 「肝は〜」を言い換え。他は合格 |
+| pubsub | ✅ | 合格 |
+| rpc | ✅ | 合格。格付け表は言葉化済み |
+| event-sourcing | ✅ | 合格 |
+| cqrs | ✅ | ③で宙に浮いていたコロン(コード引用漏れの残骸)を既出コードへの言及に修正 |
 | vdom | ⬜ | |
 | reactivity | ⬜ | |
 | store | ⬜ | |
