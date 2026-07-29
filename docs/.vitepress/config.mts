@@ -122,9 +122,6 @@ export default defineConfig({
       {
         text: "Kubernetesのなかみ",
         items: [
-          { text: "APIサーバとinformer", link: "/parts/apiserver" },
-          { text: "kubeletとCRI", link: "/parts/kubelet" },
-          { text: "etcdの履歴と容量", link: "/parts/etcd-ops" },
           { text: "調整ループ(reconciliation)", link: "/parts/reconcile" },
           { text: "スケジューラ(Podの配置)", link: "/parts/pod-scheduler" },
           { text: "水平オートスケール(HPA)", link: "/parts/autoscaler" },
@@ -150,6 +147,9 @@ export default defineConfig({
           { text: "admission webhook", link: "/parts/admission" },
           { text: "SecurityContextとPSS", link: "/parts/pod-security" },
           { text: "ResourceQuotaとLimitRange", link: "/parts/quota" },
+          { text: "APIサーバとinformer", link: "/parts/apiserver" },
+          { text: "kubeletとCRI", link: "/parts/kubelet" },
+          { text: "etcdの履歴と容量", link: "/parts/etcd-ops" },
           { text: "leader election", link: "/parts/leader-election" },
           { text: "Operatorパターン", link: "/parts/operator" },
         ],

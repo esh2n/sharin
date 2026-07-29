@@ -106,9 +106,9 @@
 | bytecode | ✅ | 合格 |
 | scheduler | ✅ | 合格。格付け表は言葉化済み |
 | wasm | ✅ | Summary の「鍵は〜」を言い換え |
-| apiserver | ⬜ | |
-| kubelet | ⬜ | |
-| etcd-ops | ⬜ | |
+| apiserver | ✅ | 「ここまでの全章は…」と編終盤の語りなのにサイドバー先頭に居たため、kubelet/etcd-ops と共に編終盤(quota の後)へ移動。本文は合格 |
+| kubelet | ✅ | 合格(サイドバー移動で参照が整合) |
+| etcd-ops | ✅ | 合格(同上) |
 | reconcile | ⬜ | |
 | pod-scheduler | ⬜ | |
 | autoscaler | ⬜ | |
