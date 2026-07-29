@@ -15,6 +15,10 @@ type node struct {
 // Tree は二分探索木。平衡化はしない(それがこの章の主題)。
 type Tree struct {
 	root *node
+
+	// compares は Contains で鍵を見比べた回数の累計。
+	// 「1回の比較で候補が半分になる」が本当かは、ここを数えれば分かる。
+	compares int
 }
 
 // New は空の木を返す。
@@ -29,6 +33,7 @@ func New() *Tree {
 // ループ回数は最大で木の高さ+1。
 func (tr *Tree) Contains(key int) bool {
 	for n := tr.root; n != nil; {
+		tr.compares++
 		switch {
 		case key == n.key:
 			return true
@@ -46,7 +51,7 @@ func (tr *Tree) Contains(key int) bool {
 // #region insert
 // Insert は key を挿入する(既存なら何もしない)。
 // 検索と同じ道を降りて、行き止まり(nil)の場所に新しいノードを置く。
-// どこに置かれるかは「今までに入った順序」だけで決まる — ここに崩壊の種がある。
+// どこに置かれるかは「今までに入った順序」だけで決まる。ここに崩れる種がある。
 func (tr *Tree) Insert(key int) {
 	pos := &tr.root
 	for *pos != nil {
@@ -64,6 +69,16 @@ func (tr *Tree) Insert(key int) {
 }
 
 // #endregion insert
+
+// #region stats
+
+// Compares は Contains で鍵を見比べた回数の累計を返す。
+func (tr *Tree) Compares() int { return tr.compares }
+
+// ResetStats は数え直す。
+func (tr *Tree) ResetStats() { tr.compares = 0 }
+
+// #endregion stats
 
 // Height は木の高さを返す(空なら-1、rootのみなら0)。
 func (tr *Tree) Height() int {

@@ -80,3 +80,83 @@ func TestEmptyTree(t *testing.T) {
 		t.Error("空の木のKeysは空のはず")
 	}
 }
+
+// この章の中心。形は入れる順だけで決まり、それがそのまま探す手数になる。
+func TestShapeIsDecidedByInsertionOrder(t *testing.T) {
+	const n = 4000
+
+	asc := New()
+	for i := 0; i < n; i++ {
+		asc.Insert(i)
+	}
+	shuf := New()
+	var s uint64 = 7
+	for i := 0; i < n; i++ {
+		s = s*6364136223846793005 + 1442695040888963407
+		shuf.Insert(int(s>>40) % (4 * n))
+	}
+
+	// 昇順に入れると、高さが件数そのものになる(右へ伸びる1本の鎖)。
+	if asc.Height() != n-1 {
+		t.Fatalf("鎖になっていない: 高さ %d(件数 %d)", asc.Height(), n)
+	}
+	// ばらばらに入れれば、高さは件数の対数のあたりに収まる。
+	if shuf.Height() > 40 {
+		t.Fatalf("ばらばらなのに高い: %d", shuf.Height())
+	}
+
+	// 高さの差が、そのまま探す手数の差になる。
+	asc.ResetStats()
+	shuf.ResetStats()
+	for i := 0; i < n; i++ {
+		asc.Contains(i)
+		shuf.Contains(i)
+	}
+	a := float64(asc.Compares()) / n
+	b := float64(shuf.Compares()) / n
+	if a < float64(n)/4 {
+		t.Fatalf("鎖なのに %.1f 回で済んでいる", a)
+	}
+	if b > 40 {
+		t.Fatalf("ばらばらなのに %.1f 回かかっている", b)
+	}
+}
+
+// ばらばらに入れたときの高さは、件数の対数のあたりで止まる。
+func TestRandomOrderStaysLogarithmic(t *testing.T) {
+	for _, n := range []int{1000, 10000, 100000} {
+		tr := New()
+		var s uint64 = 31
+		for i := 0; i < n; i++ {
+			s = s*6364136223846793005 + 1442695040888963407
+			tr.Insert(int(s>>40) % (4 * n))
+		}
+		// 期待される高さは 2·log2(n) 前後。余裕を見て 3 倍までに収まること。
+		limit := 1
+		for 1<<limit < n {
+			limit++
+		}
+		if tr.Height() > 3*limit {
+			t.Fatalf("件数 %d で高さ %d(上限 %d)", n, tr.Height(), 3*limit)
+		}
+	}
+}
+
+// 数えまわり。
+func TestCompareStats(t *testing.T) {
+	tr := New()
+	if tr.Compares() != 0 {
+		t.Fatal("最初は 0")
+	}
+	tr.Insert(2)
+	tr.Insert(1)
+	tr.Insert(3)
+	tr.Contains(3) // 2 → 3 で 2 回
+	if tr.Compares() != 2 {
+		t.Fatalf("%d 回", tr.Compares())
+	}
+	tr.ResetStats()
+	if tr.Compares() != 0 {
+		t.Fatal("数え直せていない")
+	}
+}
