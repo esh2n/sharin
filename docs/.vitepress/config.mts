@@ -103,6 +103,7 @@ export default defineConfig({
           { text: "仮想メモリ", link: "/parts/virtual-memory" },
           { text: "正規表現(NFA/DFA)", link: "/parts/regex" },
           { text: "コンテナ", link: "/parts/container" },
+          { text: "CPU スロットリング", link: "/parts/cpu-throttling" },
           { text: "OS/スケジューラ", link: "/parts/os" },
         ],
       },
