@@ -1,12 +1,15 @@
 // Package loadbalancer は負荷分散の代表的な選び方を最小構成で実装する。
 //
-// 複数の同等なバックエンドに、どのリクエストをどこへ振るか。素朴には順番に
-// 回す(ラウンドロビン)か、今いちばん空いている所へ送る(最少接続)。だが
-// 最少接続は全接続数を正確に知る必要があり、分散した振り分け役が同じ「最少」を
-// 見て一斉に殺到する群集効果(herd)を起こす。そこで P2C(power of two choices):
-// 無作為に 2 台だけ選び、そのうち軽い方へ送る。全体を知らずとも偏りが劇的に
-// 減る、という確率のいたずらを使う。一貫ハッシュは、同じキーを常に同じ台へ
-// 振り、台の増減で振り先が最小限しか動かないようにする。
+// 同じ役割のサーバを何台も並べたとき、来たリクエストをどの台へ振るかを決める。
+// 選び方を4つ用意して、それぞれ何を見て何を見ないかを比べられるようにした。
+//
+//	pickRoundRobin  順番に1台ずつ回す。混み具合を見ない
+//	pickLeastConn   全台を見て、いちばん空いた台へ送る
+//	pickP2C         無作為に2台だけ見て、軽いほうへ送る
+//	pickRing        キーのハッシュで、常に同じ台へ送る
+//
+// 実時間も実乱数も使わない。擬似乱数は種を固定した整数の線形合同法なので、
+// 何回やっても同じ結果になる。
 package loadbalancer
 
 import "sort"
@@ -99,46 +102,84 @@ func (b *Balancer) Backends() []*Backend { return b.backends }
 // Pick は方式に従って振り先のインデックスを選ぶ。
 // key は一貫ハッシュでのみ使う(他方式は無視)。
 func (b *Balancer) Pick(key string) int {
-	n := len(b.backends)
-	if n == 0 {
+	if len(b.backends) == 0 {
 		return -1
 	}
 	switch b.strategy {
 	case RoundRobin:
-		i := b.rr % n
-		b.rr++
-		return i
-
+		return b.pickRoundRobin()
 	case LeastConn:
-		// 全台を見て、最も active が少ない台。同数なら若い番号。
-		best := 0
-		for i := 1; i < n; i++ {
-			if b.backends[i].active < b.backends[best].active {
-				best = i
-			}
-		}
-		return best
-
+		return b.pickLeastConn()
 	case P2C:
-		if n == 1 {
-			return 0
-		}
-		// 異なる 2 台を無作為に選び、active の少ない方(同数なら先に引いた方)。
-		i := b.rand.intn(n)
-		j := b.rand.intn(n - 1)
-		if j >= i {
-			j++ // i を除いた n-1 台から選ぶ
-		}
-		if b.backends[j].active < b.backends[i].active {
-			return j
-		}
-		return i
-
+		return b.pickP2C()
 	case ConsistentHash:
 		return b.pickRing(key)
 	}
 	return 0
 }
+
+// #endregion pick
+
+// #region roundrobin
+
+// pickRoundRobin は順番に1台ずつ回す。
+//
+// 台の混み具合は一切見ない。カーソルを1つ進めて、台数で割った余りを返すだけ。
+// 状態を見ないので速く、振り分け役が何台居ても同じように動く。
+// 代わりに、重いリクエストが特定の台に集まっても気づけない。
+func (b *Balancer) pickRoundRobin() int {
+	i := b.rr % len(b.backends)
+	b.rr++
+	return i
+}
+
+// #endregion roundrobin
+
+// #region leastconn
+
+// pickLeastConn は全台を見て、いま処理中の数がいちばん少ない台を選ぶ。
+//
+// 混み具合を見るので、重さがばらついても偏らない。
+// 代わりに毎回すべての台を見ることになり、振り分け役が複数居ると
+// 全員が同じ「いちばん空いた台」を選んで殺到する。
+func (b *Balancer) pickLeastConn() int {
+	best := 0
+	for i := 1; i < len(b.backends); i++ {
+		if b.backends[i].active < b.backends[best].active {
+			best = i
+		}
+	}
+	return best
+}
+
+// #endregion leastconn
+
+// #region p2c
+
+// pickP2C は無作為に2台だけ選び、そのうち処理中の数が少ないほうを返す。
+//
+// 全台は見ないので、振り分け役が何台居ても同じ台へ殺到しない。
+// それでいて、1台を無作為に選ぶのに比べて偏りがはっきり小さくなる。
+// 2台目は「1台目を除いた n-1 台」から引くので、同じ台を2回引かない。
+func (b *Balancer) pickP2C() int {
+	n := len(b.backends)
+	if n == 1 {
+		return 0
+	}
+	i := b.rand.intn(n)
+	j := b.rand.intn(n - 1)
+	if j >= i {
+		j++ // i を除いた n-1 台から選ぶ
+	}
+	if b.backends[j].active < b.backends[i].active {
+		return j
+	}
+	return i
+}
+
+// #endregion p2c
+
+// #region count
 
 // Acquire は i 番の台の処理中カウントを 1 増やす(リクエスト受付)。
 func (b *Balancer) Acquire(i int) { b.backends[i].active++ }
@@ -150,7 +191,7 @@ func (b *Balancer) Release(i int) {
 	}
 }
 
-// #endregion pick
+// #endregion count
 
 // #region consistent
 

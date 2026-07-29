@@ -171,3 +171,89 @@ func TestConsistentHashMinimalRemap(t *testing.T) {
 	}
 	t.Logf("moved %d/%d keys when growing 5->6", moved, keys)
 }
+
+// 素朴な割り算(hash % n)と円環を並べて測る。台を1つ足したときに何件動くか。
+func TestRingMovesFarFewerKeysThanModulo(t *testing.T) {
+	const keys = 1000
+	before := New(ids(5), ConsistentHash, nil)
+	after := New(ids(6), ConsistentHash, nil)
+
+	ring, mod := 0, 0
+	for i := 0; i < keys; i++ {
+		k := "key-" + itoa(i)
+		if before.backends[before.Pick(k)].ID != after.backends[after.Pick(k)].ID {
+			ring++
+		}
+		if int(hash32(k))%5 != int(hash32(k))%6 {
+			mod++
+		}
+	}
+	t.Logf("5台 → 6台   円環 %d/%d 動いた   割り算 %d/%d 動いた", ring, keys, mod, keys)
+
+	// 割り算は大半が動く。円環は 1/6 前後で収まる。
+	if mod < keys*3/4 {
+		t.Errorf("割り算で動いたのが %d/%d しかない", mod, keys)
+	}
+	if ring > keys/3 {
+		t.Errorf("円環で動きすぎ: %d/%d", ring, keys)
+	}
+	if mod < ring*3 {
+		t.Errorf("差が出ていない: 円環 %d / 割り算 %d", ring, mod)
+	}
+}
+
+// ラウンドロビンは「重さが同じなら完璧」で「ばらつくと崩れる」。両方を固定する。
+func TestRoundRobinBreaksOnUnevenWeights(t *testing.T) {
+	const n, reqs = 20, 2000
+
+	// 重さが全部同じなら、順番に回すだけで完全に均等になる。
+	even := New(ids(n), RoundRobin, nil)
+	for i := 0; i < reqs; i++ {
+		even.Acquire(even.Pick(""))
+	}
+	if maxActive(even) != reqs/n {
+		t.Fatalf("等しい重さで偏った: %d", maxActive(even))
+	}
+
+	// 10 回に1回だけ、10 倍重いリクエストが来る場合。
+	weight := func(i int) int {
+		if i%10 == 0 {
+			return 10
+		}
+		return 1
+	}
+	load := func(b *Balancer) (max, min int) {
+		for i := 0; i < reqs; i++ {
+			p := b.Pick("")
+			for w := 0; w < weight(i); w++ {
+				b.Acquire(p)
+			}
+		}
+		max, min = 0, 1<<30
+		for _, be := range b.backends {
+			if be.active > max {
+				max = be.active
+			}
+			if be.active < min {
+				min = be.active
+			}
+		}
+		return
+	}
+	rrMax, rrMin := load(New(ids(n), RoundRobin, nil))
+	lcMax, lcMin := load(New(ids(n), LeastConn, nil))
+	p2Max, p2Min := load(New(ids(n), P2C, NewRand(42)))
+
+	t.Logf("重さがばらつくとき   ラウンドロビン 最大 %4d / 最小 %4d", rrMax, rrMin)
+	t.Logf("                     最少接続       最大 %4d / 最小 %4d", lcMax, lcMin)
+	t.Logf("                     P2C            最大 %4d / 最小 %4d", p2Max, p2Min)
+
+	// 重いものが同じ台に集まるので、ラウンドロビンは大きく崩れる。
+	if rrMax <= rrMin*2 {
+		t.Errorf("ラウンドロビンが崩れていない: %d, %d", rrMax, rrMin)
+	}
+	// 混み具合を見る2つは崩れない。
+	if lcMax > lcMin*2 || p2Max > p2Min*2 {
+		t.Errorf("見ているのに崩れた: lc %d/%d, p2c %d/%d", lcMax, lcMin, p2Max, p2Min)
+	}
+}
