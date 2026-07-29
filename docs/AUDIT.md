@@ -143,10 +143,10 @@
 | tls-handshake | ✅ | 合格。既出4章の部品を明示して組み上げる構成 |
 | auth | ✅ | JWT を守るのは RSA 署名でなく HMAC なので参照を hashing へ修正。OAuth 節を次章への入口と明示 |
 | oauth | ✅ | 合格 |
-| blockchain | ⬜ | |
-| utxo | ⬜ | |
-| evm | ⬜ | |
-| rollup | ⬜ | |
+| blockchain | ✅ | 合格。検出→抑止→値段の順で積み上がっている |
+| utxo | ✅ | 合格 |
+| evm | ✅ | 合格。格付け表は言葉化済み |
+| rollup | ✅ | 合格 |
 | lightning | ⬜ | |
 | substrate | ⬜ | |
 | bpe | ⬜ | |
