@@ -136,10 +136,10 @@
 | quota | ✅ | 合格 |
 | leader-election | ✅ | 合格 |
 | operator | ✅ | 合格。編の最終章として調整ループへ回帰する構成も整合 |
-| hashing | ⬜ | |
-| symmetric-cipher | ⬜ | |
-| key-exchange | ⬜ | |
-| crypto | ⬜ | |
+| hashing | ✅ | 編の先頭章なのに RSA 章で「整理した」前提だったのを、章内で3つの道具を定義する形に |
+| symmetric-cipher | ✅ | 同じく RSA 章を既知前提にしていた冒頭を、対称/公開鍵の対比を自前で置く形に |
+| key-exchange | ✅ | TLS への言及が crypto を指す誤リンクだったのを tls-handshake に修正 |
+| crypto | ✅ | ハッシュ・共通鍵を「別章で作る」と書いていた箇所を既出章へのリンクに修正 |
 | tls-handshake | ⬜ | |
 | auth | ⬜ | |
 | oauth | ⬜ | |
