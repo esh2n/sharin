@@ -77,10 +77,10 @@ import FigureBox from '../components/figures/FigureBox.vue'
 
 | 方式 | クラッシュ耐性 | 二重取得の防止 | 依存 | 実例 |
 |---|---|---|---|---|
-| 単純ロック(TTL 無し) | ✕(持ち主死で永久ロック) | — | — | 素朴な実装(避けるべき) |
-| リースロック(TTL) | ○(自動失効) | ✕(フェンス無しだと破壊) | 時計 | Redlock(単体)、素朴な Redis ロック |
-| リース + フェンシング | ○ | ◎(資源側で拒否) | 合意 + 資源の検査 | Chubby、Zookeeper + fencing、etcd lease |
-| 合意ベース(Raft/Paxos) | ◎ | ◎(+ フェンシング) | 合意プロトコル | etcd、Zookeeper、Consul |
+| 単純ロック(TTL 無し) | 無い(持ち主死で永久ロック) | — | — | 素朴な実装(避けるべき) |
+| リースロック(TTL) | 自動失効で耐える | フェンス無しだと破壊される | 時計 | Redlock(単体)、素朴な Redis ロック |
+| リース + フェンシング | 自動失効で耐える | 資源側で拒否できる | 合意 + 資源の検査 | Chubby、Zookeeper + fencing、etcd lease |
+| 合意ベース(Raft/Paxos) | 過半数が残れば耐える | フェンシング併用で防げる | 合意プロトコル | etcd、Zookeeper、Consul |
 
 裏どり:
 

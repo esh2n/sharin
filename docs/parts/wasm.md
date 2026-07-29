@@ -79,10 +79,10 @@ VM は bytecode 編と同じくスタックマシンだが、制御スタック�
 
 | 技術 | 移植性 | 速度 | 安全な隔離 | 実例 |
 |---|---|---|---|---|
-| WebAssembly | ◎(Web 標準) | ○(JIT/AOT でネイティブ近) | ◎(検証+線形メモリ) | ブラウザ、Cloudflare Workers、Envoy、Wasmtime |
-| JVM バイトコード | ○(JVM 上) | ○(HotSpot JIT) | ○(バイトコード検証) | Java、Kotlin、Scala |
-| ネイティブ(.so/.dll) | ✕(CPU/OS 依存) | ◎ | ✕(同一プロセス) | C/C++ プラグイン |
-| コンテナ | ○(OS 依存) | ◎ | ○(namespace/cgroup) | Docker、K8s |
+| WebAssembly | 高い(Web 標準) | ネイティブに近い(JIT/AOT) | 強い(検証+線形メモリ) | ブラウザ、Cloudflare Workers、Envoy、Wasmtime |
+| JVM バイトコード | JVM の上なら動く | 速い(HotSpot JIT) | ある(バイトコード検証) | Java、Kotlin、Scala |
+| ネイティブ(.so/.dll) | 無い(CPU/OS 依存) | 最速 | 無い(同一プロセス) | C/C++ プラグイン |
+| コンテナ | OS が合えば動く | 最速 | ある(namespace/cgroup) | Docker、K8s |
 
 裏どり:
 

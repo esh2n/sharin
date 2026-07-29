@@ -83,10 +83,10 @@ import FigureBox from '../components/figures/FigureBox.vue'
 
 | モデル | 多重化 | コードの素直さ | CPU バウンド | 実例 |
 |---|---|---|---|---|
-| ブロッキング(スレッド per 接続) | ✕(接続数=スレッド数) | ◎(上から下へ) | ○ | 素朴な Java/Go 以前のサーバ、Apache prefork |
-| イベントループ(epoll/kqueue) | ◎(1 スレッドで多数) | △(コールバック/状態機械) | ✕(塞ぐと全滅) | Node.js、nginx、Redis、libuv |
-| goroutine(M:N + ネット poller) | ◎(ブロッキング風に書ける) | ◎(見た目は同期) | ○ | Go の net パッケージ |
-| スレッドプール + ブロッキング | ○(プール分だけ) | ◎ | ○ | 従来型 Java(Servlet)、DB コネクションプール |
+| ブロッキング(スレッド per 接続) | 弱い(接続数=スレッド数) | 素直(上から下へ) | 耐える | 素朴な Java/Go 以前のサーバ、Apache prefork |
+| イベントループ(epoll/kqueue) | 強い(1 スレッドで多数) | 崩れる(コールバック/状態機械) | 弱い(塞ぐと全滅) | Node.js、nginx、Redis、libuv |
+| goroutine(M:N + ネット poller) | 強い(ブロッキング風に書ける) | 素直(見た目は同期) | 耐える | Go の net パッケージ |
+| スレッドプール + ブロッキング | 中(プール分だけ) | 素直 | 耐える | 従来型 Java(Servlet)、DB コネクションプール |
 
 裏どり:
 

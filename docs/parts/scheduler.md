@@ -79,10 +79,10 @@ Go が数百万の goroutine を数個の OS スレッドで回す仕組み、M:
 
 | 方式 | 並列度 | 生成コスト | 負荷分散 | 実例 |
 |---|---|---|---|---|
-| 1:1(スレッド=タスク) | ○ | 高(スタック重い) | OS 任せ | pthread、Java 旧来スレッド |
-| 単一キュー M:N | △(ロック競合) | 低 | 中央キュー | 素朴なスレッドプール |
-| M:N + work-stealing(本章) | ◎ | 低 | 自律的に均衡 | Go、Java ForkJoinPool、Rust Tokio、Erlang |
-| イベントループ(1 スレッド) | ✕(1 コア) | 低 | 不要 | Node.js、nginx、Redis |
+| 1:1(スレッド=タスク) | 出る | 高い(スタック重い) | OS 任せ | pthread、Java 旧来スレッド |
+| 単一キュー M:N | ロック競合で頭打ち | 低い | 中央キュー | 素朴なスレッドプール |
+| M:N + work-stealing(本章) | 出る | 低い | 自律的に均衡 | Go、Java ForkJoinPool、Rust Tokio、Erlang |
+| イベントループ(1 スレッド) | 出ない(1 コア) | 低い | 不要 | Node.js、nginx、Redis |
 
 裏どり:
 

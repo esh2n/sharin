@@ -81,10 +81,10 @@ import FigureBox from '../components/figures/FigureBox.vue'
 
 | 方式 | 循環回収 | 停止時間 | 即時性 | 実例 |
 |---|---|---|---|---|
-| 参照カウント | ✕(漏らす) | 無し(逐次解放) | 即座 | CPython(基本)、Swift ARC |
-| mark-sweep(本章) | ○ | 大(stop-the-world) | GC 時 | 初期の JVM、素朴な実装 |
-| 世代別 mark-sweep | ○ | 中 | GC 時 | Java(Parallel/G1)、.NET |
-| 並行 mark-sweep | ○ | 小(数百µs〜) | GC 時 | Go(write barrier)、ZGC |
+| 参照カウント | 漏らす | 無し(逐次解放) | 即座 | CPython(基本)、Swift ARC |
+| mark-sweep(本章) | 回収できる | 大(stop-the-world) | GC 時 | 初期の JVM、素朴な実装 |
+| 世代別 mark-sweep | 回収できる | 中 | GC 時 | Java(Parallel/G1)、.NET |
+| 並行 mark-sweep | 回収できる | 小(数百µs〜) | GC 時 | Go(write barrier)、ZGC |
 
 裏どり:
 

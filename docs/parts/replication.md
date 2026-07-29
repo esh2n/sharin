@@ -7,7 +7,7 @@ import FigureBox from '../components/figures/FigureBox.vue'
 # レプリケーション
 
 <Summary>
-リーダーの書き込みログを複数のレプリカへ流し、同じ状態を持たせる。鍵は 3 つある。確定と見なすのに何台の複製を待つか(async / quorum / sync)で、速さと無損失が入れ替わる。複製には遅れがあり、遅れたレプリカから読むと自分の書き込みがまだ見えない(stale read)。遅れたレプリカを昇格させると確定済みの書き込みが消える。この 3 つを、切断できるデモで壊しながら確かめる。
+リーダーの書き込みログを複数のレプリカへ流し、同じ状態を持たせる。確かめることは 3 つある。確定と見なすのに何台の複製を待つか(async / quorum / sync)で、速さと無損失が入れ替わる。複製には遅れがあり、遅れたレプリカから読むと自分の書き込みがまだ見えない(stale read)。遅れたレプリカを昇格させると確定済みの書き込みが消える。この 3 つを、切断できるデモで壊しながら確かめる。
 </Summary>
 
 ## この章で作るもの
@@ -41,7 +41,7 @@ import FigureBox from '../components/figures/FigureBox.vue'
 
 ## 耐久性ポリシー: 速さと無損失の交換
 
-肝は「リーダーが**何台の複製を待って確定とするか**」。確定(committed)とは「クライアントに『書けたよ』と返してよい、もう失われない」という状態のこと。必要な台数はポリシーで決まる(リーダー自身も1台に数える):
+中心の問いは「リーダーが**何台の複製を待って確定とするか**」だ。確定(committed)とは「クライアントに『書けたよ』と返してよい、もう失われない」という状態のこと。必要な台数はポリシーで決まる(リーダー自身も1台に数える):
 
 <<< ../../distributed/replication/replication.go#durability{go}
 
@@ -116,9 +116,9 @@ import FigureBox from '../components/figures/FigureBox.vue'
 
 | 方式 | 速さ | 無損失 | 1台故障時 | 代表例 |
 |---|---|---|---|---|
-| async | ◎ 即確定 | ✗ 損失窓あり | 書きは止まらない | Redis レプリカ、MySQL 既定、PostgreSQL 既定 |
-| quorum(準同期) | ○ 過半数待ち | ○ 昇格先が最新 | 過半数で継続 | MySQL 準同期、MongoDB `w:majority`、Kafka `acks=all`+`min.insync.replicas` |
-| sync(全台) | △ 最遅の1台律速 | ◎ 完全 | **止まる** | PostgreSQL `synchronous_commit`(全同期スタンバイ) |
+| async | 即確定(最速) | 損失窓あり | 書きは止まらない | Redis レプリカ、MySQL 既定、PostgreSQL 既定 |
+| quorum(準同期) | 過半数を待つ | 昇格先が最新なら失わない | 過半数で継続 | MySQL 準同期、MongoDB `w:majority`、Kafka `acks=all`+`min.insync.replicas` |
+| sync(全台) | 最も遅い1台に律速 | 完全 | **止まる** | PostgreSQL `synchronous_commit`(全同期スタンバイ) |
 
 裏どり:
 
