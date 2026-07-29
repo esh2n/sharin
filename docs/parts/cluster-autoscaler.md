@@ -14,7 +14,7 @@ import FigureBox from '../components/figures/FigureBox.vue'
 
 ## この章で作るもの
 
-この編の締めにあたる。[スケジューラ](/parts/pod-scheduler)と[水平オートスケール](/parts/autoscaler)が、ここで合流する。
+この章で、[スケジューラ](/parts/pod-scheduler)と[水平オートスケール](/parts/autoscaler)が合流する。
 
 水平オートスケーラは、負荷に応じて Pod の数を決めた。だが Pod は置き場所がなければ動かない。全ノードが埋まっていれば、増やした Pod は Pending のまま残る。数を増やしただけでは、捌ける量は増えない。足りないのがノードそのものなら、ノードを増やすしかない。それをやるのが Cluster Autoscaler だ。
 

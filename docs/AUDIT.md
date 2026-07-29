@@ -115,12 +115,12 @@
 | custom-metrics | ✅ | 後続の Cluster Autoscaler 章への過去形参照を修正 |
 | pod-lifecycle | ✅ | 合格 |
 | init-container | ✅ | 合格 |
-| probe | ⬜ | |
-| rollout | ⬜ | |
-| cluster-autoscaler | ⬜ | |
-| topology | ⬜ | |
-| service | ⬜ | |
-| pdb | ⬜ | |
+| probe | ✅ | 合格 |
+| rollout | ✅ | 合格 |
+| cluster-autoscaler | ✅ | 「この編の締め」の古い記述を現構成に合わせ修正 |
+| topology | ✅ | 後続の pdb 章への過去形参照を修正 |
+| service | ✅ | 合格 |
+| pdb | ✅ | 合格 |
 | preemption | ⬜ | |
 | statefulset | ⬜ | |
 | csi | ⬜ | |
