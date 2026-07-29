@@ -104,6 +104,7 @@ export default defineConfig({
           { text: "正規表現(NFA/DFA)", link: "/parts/regex" },
           { text: "コンテナ", link: "/parts/container" },
           { text: "CPU スロットリング", link: "/parts/cpu-throttling" },
+          { text: "OOM killer", link: "/parts/oom" },
           { text: "OS/スケジューラ", link: "/parts/os" },
         ],
       },
