@@ -140,9 +140,9 @@
 | symmetric-cipher | ✅ | 同じく RSA 章を既知前提にしていた冒頭を、対称/公開鍵の対比を自前で置く形に |
 | key-exchange | ✅ | TLS への言及が crypto を指す誤リンクだったのを tls-handshake に修正 |
 | crypto | ✅ | ハッシュ・共通鍵を「別章で作る」と書いていた箇所を既出章へのリンクに修正 |
-| tls-handshake | ⬜ | |
-| auth | ⬜ | |
-| oauth | ⬜ | |
+| tls-handshake | ✅ | 合格。既出4章の部品を明示して組み上げる構成 |
+| auth | ✅ | JWT を守るのは RSA 署名でなく HMAC なので参照を hashing へ修正。OAuth 節を次章への入口と明示 |
+| oauth | ✅ | 合格 |
 | blockchain | ⬜ | |
 | utxo | ⬜ | |
 | evm | ⬜ | |
