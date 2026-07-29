@@ -74,12 +74,12 @@
 | replication | ✅ | Summary の「鍵は3つ」・本文の「肝は〜」を言い換え。記号格付け表を言葉に |
 | crdt | ✅ | 後続章(reconcile/numbers/etcd-ops)への過去形参照を前方参照に修正。ゴシップの誤リンク(replication 行き)を修正 |
 | consistent-hashing | ✅ | 記号格付け表を言葉に。他は合格 |
-| quorum | ⬜ | |
-| anti-entropy | ⬜ | |
-| gossip | ⬜ | |
-| distributed-lock | ⬜ | |
-| distributed-txn | ⬜ | |
-| capacity-estimation | ⬜ | |
+| quorum | ✅ | 後続のゴシップ章への既読前提を修正。他は合格 |
+| anti-entropy | ✅ | 次章ゴシップへの過去形参照を修正。他は合格 |
+| gossip | ✅ | Kubernetes 編(後続)への「扱った」参照を前方参照に修正 |
+| distributed-lock | ✅ | 「防ぐ鍵は」「鍵になる」を言い換え。格付け表は言葉化済み |
+| distributed-txn | ✅ | 合格 |
+| capacity-estimation | ✅ | 合格。数字→選択の順で説明が積み上がっている |
 | message-queue | ⬜ | |
 | pubsub | ⬜ | |
 | rpc | ⬜ | |

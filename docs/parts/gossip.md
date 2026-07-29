@@ -94,7 +94,7 @@ CRDT でまとめ方は用意できたが、誰に届けるかが空いていた
 
 これが無いと何が起きるか。ネットワークの一部が不安定になっただけで、そこから見えないノードが次々に死んだことにされる。生きているノードが外され、そこに載っていた仕事が動き、また別のところで同じことが起きる。**検知の誤りが、そのまま障害になる**。
 
-Kubernetes 編で扱った [Service の Endpoints](/parts/service) も [Cluster Autoscaler](/parts/cluster-autoscaler) も、「あのノードは生きているか」という判定の上に乗っている。判定を間違えれば、その上の全部が間違える。
+後の Kubernetes 編で扱う [Service](/parts/service) も [Cluster Autoscaler](/parts/cluster-autoscaler) も、「あのノードは生きているか」という判定の上に乗っている。判定を間違えれば、その上の全部が間違える。
 
 ## ③ 主張できるのは本人だけ
 
