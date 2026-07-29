@@ -29,7 +29,7 @@ import FigureBox from '../components/figures/FigureBox.vue'
 
 </FigureBox>
 
-肝は3つ:
+順に作る。
 
 1. **指数バックオフ**: 待ち時間を `base·mult^n` で伸ばし、max で頭打ち。再送の間隔を空けて相手を緩める
 2. **ジッター**: 待ちに乱数の揺らぎを足す。同時失敗した多数のクライアントの再送時刻を散らし、衝突を防ぐ
@@ -49,7 +49,7 @@ import FigureBox from '../components/figures/FigureBox.vue'
 
 <<< ../../resilience/retry/retry.go#do{go}
 
-3 種類ある。full jitter は `[0, raw]` の一様乱数で、最も散る代わりに待ちが極端に短くなることもある。equal jitter は `raw/2 + [0, raw/2]` で、下限を確保しつつ散らす。テストで固定したのが効果の核心で、full jitter を使うと 100 クライアントの再送時刻が 50 以上の異なる値に散る。ジッターなしなら全員が同じ 800 に集中する。AWS の解析では full jitter がサーバ負荷とクライアント完了時間の両方で最良だった。
+実装では、揺らぎなし・full jitter・equal jitter の3種を切り替えられる。full jitter は `[0, raw]` の一様乱数で、最も散る代わりに待ちが極端に短くなることもある。equal jitter は `raw/2 + [0, raw/2]` で、下限を確保しつつ散らす。テストで固定したのが効果の核心で、full jitter を使うと 100 クライアントの再送時刻が 50 以上の異なる値に散る。ジッターなしなら全員が同じ 800 に集中する。AWS の解析では full jitter がサーバ負荷とクライアント完了時間の両方で最良だった。
 
 ## ③ 恒久的失敗は再送しない
 

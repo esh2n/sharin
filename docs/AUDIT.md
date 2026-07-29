@@ -30,12 +30,12 @@
 | load-balancer | ✅ | 4方式を①〜④で説明してから比較。実装も方式ごとに分割。RRの崩れ方を実測 |
 | tcp | ✅ | パケット→IP→TCPの順で土台から説明。番号→返事→送り直し→窓を説明後にコード。「鍵は〜だ」「〜に尽きる」定型と◎△✕表を排除 |
 | rate-limiter | ✅ | 合格。方式ごとに物理モデル→コード→メリデメ→実例→デモの順が守られている。手本のまま |
-| circuit-breaker | ⬜ | |
-| retry-backoff | ⬜ | |
-| metrics | ⬜ | |
-| timeseries | ⬜ | |
-| tracing | ⬜ | |
-| trace-sampling | ⬜ | |
+| circuit-breaker | ✅ | half-open を図の前に定義。continuously の英語混入・degrade→縮退・「肝は3つ」「鍵になる」定型を排除 |
+| retry-backoff | ✅ | 「3種類ある」を実装どおり(なし/full/equal)に明示。「肝は3つ」定型を排除 |
+| metrics | ✅ | Summary から p99・バケットの先出しを排除(現象で言い直し)。バケットは初出で定義 |
+| timeseries | ✅ | Summary と本文の Pod を「サービスの複製」で定義。p99 を初出で言い直し。「肝は3つ」定型を排除 |
+| tracing | ✅ | Summary から span・クリティカルパスの先出しを排除。「束ねる鍵」定型を排除 |
+| trace-sampling | ✅ | trace/span の前提節を「作るもの」より前に移動(要点リストが span を先出ししていた) |
 | http-server | ⬜ | |
 | http2 | ⬜ | |
 | websocket | ⬜ | |
