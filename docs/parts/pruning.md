@@ -16,7 +16,7 @@ import FigureBox from '../components/figures/FigureBox.vue'
 
 [誤差を配る量子化](/parts/gptq)では、丸め先を選ぶのに入力の相関を使った。同じ道具で、別の問いにも答えられる。**どれを 0 にするか**、という問いだ。
 
-もともと順序は逆になる。ヘッセ行列を使って重みを1つ選んで消し、残りを動かして補うという手は、枝刈りのために考えられたものだった(Optimal Brain Surgeon、1992年)。量子化に持ち込まれたのは30年後になる。
+もともと順序は逆になる。ヘッセ行列を使って重みを1つ選んで消し、残りを動かして補うという手は、枝刈りのために考えられたものだった(Optimal Brain Surgeon、1992年)。量子化に持ち込まれたのは、その30年後だ。
 
 素朴には、絶対値の小さい重みから消せばよい。小さいのだから出力への寄与も小さいだろう、という理屈だ。
 
@@ -37,7 +37,7 @@ import FigureBox from '../components/figures/FigureBox.vue'
              │            └ 補いやすさ。残りで肩代わりできるほど大きい
              └ 重みの大きさ
 
-  分母が付いているのが要点になる。
+  分母が付いているのが要点だ。
   補えるものは、消しても安い。
 ```
 
@@ -61,7 +61,7 @@ import FigureBox from '../components/figures/FigureBox.vue'
 
 逆に言うと、入力の振れ幅が揃っていて相関も無ければ、この2つは一致する。`[H⁻¹]_ii` が全次元で同じなら、順序は `w_i²` の順、つまり絶対値の順そのものになる。テストで、その場合に順序が完全に一致することを固定した。
 
-**絶対値で選ぶのが乱暴なのではなく、入力が揃っているという暗黙の前提が置かれている**、と言うほうが正確になる。
+**絶対値で選ぶのが乱暴なのではなく、入力が揃っているという暗黙の前提が置かれている**、と言うほうが正確だ。
 
 <<< ../../llm/prune/prune.go#select{go}
 
@@ -137,7 +137,7 @@ import FigureBox from '../components/figures/FigureBox.vue'
 
 - **Optimal Brain Damage(1989)**: [LeCun et al.](https://proceedings.neurips.cc/paper/1989/hash/6c9882bbac1c7093bd25041881277658-Abstract.html)。ヘッセ行列の対角だけを使い、`L_i = w_i² · H_ii / 2` で選ぶ。対角だけなら `[H⁻¹]_ii = 1 / H_ii` なので、**OBS の見積もりを対角に制限したものがそのまま OBD になる**。同時に非対角が消えるので補う先も無くなる。テストで、この一致を固定した
 - **切り分け用の中間**: この章の「効きで選ぶ(補正なし)」は、非対角まで使った見積もりで選びながら補わない形で、公表された手法ではない。選び方と補い方のどちらが効いているかを分けるために置いている
-- **Optimal Brain Surgeon(1992)**: [Hassibi, Stork](https://proceedings.neurips.cc/paper/1992/hash/303ed4c69846ab36c2904d3ba8573050-Abstract.html)。非対角まで使い、消したあと残りを動かす。この章の実装はこれになる
+- **Optimal Brain Surgeon(1992)**: [Hassibi, Stork](https://proceedings.neurips.cc/paper/1992/hash/303ed4c69846ab36c2904d3ba8573050-Abstract.html)。非対角まで使い、消したあと残りを動かす。この章の実装はこれにあたる
 - **Optimal Brain Compression(2022)**: [Frantar, Alistarh](https://arxiv.org/abs/2208.11580)。OBS を層ごとに解いて大規模モデルに載せた。[GPTQ](/parts/gptq) の直接の土台
 - **SparseGPT(2023)**: [Frantar, Alistarh](https://arxiv.org/abs/2301.00774)。同じ枠組みで、大規模モデルを1回のなぞりで 50% 疎にする
 - **構造化と非構造化**: 個々の重みを 0 にしても、行列は疎になるだけで速くはならない。速さが欲しいなら行や列ごと落とす(構造化)か、`2:4` のように専用の演算器が扱える形にする
