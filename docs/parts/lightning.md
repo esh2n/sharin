@@ -4,7 +4,7 @@ import Summary from '../components/Summary.vue'
 import FigureBox from '../components/figures/FigureBox.vue'
 </script>
 
-# lightning(決済チャネルとペナルティ、HTLC)
+# Lightning(決済チャネルとペナルティ、HTLC)
 
 <Summary>
 ブロックチェーンは 1 秒に数件しかさばけない。コーヒー 1 杯を毎回チェーンに載せるのは遅く高い。Lightning は 2 者が一度だけ資金をロックし、以降の残高更新を署名済みの差し替えとしてオフチェーンで行う。チェーンに触れるのは開閉の 2 回だけだ。ただし古い残高を提出して過去に巻き戻す不正が生まれる。これをリボケーションと全額没収のペナルティで封じ、直接繋がらない相手へは HTLC を多段に張って届ける。

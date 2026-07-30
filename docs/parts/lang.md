@@ -4,7 +4,7 @@ import Summary from '../components/Summary.vue'
 import FigureBox from '../components/figures/FigureBox.vue'
 </script>
 
-# lang(字句 → 構文 → 評価)
+# 小さな言語(字句 → 構文 → 評価)
 
 <Summary>
 <code>let add = fn(a, b) { a + b }; add(2, 3)</code> のようなプログラムを解釈して値にする、小さな言語をフルスクラッチする。仕組みは字句解析・構文解析・評価の 3 段に分かれ、各段は前段の出力だけを入力に取る。優先順位は Pratt 解析で決め、<code>a + b * c</code> を掛け算優先で組む。関数値が定義時の環境を抱え、返された関数が外側の変数を覚える(クロージャ)。

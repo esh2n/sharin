@@ -4,7 +4,7 @@ import Summary from '../components/Summary.vue'
 import FigureBox from '../components/figures/FigureBox.vue'
 </script>
 
-# event-loop(epoll 風の I/O 多重化)
+# イベントループ(epoll 風の I/O 多重化)
 
 <Summary>
 1 本のスレッドで何千もの接続を同時にさばく、Node.js・nginx・Redis の心臓部を Go でモデル化する。1 接続 = 1 スレッドでは read がデータ待ちでスレッドを止め、接続の数だけスレッドが要って破綻する。イベントループは、接続を指す番号(FD)を全部ノンブロッキングにし、どれか準備できたら教えてと epoll に一括で尋ね、準備できた接続だけを 1 本のスレッドで順に処理する。止まるのは全接続をまとめて待つ間だけだ。

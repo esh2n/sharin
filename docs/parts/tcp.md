@@ -4,7 +4,7 @@ import Summary from '../components/Summary.vue'
 import FigureBox from '../components/figures/FigureBox.vue'
 </script>
 
-# tcp(信頼できるバイトストリーム)
+# TCP(信頼できるバイトストリーム)
 
 <Summary>
 ネットワークの下の層は、データを小分けの包みにして宛先へ投げるだけで、届く保証も順番の保証もない。それでもアプリが書いたバイト列は、欠けず、書いた順で相手に届く。この差を埋めているのが TCP になる。この章では、包みが落ちたり追い越したりする模擬の網の上で、番号を振り、受け取りを確認し、返事が無ければ送り直して、1本のバイトの流れを組み立てる。

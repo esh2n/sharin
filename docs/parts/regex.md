@@ -4,7 +4,7 @@ import Summary from '../components/Summary.vue'
 import FigureBox from '../components/figures/FigureBox.vue'
 </script>
 
-# regex(NFA / DFA と Thompson 構成)
+# 正規表現(NFA / DFA と Thompson 構成)
 
 <Summary>
 多くの言語の正規表現はバックトラッキングで動き、a(a|aa)*b のような式に悪い入力を与えると処理時間が指数的に膨れ上がる(ReDoS)。この章はオートマトンに基づく別系統のエンジンを作る。正規表現をパースして AST にし、Thompson 構成で NFA に変換し、状態集合を並行に進めてマッチする。今いる状態を集合として持つのでバックトラッキングが要らず、入力長に比例した時間で済む。

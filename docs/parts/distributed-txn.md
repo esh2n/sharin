@@ -4,7 +4,7 @@ import Summary from '../components/Summary.vue'
 import FigureBox from '../components/figures/FigureBox.vue'
 </script>
 
-# distributed-txn(2PC と Saga)
+# 分散トランザクション(2PC と Saga)
 
 <Summary>
 別々のシステムにまたがる更新には単一の commit が無く、片方だけ成功した中途半端な状態をどう避けるかが問題になる。答えは 2 つ。2 相コミットは全員に準備を聞き、全員 Yes のときだけ確定させるが、調整役が落ちると参加者がロックを抱えて止まる。Saga はロックを捨てて各ステップを即確定し、失敗したら補償を逆順に実行して辻褄を合わせる。

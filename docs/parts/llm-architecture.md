@@ -21,7 +21,7 @@ LLM 編は章数が多い。骨格を組む基礎スパイン、Transformer の�
 Transformer (2017)  ── decoder-only が生成の主流
   │
   ├─ 基礎スパイン(自分の手で組む)
-  │    行列演算 → attention → mini-GPT → sampling
+  │    入口(BPE)→ 出口(sampling)→ 行列演算 → attention → mini-GPT
   │
   ├─ Transformerの部品(GPT-2 からの改良)
   │    位置: 絶対 → RoPE
@@ -30,7 +30,10 @@ Transformer (2017)  ── decoder-only が生成の主流
   │    FFN: dense → MoE
   │
   ├─ モデルを支える部品
-  │    トークナイザ(BPE) / 推論高速化(KVキャッシュ・投機) / 学習(事前学習→SFT→RLHF)
+  │    速く: 推論高速化(KVキャッシュ・投機)
+  │    小さく: 量子化 → GPTQ → 枝刈り
+  │    育てる: 学習パイプライン / LoRA
+  │    外へ: 埋め込み検索 / パッチ化 / エージェントの枠組み
   │
   └─ モデルの系譜
        GPT系 → 推論モデル(o1/R1)
@@ -43,14 +46,15 @@ Transformer (2017)  ── decoder-only が生成の主流
 
 ## 章の一覧
 
-**基礎スパイン**（自分の手で Transformer を組む）
+**基礎スパイン**(自分の手で Transformer を組む)
 
+- [BPEトークナイザ](/parts/bpe) — 文字列をトークン ID 列に切る入口
+- [LLM Sampling](/parts/llm-sampling) — logits からトークンを選ぶ出口
 - [行列演算](/parts/tensor) — numpy に頼らず行列積・softmax・LayerNorm を作る
 - [Attention](/parts/attention) — self-attention の 1 ヘッド
 - [mini-GPT](/parts/mini-gpt) — ブロックを重ねた forward pass
-- [LLM Sampling](/parts/llm-sampling) — logits からトークンを選ぶ
 
-**Transformerの部品**（GPT-2 構成からの改良）
+**Transformerの部品**(GPT-2 構成からの改良)
 
 - [Transformer全体像](/parts/transformer) — RNN の限界、3 系統、ブロックの分業
 - [位置エンコーディングとRoPE](/parts/rope) — 足す位置から回す位置へ
@@ -60,9 +64,15 @@ Transformer (2017)  ── decoder-only が生成の主流
 
 **モデルを支える部品**
 
-- [BPEトークナイザ](/parts/bpe) — 文字列をトークンに切る入口
 - [推論高速化](/parts/inference) — KV キャッシュと speculative decoding
 - [学習パイプライン](/parts/llm-training) — 事前学習 → SFT → RLHF/DPO
+- [量子化](/parts/quantization) — 整数に写して 1/4〜1/8 に縮める
+- [誤差を配る量子化(GPTQ)](/parts/gptq) — 丸めた誤差を残りの重みに肩代わりさせる
+- [枝刈り](/parts/pruning) — どれを 0 にするかを、消す損の見積もりで選ぶ
+- [LoRA](/parts/lora) — 元の重みを凍結し、低ランクの補正だけ学習する
+- [埋め込みとベクトル検索](/parts/embedding-search) — 意味の近さで引く、RAG の土台
+- [マルチモーダル入口(パッチ化)](/parts/patchify) — 画像を 16×16 に切ってトークンにする
+- [エージェントの枠組み](/parts/agent-harness) — プロンプト・ループ・グラフの分かれ目
 
 **モデルの系譜**
 
@@ -78,7 +88,7 @@ Transformer (2017)  ── decoder-only が生成の主流
 [mini-GPT](/parts/mini-gpt) で作ったのは、decoder-only の GPT-2 相当だ。全体マップの中で位置を確かめると、そこからフロンティアまでの距離が 4 つの差でできていることが分かる。
 
 - **系統**: decoder-only(GPT 系)。今のチャット LLM の主流に乗っている
-- **部品**: GPT-2 相当の素朴な構成(絶対位置・MHA・LayerNorm・GELU・dense FFN)。RoPE・GQA・RMSNorm・SwiGLU・MoE の改良は、それぞれ [Transformerの部品](/parts/rope)の各章で実装した
+- **部品**: GPT-2 相当の素朴な構成(絶対位置・MHA・LayerNorm・GELU・dense FFN)。[RoPE](/parts/rope)・[GQA](/parts/attention-variants)・[RMSNorm と SwiGLU](/parts/rmsnorm-swiglu)・[MoE](/parts/moe) の改良は、それぞれの章で実装した
 - **学習**: なし(重みは乱数)。実物は事前学習 + SFT + RLHF の 3 段([学習パイプライン](/parts/llm-training))
 - **規模**: 数万〜数百万パラメータ。フロンティアは兆単位
 

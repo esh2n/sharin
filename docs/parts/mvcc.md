@@ -4,7 +4,7 @@ import Summary from '../components/Summary.vue'
 import FigureBox from '../components/figures/FigureBox.vue'
 </script>
 
-# mvcc(多版・スナップショット分離・write skew)
+# MVCC(多版・スナップショット分離・write skew)
 
 <Summary>
 ロックで読み書きを直列化すると、読むだけのトランザクションが書き込みを待たせ、書き込みが読み手を止める。MVCC は上書きせずに版を積み、各トランザクションは開始時点で見える版だけを読む。読み手はロックを取らない。同じキーへの並行書き込みは先勝ちで、後の書き込みが先の更新を黙って消す事故を防ぐ。だが別々のキーに書く write skew はすり抜ける。それを止めるのが直列化可能の検証だ。

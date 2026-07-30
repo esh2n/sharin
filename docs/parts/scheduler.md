@@ -4,7 +4,7 @@ import Summary from '../components/Summary.vue'
 import FigureBox from '../components/figures/FigureBox.vue'
 </script>
 
-# scheduler(M:N スケジューラと work-stealing)
+# スケジューラ(M:N スケジューラと work-stealing)
 
 <Summary>
 Go が数百万の goroutine を数個の OS スレッドで回す仕組み、M:N スケジューラ(GMP モデル)と work-stealing を Go でモデル化する。キューを 1 本にすればロックが詰まり、コアごとに分ければ偏ったとき暇なコアが遊ぶ。Go は P ごとにローカルキューを持たせてロック無しで回し、空いた P が最も混む P からキューの半分を横取りする。偏りが自動で均され、全コアが働き続ける。

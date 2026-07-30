@@ -4,7 +4,7 @@ import Summary from '../components/Summary.vue'
 import FigureBox from '../components/figures/FigureBox.vue'
 </script>
 
-# bytecode(バイトコードコンパイラとスタックマシン)
+# バイトコードVM(バイトコードコンパイラとスタックマシン)
 
 <Summary>
 lang 編のツリーウォーク評価器の次の段を Go でモデル化する。木を毎回たどり直すのは遅いので、多くの本番言語は木を一度平らな命令列(バイトコード)に落とし、仮想マシンで回す。VM の仕事は命令を 1 つ取り出して実行するだけの単純なループだ。式は push/pop に、if は条件ジャンプに、変数はスロット番号に還元される。字句・構文解析は lang を再利用し、評価器の代わりにコンパイラと VM で走らせる。

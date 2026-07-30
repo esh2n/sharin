@@ -4,7 +4,7 @@ import Summary from '../components/Summary.vue'
 import FigureBox from '../components/figures/FigureBox.vue'
 </script>
 
-# evm(アカウントモデルとスタックVM、gas)
+# EVM(アカウントモデルとスタックVM、gas)
 
 <Summary>
 UTXO モデルは残高を持たないが、スマートコントラクトは状態を持つプログラムだ。だから EVM は口座ごとに残高とストレージを持つアカウントモデルを選び、その上でバイトコードをスタックマシンで実行する。普通の VM と違うのは 2 点。gas は命令ごとに価格を取り、尽きたら実行を止める。リバートは失敗時に状態を巻き戻す(ただし gas は消費されたまま)。

@@ -4,7 +4,7 @@ import Summary from '../components/Summary.vue'
 import FigureBox from '../components/figures/FigureBox.vue'
 </script>
 
-# os(最小カーネルと協調スケジューラ)
+# OS(最小カーネルと協調スケジューラ)
 
 <Summary>
 OS の奥にある仕事、「誰が CPU を握るかを決める」を Go でモデル化する。CPU は 1 つ、走れるタスクも 1 つで、それを分け合うのがスケジューラだ。ここで作るのは協調(cooperative)方式で、タスクが yield / sleep して CPU を手放したときにだけ次を選ぶ。タスクの文脈は pc に尽き、context switch とはその位置の保存と復元にすぎない。yield を書かないタスクは他を待たせる。
