@@ -18,14 +18,14 @@ const dataflow = [
 > 実装: [`llm/gpt/`](https://github.com/esh2n/sharin/tree/main/llm/gpt) / 実行: `go test ./llm/gpt/`
 
 <Summary>
-LLM 編の集大成。attention の1ヘッドを Transformer ブロックに仕立て、それを重ねて、実際に「次のトークンを予測する」forward pass を完成させる。埋め込み → ブロック → logits が動けば、あとは llm-sampling 編に繋ぐだけでテキストが生成される。最後に、あなたが書いたこの200行と GPT-4 を隔てているものは何かを考え、フロンティアモデルとの距離を見取る。
+attention の1ヘッドを Transformer ブロックに仕立て、それを重ねて、「次のトークンを予測する」forward pass を完成させる。埋め込みからブロックを通って logits が出れば、あとは選び方を繋ぐだけでテキストが生成される。最後に、この 200 行と GPT-4 を隔てているものが何かを、規模・改良・学習・広がりの4つに分けて見る。
 </Summary>
 
 ## この章で作るもの
 
 [attention](./attention) で作った1ヘッドを、実際の GPT の形である**Transformer ブロック**に
 組み上げ、それを重ねて mini-GPT の forward pass を完成させる。
-[行列演算](./tensor)から始まった LLM 編が、ここで1つに合流する。
+[行列演算](./tensor)から積み上げてきた部品が、ここで1つに合流する。
 
 先に押さえることが3つある。
 
@@ -74,8 +74,8 @@ forward pass は「各位置での次トークンの logits」を返す。生成
 
 ここで選ぶ部分(argmax = greedy)を、[llm-sampling](./llm-sampling) の
 temperature や top-p に差し替えれば、まさに ChatGPT がやっている生成になる。
-**LLM 編が一周した**。logits の出し方(この章)と、logits からの選び方(llm-sampling 編)の
-両方を、自分の手で書いた。
+これで、logits の出し方(この章)と logits からの選び方([llm-sampling](./llm-sampling))が
+両方揃った。文字列を ID に変える入口も含めれば、テキストからテキストまでの道が一本つながる。
 
 テストでは因果性(末尾トークンを変えても過去の位置の logits は動かない)も固定している。
 これが「左から右へ、既に書いた分だけを見て次を書く」を保証する。
@@ -83,7 +83,7 @@ temperature や top-p に差し替えれば、まさに ChatGPT がやってい�
 ## ここから GPT-4 まで: 何が違うのか
 
 あなたが書いたこの mini-GPT は、GPT-2/3/4 と**同じ Transformer**。
-では何が「フロンティアモデル」を分けるのか。3つの軸で見る。
+では何が「フロンティアモデル」を分けるのか。4つの軸で見る。
 
 ### 軸1: 規模(スケール)
 
@@ -153,12 +153,13 @@ Claude の Constitutional AI もこの後段の工夫。
 
 ## 結局、あなたは何を作ったのか
 
-まとめると、あなたが LLM 編で自分の手で書いたものは:
+ここまでで自分の手で書いたものは:
 
+- [BPEトークナイザ](./bpe): 文字列をトークンID列にする入口
+- [llm-sampling](./llm-sampling): logits からトークンを選ぶ出口
 - [tensor](./tensor): 行列演算(numpy に逃げず)
 - [attention](./attention): self-attention(Transformer の心臓)
 - この章: それを重ねた GPT の forward pass
-- [llm-sampling](./llm-sampling): logits からトークンを選ぶ
 
 これは GPT-4 と同じ骨格だ。フロンティアモデルは、この骨格を桁違いに大きくし、
 膨大なデータで事前学習し、人の意図に沿わせる後段学習を施し、テキストの外まで広げたもの。
@@ -169,7 +170,7 @@ Claude の Constitutional AI もこの後段の工夫。
 - **未学習(重みは乱数)**: だから生成は意味をなさない。「動く forward pass」の理解が目的。
   意味のある生成には学習(backward + 最適化 + 大量データ)が要る
 - **KV cache なし**: 生成のたび全系列を再計算。実物は過去の K,V を使い回す
-- **BPE トークナイザは別**: ここはトークンID列を直接受ける
+- **[トークナイザ](./bpe)は通さない**: ここはトークンID列を直接受ける
 - **RoPE/MoE/FlashAttention なし**: 上記「アーキテクチャの改良」は未実装。素の GPT-2 構造
 
 ## 参考資料

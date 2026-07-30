@@ -180,6 +180,7 @@ export default defineConfig({
       {
         text: "LLMのなかみ",
         items: [
+          { text: "BPEトークナイザ", link: "/parts/bpe" },
           { text: "LLM Sampling", link: "/parts/llm-sampling" },
           { text: "行列演算", link: "/parts/tensor" },
           { text: "Attention", link: "/parts/attention" },
@@ -197,7 +198,6 @@ export default defineConfig({
           {
             text: "モデルを支える部品",
             items: [
-              { text: "BPEトークナイザ", link: "/parts/bpe" },
               { text: "推論高速化", link: "/parts/inference" },
               { text: "学習パイプライン", link: "/parts/llm-training" },
               { text: "量子化", link: "/parts/quantization" },

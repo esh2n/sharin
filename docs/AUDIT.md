@@ -149,30 +149,36 @@
 | rollup | ✅ | 合格 |
 | lightning | ✅ | 「HTLC の肝」の体言止めを言い換え。他は合格 |
 | substrate | ✅ | 合格 |
-| bpe | ✅ | 編の先頭章なのに llm-sampling/mini-gpt 既読前提だった冒頭を書き直し。attention の n² も言い直し |
-| tensor | ⬜ | |
-| attention | ⬜ | |
-| transformer | ⬜ | |
+| bpe | ✅ | 編の先頭章なのに llm-sampling/mini-gpt 既読前提だった冒頭を書き直し。attention の n² も言い直し。サイドバーで10番目だったのを編の先頭へ移動 |
+| llm-sampling | ✅ | bpe を「これから作る」と書いていた箇所を前章参照へ。Transformer の先出しを「モデル」に。見出し「4方式の比較」に対し表が5行だったのを修正 |
+| tensor | ✅ | Summary が Transformer 先出し+「に尽きる」+「2つ」と言って3つ挙げていたのを書き直し。forward pass/logits/GELU に説明を追加 |
+| attention | ✅ | 「ここが Transformer の本体」の先出しを次章参照へ。「〜の塊、を確かめられた」の壊れた文を修正。下三角の説明が図の caption と重複していたのを削除 |
+| mini-gpt | ✅ | 「3つの軸で見る」と書いて軸が4つあったのを修正。「LLM 編が一周した」が編の途中なので言い直し。Summary 210字を圧縮 |
+| transformer | ✅ | bpe が編の先頭に移ったので「以降の部品章(トークナイザ…)」から除外。Summary の RNN/FFN 先出しを解消 |
 | rope | ⬜ | |
-| rmsnorm-swiglu | ⬜ | |
 | attention-variants | ⬜ | |
+| rmsnorm-swiglu | ⬜ | |
 | moe | ⬜ | |
-| ssm | ⬜ | |
-| patchify | ⬜ | |
-| mini-gpt | ⬜ | |
-| llm-architecture | ⬜ | |
-| gpt-lineage | ⬜ | |
-| claude-lineage | ⬜ | |
-| gemini-lineage | ⬜ | |
-| open-models | ⬜ | |
-| reasoning-models | ⬜ | |
-| llm-training | ⬜ | |
-| llm-sampling | ⬜ | |
 | inference | ⬜ | |
+| llm-training | ⬜ | |
 | quantization | ⬜ | |
 | gptq | ⬜ | |
 | pruning | ⬜ | |
+| lora | ⬜ | |
 | embedding-search | ⬜ | |
+| patchify | ⬜ | |
 | agent-harness | ⬜ | |
+| gpt-lineage | ⬜ | |
+| reasoning-models | ⬜ | |
+| claude-lineage | ⬜ | |
+| gemini-lineage | ⬜ | |
+| open-models | ⬜ | |
+| ssm | ⬜ | |
+| llm-architecture | ⬜ | |
 
 未着手 = ⬜、着手中 = 🔧、済 = ✅。この表が正。セッションをまたいでもここから再開する。
+
+台帳の欠落と順序について(2026-07-30 に修正):
+
+- `lora` の行が最初から無かった。章ファイルは 141 本で、表は 140 章しか追っていなかった
+- LLM 編の行の並びがサイドバーの読む順と違っていた。**読む順はサイドバー(`.vitepress/config.mts`)が正**なので、この表もその順に並べ替えた。以後、監査もこの順で進める
