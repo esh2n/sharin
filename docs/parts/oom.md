@@ -30,7 +30,7 @@ import FigureBox from '../components/figures/FigureBox.vue'
 <<< ../../foundations/oom/oom.go#proc{go}
 
 見ているのは `Touched` であって `Reserved` ではない。**申し込んだ量ではなく、
-実際に抱えている量**で選ぶ。殺して効くのはそこだけだからになる。
+実際に抱えている量**で選ぶ。殺して効くのはそこだけだからだ。
 
 <<< ../../foundations/oom/oom.go#reserve{go}
 
@@ -75,7 +75,7 @@ import FigureBox from '../components/figures/FigureBox.vue'
 | 効く相手を殺す | 1 | **800** | **通る** |
 
 **8倍違う**。しかも本人を殺す方式では、要求を出した当人が消えるので仕事が進まない。
-Linux が `oom_score` で選ぶのはこのためになる。
+Linux が `oom_score` で選ぶのはこのためだ。
 
 代償もはっきりしている。実測では、**足りなくしたのは小物なのに、死んだのは大物**だった。
 4つが 400 ずつ申し込む筋書きでも、`c` が触ろうとした時点で `a` が殺されている。

@@ -14,9 +14,9 @@ attention は全トークンが全トークンを見るので計算量が系列�
 
 ## この章で作るもの
 
-[transformer](/parts/transformer) で見たとおり、attention のコストは系列長 n の二乗に比例する。全トークンが全トークンとの内積を取るからで、[inference](/parts/inference) の KV キャッシュも [attention変種](/parts/attention-variants)の GQA も、この二乗を消すのではなく定数を小さくする工夫だった。二乗そのものを線形に置き換えようとするのが、この章の SSM(state space model)だ。
+[Transformer全体像](/parts/transformer) で見たとおり、attention のコストは系列長 n の二乗に比例する。全トークンが全トークンとの内積を取るからで、[推論高速化](/parts/inference) の KV キャッシュも [attention変種](/parts/attention-variants)の GQA も、この二乗を消すのではなく定数を小さくする工夫だった。二乗そのものを線形に置き換えようとするのが、この章の SSM(state space model)だ。
 
-発想は素朴で、[event-loop](/parts/event-loop) や [os](/parts/os) で見た「状態を 1 個持って系列を流す」ループに近い。全ペアを見る代わりに、系列を先頭から 1 つずつ読み、そのたびに 1 個の状態を更新する。1 ステップの計算は定数なので、全体は n に線形になる。問題は、この単純な更新則だと入力を選り分けられないことで、それを解いたのが Mamba だ。
+発想は素朴で、[イベントループ](/parts/event-loop) や [os](/parts/os) で見た「状態を 1 個持って系列を流す」ループに近い。全ペアを見る代わりに、系列を先頭から 1 つずつ読み、そのたびに 1 個の状態を更新する。1 ステップの計算は定数なので、全体は n に線形になる。問題は、この単純な更新則だと入力を選り分けられないことで、それを解いたのが Mamba だ。
 
 <FigureBox caption="attention と SSM の計算構造。attention は全ペアを見て n²。SSM は 1 個の状態を系列に沿って更新するので n に線形。かわりに全体を一度に見ることはできない">
 
@@ -46,7 +46,7 @@ attention (n²)              SSM (n)
 
 計算量の差は `ScanCounted` と `AttentionOps` の対比で見える。長さ 1000 の系列で、SSM の状態更新は 1000 回、attention の全ペア計算は 100 万回。n が伸びるほどこの差は開く。100 万トークンのような長系列で SSM が注目される理由がここにある。
 
-RNN との違いも押さえておきたい。見た目は RNN の逐次更新に似ているが、更新則が線形なので、実物は並列プレフィックススキャンでまとめて計算でき、学習も並列に回せる。RNN の逐次性という弱点([transformer](/parts/transformer) で attention が置き換えた理由)を、線形性で回避しているのが SSM の要点だ。
+RNN との違いも押さえておきたい。見た目は RNN の逐次更新に似ているが、更新則が線形なので、実物は並列プレフィックススキャンでまとめて計算でき、学習も並列に回せる。RNN の逐次性という弱点([Transformer全体像](/parts/transformer) で attention が置き換えた理由)を、線形性で回避しているのが SSM の要点だ。
 
 ## ② 選択的 SSM: 入力を選り分ける
 

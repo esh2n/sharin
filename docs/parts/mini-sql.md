@@ -23,7 +23,7 @@ db 編の完結編。クラッシュセーフな B-Tree ストレージに、SQL
 
 ## この章で作るもの
 
-ここまでの [btreewal](./btree-wal) は Go の関数(`Insert`, `Get`, `Scan`)で叩く
+ここまでの [B-Tree + WAL](./btree-wal) は Go の関数(`Insert`, `Get`, `Scan`)で叩く
 ストレージだった。その上に、SQL 文字列を受け取って実行する層を載せる。
 
 ```sql
@@ -72,7 +72,7 @@ DB が `SELECT * FROM users` という文字列を受け取ってから結果を
 
 ## ② 最後の段が道を選ぶ
 
-engine は AST の種類を見て、[btreewal](./btree-wal) の操作を呼ぶ。
+engine は AST の種類を見て、[B-Tree + WAL](./btree-wal) の操作を呼ぶ。
 
 <<< ../../db/minisql/engine.go#engine{go}
 

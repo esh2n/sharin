@@ -72,9 +72,9 @@ forward pass は「各位置での次トークンの logits」を返す。生成
 
 <<< ../../llm/gpt/gpt.go#generate{go}
 
-ここで選ぶ部分(argmax = greedy)を、[llm-sampling](./llm-sampling) の
+ここで選ぶ部分(argmax = greedy)を、[LLM Sampling](./llm-sampling) の
 temperature や top-p に差し替えれば、まさに ChatGPT がやっている生成になる。
-これで、logits の出し方(この章)と logits からの選び方([llm-sampling](./llm-sampling))が
+これで、logits の出し方(この章)と logits からの選び方([LLM Sampling](./llm-sampling))が
 両方揃った。文字列を ID に変える入口も含めれば、テキストからテキストまでの道が一本つながる。
 
 テストでは因果性(末尾トークンを変えても過去の位置の logits は動かない)も固定している。
@@ -156,7 +156,7 @@ Claude の Constitutional AI もこの後段の工夫。
 ここまでで自分の手で書いたものは:
 
 - [BPEトークナイザ](./bpe): 文字列をトークンID列にする入口
-- [llm-sampling](./llm-sampling): logits からトークンを選ぶ出口
+- [LLM Sampling](./llm-sampling): logits からトークンを選ぶ出口
 - [tensor](./tensor): 行列演算(numpy に逃げず)
 - [attention](./attention): self-attention(Transformer の心臓)
 - この章: それを重ねた GPT の forward pass
