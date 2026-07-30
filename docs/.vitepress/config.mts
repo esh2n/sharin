@@ -47,6 +47,7 @@ export default defineConfig({
           { text: "B-Tree + WAL", link: "/parts/btree-wal" },
           { text: "ミニSQL", link: "/parts/mini-sql" },
           { text: "セカンダリインデックス", link: "/parts/secondary-index" },
+          { text: "複合インデックス", link: "/parts/composite-index" },
           { text: "MVCC / 分離レベル", link: "/parts/mvcc" },
           { text: "ハッシュマップ", link: "/parts/hash-map" },
           { text: "ブルームフィルタ", link: "/parts/bloom-filter" },
