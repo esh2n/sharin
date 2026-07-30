@@ -155,11 +155,11 @@
 | attention | ✅ | 「ここが Transformer の本体」の先出しを次章参照へ。「〜の塊、を確かめられた」の壊れた文を修正。下三角の説明が図の caption と重複していたのを削除 |
 | mini-gpt | ✅ | 「3つの軸で見る」と書いて軸が4つあったのを修正。「LLM 編が一周した」が編の途中なので言い直し。Summary 210字を圧縮 |
 | transformer | ✅ | bpe が編の先頭に移ったので「以降の部品章(トークナイザ…)」から除外。Summary の RNN/FFN 先出しを解消 |
-| rope | ⬜ | |
-| attention-variants | ⬜ | |
-| rmsnorm-swiglu | ⬜ | |
-| moe | ⬜ | |
-| inference | ⬜ | |
+| rope | ✅ | 「attention の実装は絶対位置前提」が事実誤り(attention 章は位置情報を持たない)なので修正 |
+| attention-variants | ✅ | 「attention 章で作ったマルチヘッド」は誤り(1ヘッドのみ、多ヘッド化は mini-GPT)。「次の推論高速化の章」が2章先だったのも修正 |
+| rmsnorm-swiglu | ✅ | SiLU が説明なしで使われていたので定義を追加。図の ⊙ に注記。SwiGLU の説明が container/event-loop を脈絡なく引いていたのを削除 |
+| moe | ✅ | 合格。総量とアクティブ量の分離が式とテストで裏打ちされている |
+| inference | ✅ | 「causal マスク」表記を他章の「因果マスク」に統一。捻れた一文を整理 |
 | llm-training | ⬜ | |
 | quantization | ⬜ | |
 | gptq | ⬜ | |
