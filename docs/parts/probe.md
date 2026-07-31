@@ -9,7 +9,7 @@ import FigureBox from '../components/figures/FigureBox.vue'
 > 実装: [`orchestration/probe/`](https://github.com/esh2n/sharin/tree/main/orchestration/probe) / 実行: `go test ./orchestration/probe/`
 
 <Summary>
-プロセスが起動したことと、リクエストを処理できることは別だ。起動直後は温まっておらず、しばらく動いた後に固まることもある。Kubernetes はこれを外から定期的に叩いて確かめる。肝は検査そのものでなく、失敗したときの扱いの違いにある。readiness は転送先から外すだけ、liveness は再起動する。3種類の検査を実装し、扱いを取り違えると遅いだけの Pod を殺し続ける様子を見る。
+プロセスが起動したことと、リクエストを処理できることは別だ。起動直後は温まっておらず、動いた後に固まることもある。Kubernetes は外から定期的に叩いて確かめる。効いてくるのは検査そのものより、失敗したときの扱いの違いになる。readiness は転送先から外すだけ、liveness は再起動する。3種類の検査を実装すると、扱いを取り違えたときに遅いだけの Pod を殺し続けることが分かる。
 </Summary>
 
 ## この章で作るもの

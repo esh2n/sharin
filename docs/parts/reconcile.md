@@ -9,7 +9,7 @@ import FigureBox from '../components/figures/FigureBox.vue'
 > 実装: [`orchestration/reconcile/`](https://github.com/esh2n/sharin/tree/main/orchestration/reconcile) / 実行: `go test ./orchestration/reconcile/`
 
 <Summary>
-Kubernetesは宣言で動く。「Podは3個であれ」と宣言すれば、コントローラが宣言と現状を見比べて差を埋める。足りなければ作り、多ければ消す。これが調整ループだ。肝は宣言的であることと、level-triggeredであること。イベントに反応せず毎回現状を数え直すので、取りこぼしても必ず追いつく。調整ループを実装し、作成・スケール・障害回復を1つのループが等しく処理する様子を見る。
+Kubernetesは宣言で動く。「Podは3個であれ」と宣言すると、コントローラが現状と見比べて差を埋める。足りなければ作り、多ければ消す。これが調整ループだ。支えているのは宣言的であることと、level-triggeredであることの2つ。イベントに反応せず毎回現状を数え直すので、取りこぼしても必ず追いつく。実装すると、作成・スケール・障害回復を1つのループが等しく扱うことを確かめられる。
 </Summary>
 
 ## この章で作るもの

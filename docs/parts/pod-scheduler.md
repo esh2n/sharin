@@ -9,7 +9,7 @@ import FigureBox from '../components/figures/FigureBox.vue'
 > 実装: [`orchestration/scheduler/`](https://github.com/esh2n/sharin/tree/main/orchestration/scheduler) / 実行: `go test ./orchestration/scheduler/`
 
 <Summary>
-調整ループが作った Pod は、まだどこにも置かれていない。それをどのマシンに載せるか決めるのがスケジューラだ。決め方は2段階で、まず filter が置けないノードを落とし、次に score が残った候補に点をつける。可否と優劣を分けるのが肝になる。点の付け方を変えるだけで、負荷を散らす配置にも詰め込む配置にもなる。スケジューラを実装し、同じ Pod が戦略しだいで別のノードに落ちる様子を見る。
+調整ループが作った Pod は、まだどこにも置かれていない。どのマシンに載せるかを決めるのがスケジューラになる。決め方は2段階で、filter が置けないノードを落とし、score が残った候補に点をつける。可否と優劣を分けてあるところが効いてくる。点の付け方を変えるだけで、負荷を散らす配置にも詰め込む配置にもなる。スケジューラを実装すると、同じ Pod が戦略しだいで別のノードに落ちる。
 </Summary>
 
 ## この章で作るもの

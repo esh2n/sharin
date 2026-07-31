@@ -9,7 +9,7 @@ import FigureBox from '../components/figures/FigureBox.vue'
 > 実装: [`orchestration/rollout/`](https://github.com/esh2n/sharin/tree/main/orchestration/rollout) / 実行: `go test ./orchestration/rollout/`
 
 <Summary>
-動いているものを、止めずに新しい版へ入れ替える。何個多く作ってよいか(maxSurge)と、何個まで減ってよいか(maxUnavailable)、この2つの幅が入れ替えの速さと保たれる容量を決める。肝は進行の条件を readiness に委ねていることで、壊れた版をデプロイしても古い版が消えず途中で止まる。実装して、幅の設定がそのまま被害の上限になる様子を見る。
+動いているものを、止めずに新しい版へ入れ替える。何個多く作ってよいか(maxSurge)と、何個まで減ってよいか(maxUnavailable)、この2つの幅が入れ替えの速さと保たれる容量を決める。進行の条件は readiness に委ねてあるので、壊れた版をデプロイしても古い版が消えず途中で止まる。実装すると、幅の設定がそのまま被害の上限になることが数字で出る。
 </Summary>
 
 ## この章で作るもの

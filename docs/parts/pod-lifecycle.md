@@ -9,7 +9,7 @@ import FigureBox from '../components/figures/FigureBox.vue'
 > 実装: [`orchestration/lifecycle/`](https://github.com/esh2n/sharin/tree/main/orchestration/lifecycle) / 実行: `go test ./orchestration/lifecycle/`
 
 <Summary>
-Pod は必ず消える。スケールダウンでも更新でも止められる。このとき、トラフィックの切り離しとプロセスの停止は別々に走る。切り離しが伝わる前に停止が効くと、まだ振られてくるのに受けられない Pod ができ、リクエストが落ちる。preStop で伝播を待ち、猶予期間で処理中を守る。事故と対策の両方を実装し、設定ひとつで落ちる件数が変わる様子を見る。
+Pod は必ず消える。スケールダウンでも更新でも止められる。このとき、トラフィックの切り離しとプロセスの停止は別々に走る。切り離しが伝わる前に停止が効くと、まだ振られてくるのに受けられない Pod ができ、リクエストが落ちる。preStop で伝播を待ち、猶予期間で処理中を守る。事故と対策の両方を実装すると、設定ひとつで落ちる件数が変わることが数字で出る。
 </Summary>
 
 ## この章で作るもの

@@ -9,7 +9,7 @@ import FigureBox from '../components/figures/FigureBox.vue'
 > 実装: [`orchestration/networkpolicy/`](https://github.com/esh2n/sharin/tree/main/orchestration/networkpolicy) / 実行: `go test ./orchestration/networkpolicy/`
 
 <Summary>
-既定では全部の Pod が全部の Pod に繋がる。そうでないと何も動かないからだが、本番では困る。web が乗っ取られたら、そこから db へ直行できてしまう。NetworkPolicy は繋いでよい相手をラベルの条件で宣言する。肝は既定の反転にあり、方針を1つ向けた瞬間その Pod への通信は既定で拒否になる。許可を書くことが、同時に書かなかった分を閉じることになる。
+既定では全部の Pod が全部の Pod に繋がる。そうでないと何も動かないからだが、本番では困る。web が乗っ取られたら、そこから db へ直行できてしまう。NetworkPolicy は繋いでよい相手をラベルの条件で宣言する。ここで既定が反転する。方針を1つ向けた瞬間、その Pod への通信は拒否が既定になる。許可を書くことが、同時に書かなかった分を閉じることになる。
 </Summary>
 
 ## この章で作るもの
