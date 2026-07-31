@@ -60,16 +60,9 @@ type Config struct {
 	StabilizeDown int
 }
 
-// clamp は n を [Min, Max] に収める。式が何を出しても、ここを超えることはない。
-func (c Config) clamp(n int) int {
-	if n < c.Min {
-		return c.Min
-	}
-	if n > c.Max {
-		return c.Max
-	}
-	return n
-}
+// #endregion config
+
+// #region tolerance
 
 // withinTolerance は使用率が目標の許容誤差の内側かを返す。
 // 目標 50%・許容誤差 10% なら、45% から 55% までは目標どおりとみなす。
@@ -81,7 +74,22 @@ func (c Config) withinTolerance(u int) bool {
 	return d*100 <= c.Target*c.Tolerance
 }
 
-// #endregion config
+// #endregion tolerance
+
+// #region clamp
+
+// clamp は n を [Min, Max] に収める。式が何を出しても、ここを超えることはない。
+func (c Config) clamp(n int) int {
+	if n < c.Min {
+		return c.Min
+	}
+	if n > c.Max {
+		return c.Max
+	}
+	return n
+}
+
+// #endregion clamp
 
 // #region autoscaler
 
