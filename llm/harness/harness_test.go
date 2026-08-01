@@ -1,6 +1,9 @@
 package harness
 
-import "testing"
+import (
+	"strings"
+	"testing"
+)
 
 // 題材は「バグを1つ直す」。道具は4つ。
 //
@@ -32,7 +35,7 @@ type planner struct {
 	calls int
 }
 
-func (p *planner) Decide([]Step) Action {
+func (p *planner) Decide(Window) Action {
 	i := p.calls
 	p.calls++
 	if i < len(p.plan) {
@@ -44,12 +47,7 @@ func (p *planner) Decide([]Step) Action {
 // stubborn は test が落ちても同じ手を繰り返す台本(よくある詰まり方)。
 type stubborn struct{}
 
-func (stubborn) Decide(seen []Step) Action {
-	if len(seen) == 0 {
-		return Action{Tool: "test"}
-	}
-	return Action{Tool: "test"} // 同じことを繰り返す
-}
+func (stubborn) Decide(Window) Action { return Action{Tool: "test"} }
 
 // この章の中心その1。1回きりでは、途中で分かったことを次に使えない。
 func TestOnceCannotUseWhatItLearns(t *testing.T) {
@@ -76,7 +74,7 @@ func TestLoopSolvesItButAsksEveryTime(t *testing.T) {
 	m := &planner{plan: []Action{
 		{Tool: "search"}, {Tool: "read"}, {Tool: "edit"}, {Tool: "test"},
 	}}
-	r := Loop(m, tools, LoopConfig{MaxSteps: 10})
+	r := Loop(m, tools, LoopConfig{MaxCalls: 10})
 
 	if !r.OK || !*fixed {
 		t.Fatalf("直っていない: %+v", r)
@@ -93,12 +91,14 @@ func TestLoopSolvesItButAsksEveryTime(t *testing.T) {
 			t.Fatal("ループでは毎手モデルが選んでいるはず")
 		}
 	}
+	t.Logf("ループ: 道具 %d 手 / モデル %d 回 / 渡した文字 %d",
+		r.ToolCalls, r.ModelCalls, r.InputChars)
 }
 
 // この章の中心その2。ループは自分では止まれない。上限が要る。
 func TestLoopNeedsALimit(t *testing.T) {
 	tools, _ := fixTools()
-	r := Loop(stubborn{}, tools, LoopConfig{MaxSteps: 6})
+	r := Loop(stubborn{}, tools, LoopConfig{MaxCalls: 6})
 
 	if r.OK {
 		t.Fatal("直っていないのに成功した")
@@ -114,6 +114,221 @@ func TestLoopNeedsALimit(t *testing.T) {
 		if s.Obs != "FAIL" {
 			t.Fatalf("観測が変わっている: %q", s.Obs)
 		}
+	}
+}
+
+// ------------------------------------------------------------------
+// ここから文脈の層。題材は「呼び出し元を全部見てから直す」。
+// ------------------------------------------------------------------
+
+// 8 本のファイルを順に読む。当たりは 2 本目で、直すにはその中身が要る。
+var files = []string{
+	"calc.go", "tax.go", "fee.go", "cart.go",
+	"item.go", "user.go", "order.go", "view.go",
+}
+
+const hit = "tax.go"
+
+func traceTools() map[string]Tool {
+	return map[string]Tool{
+		"search": func(string) string { return "呼び出し元 8 件: calc.go ほか" },
+		"read": func(f string) string {
+			if f == hit {
+				return f + " 24 行目 rate + price。掛けるのが正しい。呼び出し 3 箇所"
+			}
+			return f + " 異常なし。呼び出し 3 箇所 / 24 行 / 直近の変更なし"
+		},
+		"edit": func(f string) string { return f + " を書き換えた" },
+		"test": func(string) string { return "PASS" },
+	}
+}
+
+// tracer は「窓に見えているもの」だけで動く台本。人と同じで、
+// 見えていなければ、もう一度やる。
+//
+// 決まりは1つ。呼び出し元を全部見てから直す。
+type tracer struct {
+	writeMemo bool // 当たりを見つけたとき、窓の外に書き残すか
+}
+
+func (t *tracer) Decide(w Window) Action {
+	if !w.Did("search", "") {
+		return Action{Tool: "search"}
+	}
+	// 直したあとは確かめて終わる。
+	if w.Did("edit", hit) {
+		if !w.Did("test", "") {
+			return Action{Tool: "test"}
+		}
+		return Action{Answer: "直した"}
+	}
+	// 当たりの中身が今まさに窓にあるなら、要点だけ窓の外へ書き出しておく。
+	if _, ok := w.Obs("read", hit); ok && t.writeMemo && !w.Recall(hit) {
+		return Action{Note: hit + " は 24 行目、足すのでなく掛ける"}
+	}
+	// まだ読んでいないファイルがあれば読む。
+	for _, f := range files {
+		if !w.Did("read", f) {
+			return Action{Tool: "read", Arg: f}
+		}
+	}
+	// 直すには当たりの中身が要る。読めなければ読み直すしかない。
+	if _, ok := w.Obs("read", hit); !ok && !w.Recall(hit) {
+		return Action{Tool: "read", Arg: hit}
+	}
+	return Action{Tool: "edit", Arg: hit}
+}
+
+// この章の中心その3。窓に収まる件数は記録より少ない。溢れる側は古い側になる。
+func TestWindowHoldsFewerStepsThanTheRecordHas(t *testing.T) {
+	// まず、落とさずに走らせて記録を作る。
+	full := Loop(&tracer{}, traceTools(), LoopConfig{MaxCalls: 40})
+	if !full.OK {
+		t.Fatalf("落とさなければ終わるはず: %+v", full)
+	}
+	all := full.Steps
+	t.Logf("記録は %d 手 / %d 文字", len(all), totalSize(all))
+	if len(all) != 11 {
+		t.Fatalf("手数: %d", len(all))
+	}
+
+	t.Logf("%-8s %8s %8s %10s %10s", "窓", "収まる手", "占めた", "落ちた手", "消えた観測")
+	prev := -1
+	for _, b := range []Budget{100, 200, 400, 800} {
+		w := Recent(all, nil, b)
+		t.Logf("%-8d %8d %8d %10d %10d", b, len(w.Steps), w.Size, w.LostSteps, w.LostChars)
+		// 窓を広げれば収まる手数は増える。減ることはない。
+		if len(w.Steps) < prev {
+			t.Fatalf("窓を広げたのに減った: %d", len(w.Steps))
+		}
+		prev = len(w.Steps)
+		// 収まると言っている以上、超えていてはいけない。
+		if w.Over != 0 {
+			t.Fatalf("窓 %d を %d 超えている", b, w.Over)
+		}
+	}
+
+	// 全部残すと入らない。ここが実物では拒否か、黙って消えるかになる。
+	keep := KeepAll(all, nil, 200)
+	t.Logf("全部残す: %d 文字。窓 200 を %d 超える", keep.Size, keep.Over)
+	if keep.Over <= 0 {
+		t.Fatal("超えていない")
+	}
+	// 落ちるのは古い側。当たりは 3 手目なので、窓 200 では読めない。
+	w := Recent(all, nil, 200)
+	if _, ok := w.Obs("read", hit); ok {
+		t.Fatal("当たりが窓に残っている")
+	}
+}
+
+// この章の中心その4。同じ台本でも、何を残すかで終わったり終わらなかったりする。
+func TestWhatYouKeepDecidesWhetherItFinishes(t *testing.T) {
+	const budget = 200
+	const limit = 40
+
+	type run struct {
+		name string
+		cfg  LoopConfig
+		memo bool
+	}
+	runs := []run{
+		{"全部残す", LoopConfig{MaxCalls: limit, Budget: budget, Curate: KeepAll}, false},
+		{"直近だけ", LoopConfig{MaxCalls: limit, Budget: budget, Curate: Recent}, false},
+		{"畳む", LoopConfig{MaxCalls: limit, Budget: budget, Curate: Fold}, false},
+		{"畳む+覚え書き", LoopConfig{MaxCalls: limit, Budget: budget, Curate: Fold}, true},
+	}
+
+	got := map[string]Result{}
+	t.Logf("窓 %d 文字 / 上限 %d 回", budget, limit)
+	t.Logf("%-14s %6s %8s %10s %10s %8s", "残し方", "手数", "モデル", "渡した文字", "窓を超えた", "終わった")
+	for _, rn := range runs {
+		r := Loop(&tracer{writeMemo: rn.memo}, traceTools(), rn.cfg)
+		over := rn.cfg.Curate(r.Steps, r.Memo, budget).Over
+		t.Logf("%-14s %6d %8d %10d %10d %8v",
+			rn.name, r.ToolCalls, r.ModelCalls, r.InputChars, over, r.OK)
+		got[rn.name] = r
+	}
+
+	// 全部残すと終わりはするが、窓には入っていない。
+	all := got["全部残す"]
+	if !all.OK {
+		t.Fatalf("全部残せば終わるはず: %+v", all)
+	}
+	if KeepAll(all.Steps, all.Memo, budget).Over <= 0 {
+		t.Fatal("窓に収まってしまっている。題材が小さすぎる")
+	}
+
+	// 直近だけ残すと、読んだこと自体が窓から消えるので同じ手を繰り返す。
+	rec := got["直近だけ"]
+	if rec.OK {
+		t.Fatal("直近だけ残して終わってしまった")
+	}
+	if rec.Reason != "上限に達した" {
+		t.Fatalf("止まった理由: %q", rec.Reason)
+	}
+	reads := map[string]int{}
+	for _, s := range rec.Steps {
+		if s.Tool == "read" {
+			reads[s.Arg]++
+		}
+	}
+	t.Logf("直近だけ: 同じファイルを %d 回まで読み直した", maxOf(reads))
+	if maxOf(reads) < 2 {
+		t.Fatal("読み直しが起きていない")
+	}
+
+	// 畳むと「何をやったか」は残るので、読み直すのは当たりの1本だけになる。
+	fold := got["畳む"]
+	if !fold.OK {
+		t.Fatalf("畳めば終わるはず: %+v", fold)
+	}
+	if fold.ToolCalls != all.ToolCalls+1 {
+		t.Fatalf("読み直しは1本のはず: %d と %d", fold.ToolCalls, all.ToolCalls)
+	}
+
+	// 覚え書きに1行残しておけば、その読み直しも要らない。
+	memo := got["畳む+覚え書き"]
+	if !memo.OK || memo.ToolCalls != all.ToolCalls {
+		t.Fatalf("覚え書きがあれば読み直さないはず: %+v", memo)
+	}
+	if len(memo.Memo) != 1 {
+		t.Fatalf("覚え書きの行数: %v", memo.Memo)
+	}
+	// 落とした観測は数百文字、残した覚え書きは数十文字。
+	lost := Fold(memo.Steps, memo.Memo, budget).LostChars
+	kept := memoSize(memo.Memo)
+	t.Logf("捨てた観測 %d 文字 / 残した覚え書き %d 文字", lost, kept)
+	if lost < kept*5 {
+		t.Fatalf("差が出ていない: %d と %d", lost, kept)
+	}
+}
+
+// 畳んだ行から読み取れるのは「やったこと」だけ。「分かったこと」は読めない。
+func TestFoldKeepsTheActionAndDropsTheObservation(t *testing.T) {
+	all := Loop(&tracer{}, traceTools(), LoopConfig{MaxCalls: 40}).Steps
+
+	fold := Fold(all, nil, 120)
+	rec := Recent(all, nil, 120)
+
+	// 畳んだ側は、当たりを読んだことを知っている。
+	if !fold.Did("read", hit) {
+		t.Fatal("畳んだのに読んだことが消えた")
+	}
+	// だが中身は読めない。
+	if _, ok := fold.Obs("read", hit); ok {
+		t.Fatal("畳んだのに観測が残っている")
+	}
+	// 直近だけの側は、読んだことすら知らない。
+	if rec.Did("read", hit) {
+		t.Fatal("落としたのに残っている")
+	}
+	t.Logf("窓 120  畳む: 原文 %d 手 + 畳んだ %d 行 = %d 文字",
+		len(fold.Steps), len(fold.Folded), fold.Size)
+	t.Logf("窓 120  直近: 原文 %d 手 = %d 文字", len(rec.Steps), rec.Size)
+
+	// 畳んだ行のぶんだけ、原文で残せる手は減る。ただだとは思わないほうがいい。
+	if len(fold.Steps) > len(rec.Steps) {
+		t.Fatal("畳んだのに原文が増えた")
 	}
 }
 
@@ -136,7 +351,7 @@ func fixGraph() *Graph {
 	}
 }
 
-// この章の中心その3。経路を先に描けるところは、モデルに訊かなくてよい。
+// この章の中心その5。経路を先に描けるところは、モデルに訊かなくてよい。
 func TestGraphAsksTheModelOnlyWhereItMatters(t *testing.T) {
 	tools, fixed := fixTools()
 	m := &planner{plan: []Action{{Tool: "edit"}}}
@@ -160,6 +375,16 @@ func TestGraphAsksTheModelOnlyWhereItMatters(t *testing.T) {
 	}
 	if byModel != 1 {
 		t.Fatalf("モデルが選んだ手: %d", byModel)
+	}
+
+	// 訊く回数だけでなく、渡す量も減る。値段で効くのはこちらになる。
+	tools2, _ := fixTools()
+	lp := Loop(&planner{plan: []Action{
+		{Tool: "search"}, {Tool: "read"}, {Tool: "edit"}, {Tool: "test"},
+	}}, tools2, LoopConfig{MaxCalls: 10})
+	t.Logf("渡した文字  ループ %d / グラフ %d", lp.InputChars, r.InputChars)
+	if r.InputChars*3 > lp.InputChars {
+		t.Fatalf("差が出ていない: %d と %d", lp.InputChars, r.InputChars)
 	}
 }
 
@@ -235,7 +460,7 @@ func TestEdges(t *testing.T) {
 	bad := func() *planner { return &planner{plan: []Action{{Tool: "compile"}}} }
 
 	// 無い道具を使おうとしたら、そこで止まる。
-	if r := Loop(bad(), tools, LoopConfig{MaxSteps: 5}); r.OK || r.Reason == "" {
+	if r := Loop(bad(), tools, LoopConfig{MaxCalls: 5}); r.OK || r.Reason == "" {
 		t.Fatalf("止まっていない: %+v", r)
 	}
 	g := &Graph{Start: "x", Nodes: map[string]Node{"x": {Name: "x", Tool: "compile"}}}
@@ -260,11 +485,55 @@ func TestEdges(t *testing.T) {
 	if r := g4.Run(done, tools); !r.OK || r.Answer != "直した" {
 		t.Fatalf("終われていない: %+v", r)
 	}
+	// グラフの節でも覚え書きは書ける。書いたら同じ節をもう一度。
+	memoM := &planner{plan: []Action{{Note: "ここが怪しい"}, {Tool: "edit"}}}
+	g5 := &Graph{Start: "d", MaxVisits: 4, Nodes: map[string]Node{"d": {Name: "d", Decide: true}}}
+	if r := g5.Run(memoM, tools); !r.OK || len(r.Memo) != 1 {
+		t.Fatalf("覚え書きが残っていない: %+v", r)
+	}
 	// 上限を置かないループも、モデルが終わりと言えば止まる。
 	if r := Loop(&planner{}, tools, LoopConfig{}); !r.OK {
 		t.Fatalf("止まらない: %+v", r)
 	}
+	// 同じ行は二度書かない。
+	if m := note(note(nil, "あ"), "あ"); len(m) != 1 {
+		t.Fatalf("重複した: %v", m)
+	}
+	// 窓が空でも落ちない。
+	empty := Fold(nil, nil, 10)
+	if empty.Size != 0 || empty.Did("read", "x") || empty.Recall("x") {
+		t.Fatalf("空の窓: %+v", empty)
+	}
+	if _, ok := empty.Obs("read", "x"); ok {
+		t.Fatal("空の窓から観測が読めた")
+	}
+	// 覚え書きだけで窓を超えることもある。落とすものが無くても超える。
+	big := Recent(nil, []string{strings.Repeat("あ", 60)}, 50)
+	if big.Over != 10 || big.LostSteps != 0 {
+		t.Fatalf("覚え書きが窓を超えたとき: %+v", big)
+	}
+	// 窓を指定しなければ何も落とさない。
+	if w := Recent([]Step{{Tool: "a", Obs: "xxxx"}}, nil, 0); w.LostSteps != 0 {
+		t.Fatalf("窓なしで落とした: %+v", w)
+	}
+	// 引数のない手は道具名だけの行に畳まれる。
+	if k := foldKey(Step{Tool: "test"}); k != "test" {
+		t.Fatalf("畳んだ行: %q", k)
+	}
 	if lastObs(nil) != "" {
 		t.Fatal("空の記録で落ちた")
 	}
+	if strings.Contains(foldKey(Step{Tool: "read", Arg: "a.go", Obs: "中身"}), "中身") {
+		t.Fatal("畳んだ行に観測が残っている")
+	}
+}
+
+func maxOf(m map[string]int) int {
+	n := 0
+	for _, v := range m {
+		if v > n {
+			n = v
+		}
+	}
+	return n
 }
