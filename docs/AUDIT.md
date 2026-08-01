@@ -48,7 +48,8 @@
 | circuit-breaker | ✅ | half-open を図の前に定義。continuously の英語混入・degrade→縮退・「肝は3つ」「鍵になる」定型を排除 |
 | retry-backoff | ✅ | 「3種類ある」を実装どおり(なし/full/equal)に明示。「肝は3つ」定型を排除 |
 | metrics | ✅ | Summary から p99・バケットの先出しを排除(現象で言い直し)。バケットは初出で定義 |
-| timeseries | ✅ | Summary と本文の Pod を「サービスの複製」で定義。p99 を初出で言い直し。「肝は3つ」定型を排除 |
+| timeseries | ✅ | Summary と本文の Pod を「サービスの複製」で定義。p99 を初出で言い直し。「肝は3つ」定型を排除。章の49%を占めていた GCP 節を cloud-monitoring へ分離(324→167行) |
+| cloud-monitoring | ✅ | timeseries から分離して新規執筆。操作手順は書かず、自作した Align/Reduce と実物の対応として構成 |
 | tracing | ✅ | Summary から span・クリティカルパスの先出しを排除。「束ねる鍵」定型を排除 |
 | trace-sampling | ✅ | trace/span の前提節を「作るもの」より前に移動(要点リストが span を先出ししていた) |
 | http-server | ✅ | Summary の TCP を役割つきで言い直し。「自作 TCP は発展」の古い記述を tcp/http2/tls-handshake 章へのリンクに修正 |

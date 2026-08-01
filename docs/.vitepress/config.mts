@@ -16,6 +16,7 @@ export default defineConfig({
           { text: "ロードバランサ", link: "/parts/load-balancer" },
           { text: "メトリクスとヒストグラム", link: "/parts/metrics" },
           { text: "時系列の整列と集約", link: "/parts/timeseries" },
+          { text: "Cloud Monitoring で読み替える", link: "/parts/cloud-monitoring" },
           { text: "分散トレーシング", link: "/parts/tracing" },
           { text: "Trace Sampling", link: "/parts/trace-sampling" },
         ],
