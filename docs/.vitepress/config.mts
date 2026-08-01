@@ -163,7 +163,7 @@ export default defineConfig({
           {
             text: "製品で読み替える",
             items: [
-              { text: "KEDA のトリガーを読み替える", link: "/parts/keda-triggers" },
+              { text: "滞留を見てレプリカ数を決める", link: "/parts/keda-triggers" },
             ],
           },
         ],
