@@ -235,6 +235,13 @@ export default defineConfig({
               { text: "Mamba / SSM", link: "/parts/ssm" },
             ],
           },
+          {
+            text: "製品で読み替える",
+            items: [
+              { text: "Hermes と Pi で読み替える", link: "/parts/agent-stack" },
+              { text: "編成をモデルの内側に隠す", link: "/parts/orchestrator-model" },
+            ],
+          },
           { text: "LLM全体マップ", link: "/parts/llm-architecture" },
         ],
       },
