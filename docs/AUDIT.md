@@ -48,6 +48,7 @@
 | circuit-breaker | ✅ | half-open を図の前に定義。continuously の英語混入・degrade→縮退・「肝は3つ」「鍵になる」定型を排除 |
 | retry-backoff | ✅ | 「3種類ある」を実装どおり(なし/full/equal)に明示。「肝は3つ」定型を排除 |
 | metrics | ✅ | Summary から p99・バケットの先出しを排除(現象で言い直し)。バケットは初出で定義 |
+| collect | ✅ | 新規執筆。push/pull・カーディナリティ・収集器の配置を実装して測定(カバレッジ 97.9%) |
 | timeseries | ✅ | Summary と本文の Pod を「サービスの複製」で定義。p99 を初出で言い直し。「肝は3つ」定型を排除。章の49%を占めていた GCP 節を cloud-monitoring へ分離(324→167行) |
 | cloud-monitoring | ✅ | timeseries から分離して新規執筆。操作手順は書かず、自作した Align/Reduce と実物の対応として構成 |
 | tracing | ✅ | Summary から span・クリティカルパスの先出しを排除。「束ねる鍵」定型を排除 |

@@ -15,6 +15,7 @@ export default defineConfig({
           { text: "リトライとバックオフ", link: "/parts/retry-backoff" },
           { text: "ロードバランサ", link: "/parts/load-balancer" },
           { text: "メトリクスとヒストグラム", link: "/parts/metrics" },
+          { text: "メトリクスの集め方", link: "/parts/collect" },
           { text: "時系列の整列と集約", link: "/parts/timeseries" },
           { text: "Cloud Monitoring で読み替える", link: "/parts/cloud-monitoring" },
           { text: "分散トレーシング", link: "/parts/tracing" },
