@@ -158,7 +158,7 @@ CPU が 100% のとき、目標が 50% なら答えは常に「今の倍」に�
 - **HPA の3つの型**: `Resource`(CPU/メモリの使用率)、`Pods`(1 個あたりの絶対値)、`Object`/`External`(全体の値)。式が変わるのはこの区別による
 - **複数指標は最大**: HPA は各指標でレプリカ数を計算し、いちばん大きいものを採用する
 - **カスタム指標の経路**: `custom.metrics.k8s.io` / `external.metrics.k8s.io` のアダプタを立て、Prometheus などの値を HPA に渡す
-- **KEDA の役割**: `ScaledObject` から HPA を生成する。KEDA 自身は 0 と 1 の間を担い、1 以上は生成した HPA が動かす
+- **KEDA の役割**: `ScaledObject` から HPA を生成する。KEDA 自身は 0 と 1 の間を担い、1 以上は生成した HPA が動かす。トリガーの種類ごとの読み方は[KEDA のトリガーを読み替える](/parts/keda-triggers)にまとめた
 - **activationThreshold**: 0 から起こす閾値は、スケールの目標値とは別に指定する。量の判断と有無の判断が別だから
 - **scale to zero の代償**: 立ち上がりの遅れをリクエストが待つ。待たせてよい仕事(バッチ、キュー消化)に向く
 

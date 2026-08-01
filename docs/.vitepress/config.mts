@@ -17,9 +17,14 @@ export default defineConfig({
           { text: "メトリクスとヒストグラム", link: "/parts/metrics" },
           { text: "メトリクスの集め方", link: "/parts/collect" },
           { text: "時系列の整列と集約", link: "/parts/timeseries" },
-          { text: "Cloud Monitoring で読み替える", link: "/parts/cloud-monitoring" },
           { text: "分散トレーシング", link: "/parts/tracing" },
           { text: "Trace Sampling", link: "/parts/trace-sampling" },
+          {
+            text: "製品で読み替える",
+            items: [
+              { text: "Cloud Monitoring で読み替える", link: "/parts/cloud-monitoring" },
+            ],
+          },
         ],
       },
       {
@@ -155,6 +160,12 @@ export default defineConfig({
           { text: "etcdの履歴と容量", link: "/parts/etcd-ops" },
           { text: "leader election", link: "/parts/leader-election" },
           { text: "Operatorパターン", link: "/parts/operator" },
+          {
+            text: "製品で読み替える",
+            items: [
+              { text: "KEDA のトリガーを読み替える", link: "/parts/keda-triggers" },
+            ],
+          },
         ],
       },
       {

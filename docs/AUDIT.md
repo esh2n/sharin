@@ -124,6 +124,7 @@
 | pod-scheduler | ✅ | ミリコア表記(500m)を初出で定義 |
 | autoscaler | ✅ | 合格 |
 | custom-metrics | ✅ | 後続の Cluster Autoscaler 章への過去形参照を修正 |
+| keda-triggers | ✅ | 新規執筆。トリガー一覧をカタログにせず、ラグ/量/比率/量でない の4型として既存章に接続 |
 | pod-lifecycle | ✅ | 合格 |
 | init-container | ✅ | 合格 |
 | probe | ✅ | 合格 |
