@@ -7,7 +7,7 @@ import FigureBox from '../components/figures/FigureBox.vue'
 # Substrate(ランタイム・pallet 合成・forkless upgrade)
 
 <Summary>
-多くのチェーンは規則をノードのソフトに焼き込むので、規則を変えるには全ノードが更新してハードフォークするしかない。Substrate はランタイム(規則)をチェーン上の差し替え可能なコードとして持ち、変更を取引 1 本で行う(forkless upgrade)。ランタイムは pallet の合成でできた状態遷移関数で、extrinsic を dispatch し、1 ブロックの仕事量は weight で予算化する。
+多くのチェーンは規則をノードのソフトに焼き込むので、変更には全ノードの更新とハードフォークが要る。Substrate はランタイム(規則)をチェーン上の差し替え可能なコードとして持ち、変更を取引 1 本で行う(forkless upgrade)。ランタイムは pallet の合成でできた状態遷移関数で、1 ブロックの仕事量は weight で予算化する。
 </Summary>
 
 ## この章で作るもの

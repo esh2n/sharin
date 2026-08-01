@@ -9,7 +9,7 @@ import FigureBox from '../components/figures/FigureBox.vue'
 > 実装: [`llm/gqa/`](https://github.com/esh2n/sharin/tree/main/llm/gqa) / 実行: `go test ./llm/gqa/`
 
 <Summary>
-マルチヘッド attention はヘッドごとに独立の K/V を持つが、生成時にキャッシュする K/V のメモリはヘッド数に比例して膨らみ、長文生成のボトルネックになる。K/V だけをヘッド間で共有するのが MQA と GQA だ。この章では 3 方式を 1 つの実装で書き、違いが「Q ヘッドがどの K/V を引くか」の対応表だけであることを確かめる。共有ではなく圧縮で削る MLA も最後に見る。
+マルチヘッド attention はヘッドごとに独立の K/V を持つが、生成時にキャッシュする K/V のメモリはヘッド数に比例して膨らみ、長文生成のボトルネックになる。K/V だけをヘッド間で共有するのが MQA と GQA だ。この章では 3 方式を 1 つの実装で書き、違いが「Q ヘッドがどの K/V を引くか」の対応表だけであることを確かめる。圧縮で削る MLA も最後に見る。
 </Summary>
 
 ## この章で作るもの

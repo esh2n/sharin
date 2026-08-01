@@ -9,7 +9,7 @@ import FigureBox from '../components/figures/FigureBox.vue'
 > 実装: [`llm/kvcache/`](https://github.com/esh2n/sharin/tree/main/llm/kvcache) / 実行: `go test ./llm/kvcache/`
 
 <Summary>
-LLM の生成は 1 トークンずつ進み、各ステップで過去全トークンの K と V が要る。毎回作り直すと合計コストは系列長の二次で伸びるが、K/V は位置ごとに不変なので保存して使い回せば線形に落ちる。これが KV キャッシュ。もう 1 つの柱が speculative decoding で、軽いドラフトに先読みさせて本命が一括検証し、出力を一切変えずにパス数を減らす。この章では両方を実装し、その保証をテストで固定する。
+生成は 1 トークンずつ進み、各ステップで過去全トークンの K と V が要る。毎回作り直すと合計コストは系列長の二次だが、位置ごとに不変なので保存して使い回せば線形に落ちる。これが KV キャッシュ。もう 1 つの柱が speculative decoding で、軽いドラフトに先読みさせて本命が一括検証し、出力を一切変えずにパス数を減らす。両方を実装し、その保証をテストで固定する。
 </Summary>
 
 ## この章で作るもの

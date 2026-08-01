@@ -8,7 +8,7 @@ import Summary from '../components/Summary.vue'
 > 実装: [`rate-limiter/`](https://github.com/esh2n/sharin/tree/main/rate-limiter) / 実行: `go test ./rate-limiter/`
 
 <Summary>
-サーバーに来るリクエストの数を、単位時間あたりで頭打ちにする仕組みを作る。token bucket から sliding window まで4方式を書いてみると、どれも「一瞬に集中するアクセス(バースト)をどこまで許すか」の選び方が違うだけだと分かる。何を守りたいかで正解が変わる、という話。
+サーバーに来るリクエストの数を、単位時間あたりで頭打ちにする仕組みを作る。token bucket から sliding window まで4方式を書いてみると、どれも「一瞬に集中するアクセス(バースト)をどこまで許すか」の選び方が違うだけだと分かる。何を守りたいかで正解が変わる。固定窓は窓の変わり目で上限の2倍を通してしまう、といった穴も数えて確かめる。
 </Summary>
 
 ## この章で作るもの

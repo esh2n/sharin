@@ -7,7 +7,7 @@ import FigureBox from '../components/figures/FigureBox.vue'
 # Claude(Constitutional AI)
 
 <Summary>
-Claude の系譜を特徴づけるのは、後段学習の設計思想だ。RLHF は人間のラベラーに依存し、有害コンテンツの選別を人に負わせ、判断基準がラベラー集団の中に暗黙に埋まる。Constitutional AI は基準を明文化した原則の文書に置き換え、モデル自身が原則に照らして自分の応答を批評・修正し、AI が選好を採点する(RLAIF)。この章ではその 2 段階の仕組みと、Claude 各世代の展開を追う。
+Claude の系譜を特徴づけるのは、後段学習の設計思想だ。RLHF は人間のラベラーに依存し、判断基準がラベラー集団の中に暗黙に埋まる。Constitutional AI は基準を明文化した原則の文書に置き換え、モデル自身が原則に照らして自分の応答を批評・修正し、AI が選好を採点する(RLAIF)。この章ではその 2 段階の仕組みと、Claude 各世代の展開を追う。
 </Summary>
 
 ## この章で読むもの

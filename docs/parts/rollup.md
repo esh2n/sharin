@@ -7,7 +7,7 @@ import FigureBox from '../components/figures/FigureBox.vue'
 # Rollup(Layer2 と fraud proof / validity proof)
 
 <Summary>
-L1 は安全な代わりに遅く、手数料も高い。ロールアップは取引の実行を L2 に逃がし、結果の要約(state root)と取引データだけを L1 に記録して速くする。問題は、L1 が再実行しないなら sequencer の嘘をどう見抜くか。答えは 2 つあり、事後に暴く optimistic(fraud proof)と、事前に証明する zk(validity proof)で、確定の速さと検証コストが逆になる。
+L1 は安全な代わりに遅く高い。ロールアップは実行を L2 に逃がし、結果の要約(state root)と取引データだけを L1 に記録する。問題は、L1 が再実行しないなら sequencer の嘘をどう見抜くか。答えは 2 つ。事後に暴く optimistic(fraud proof)と、事前に証明する zk(validity proof)で、確定の速さと検証コストが逆になる。
 </Summary>
 
 ## この章で作るもの

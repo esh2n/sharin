@@ -17,7 +17,7 @@ const stack = [
 > 実装: [`network/httpserver/`](https://github.com/esh2n/sharin/tree/main/network/httpserver) / 実行: `go test ./network/httpserver/`
 
 <Summary>
-Express も Rails も Go の net/http も、下でやっていることは同じで、届いた「ただのテキスト」を読んで、それに応じたテキストを返しているだけになる。テキストを欠けず順番どおり運ぶ仕事は、下の層(TCP)が請け負ってくれる。この章では生のバイト列を受け取り、HTTP リクエストを手でパースして、レスポンスを手で組む。フレームワークが隠しているものの正体が、200行ほどで丸見えになる。
+Express も Rails も Go の net/http も、下でやっていることは同じだ。届いた「ただのテキスト」を読んで、テキストを返す。テキストを欠けず順番どおり運ぶ仕事は、下の層(TCP)が請け負ってくれる。この章では生のバイト列を受け取り、HTTP リクエストを手でパースして、レスポンスを手で組む。フレームワークが隠しているものの正体が、200行ほどで丸見えになる。
 </Summary>
 
 ## この章で作るもの

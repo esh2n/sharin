@@ -31,7 +31,7 @@ const bitRows = [
 > 実装: [`id-generation/`](https://github.com/esh2n/sharin/tree/main/id-generation) / 実行: `go test ./id-generation/`
 
 <Summary>
-サーバーが何台あっても、誰にも問い合わせずにその場で一意なIDを作る方法を4つ実装する。UUIDv4/v7、ULID、Snowflake は、どれも時刻・乱数・ノードIDという同じ材料の配合を変えているだけ。時刻を先頭のビットに置くとDBのインデックスに優しくなる、というのが後の章にも効いてくる。
+サーバーが何台あっても、誰にも問い合わせずにその場で一意なIDを作る方法を4つ実装する。UUIDv4/v7、ULID、Snowflake は、どれも時刻・乱数・ノードIDという同じ材料の配合を変えているだけ。時刻を先頭のビットに置くとDBのインデックスに優しくなり、これが後の章にも効いてくる。Snowflake だけは乱数を使わず、そのぶんノード番号を配る運用が要る。
 </Summary>
 
 ## この章で作るもの

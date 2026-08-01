@@ -7,7 +7,7 @@ import FigureBox from '../components/figures/FigureBox.vue'
 # オープンモデル(Llama / Mistral / DeepSeek / Qwen)
 
 <Summary>
-GPT-4 や Claude が構成を非公開にした一方、重みを公開するオープンモデルが猛追している。Llama が公開の流れを作り、Mistral が小型高効率、DeepSeek が学習効率と MLA・MoE、Qwen が多言語と幅広いサイズを持ち込んだ。この章では部品編で作った RoPE・GQA・RMSNorm・SwiGLU・MoE が各社でどう選ばれているかを対応表で読み、公開ゆえ中身を検証できる強みを追う。
+GPT-4 や Claude が構成を非公開にした一方、重みを公開するオープンモデルが猛追している。Llama が公開の流れを作り、Mistral・DeepSeek・Qwen がそれぞれ別の軸で追った。この章では部品編で作った RoPE・GQA・RMSNorm・SwiGLU・MoE が各社でどう選ばれているかを対応表で読み、公開ゆえ中身を検証できる強みを追う。
 </Summary>
 
 ## この章で読むもの
