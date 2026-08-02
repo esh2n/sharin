@@ -251,6 +251,7 @@ export default defineConfig({
             text: "製品で読み替える",
             items: [
               { text: "4つのハーネスで読み替える", link: "/parts/agent-stack" },
+              { text: "強いほうを既定にしない", link: "/parts/model-choice" },
               { text: "編成をモデルの内側に隠す", link: "/parts/orchestrator-model" },
             ],
           },
