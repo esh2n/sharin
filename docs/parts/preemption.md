@@ -132,7 +132,7 @@ import FigureBox from '../components/figures/FigureBox.vue'
 裏どり:
 
 - **PriorityClass**: 優先度は名前付きのオブジェクトとして定義し、Pod から参照する。`globalDefault` を持つものが1つだけ既定になる
-- **preemptionPolicy**: `Never` にすると、行列では優先されるが奪わない。上の表の真ん中の列がこれになる
+- **preemptionPolicy**: 既定は `PreemptLowerPriority` で、低いほうから奪う。`Never` にすると、行列では優先されるが奪わない。上の表の真ん中の列がこれになる
 - **system-cluster-critical / system-node-critical**: 組み込みの高優先度。[DaemonSet](/parts/daemonset) の一部はこれを使って場所を確保する
 - **nominatedNodeName**: 奪ったあと、その場所が確保されたことを表す印。実物では犠牲の終了処理を待つ間、ここに名前が入る
 - **PDB は best-effort**: 候補ノードの順位付けでは考慮されるが、他に選択肢が無ければ破って追い出す

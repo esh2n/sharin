@@ -109,7 +109,7 @@ import FigureBox from '../components/figures/FigureBox.vue'
 
 - **Pod Topology Spread Constraints**: `topologyKey` で区画を指定し、`maxSkew` で偏りの上限を宣言する
 - **whenUnsatisfiable**: `DoNotSchedule`(制約)と `ScheduleAnyway`(願い)の2つ。前者は filter、後者は score として働く
-- **既定の制約**: 実物のスケジューラには、ノードとゾーンに対する既定の緩い制約が入っている
+- **既定の制約**: 実物のスケジューラには、ノードとゾーンに対する既定の制約が入っている。どちらも `maxSkew` が 3 で `ScheduleAnyway`、つまり願いのほうになる。**Pod が自分で制約を書くと、この既定は使われない**
 - **podAntiAffinity との違い**: あちらは「同じ区画に置くな」という強い形。topology spread は偏りの度合いを数で表せる
 
 ## 簡略化したこと

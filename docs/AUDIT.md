@@ -219,7 +219,28 @@
 | autoscaler | 既定 10% は一致。公式が「設定できる許容誤差」と書くようになったので追記 |
 | init-container | 10秒→倍→5分は既定として一致。**ノードごとに頭打ちを 1〜300 秒で変えられる**設定と、既定自体を 1 秒・60 秒へ落とす設定が入ったので追記 |
 
+続けて Kubernetes 側の14章:
+
+| 章 | 結果 |
+|---|---|
+| admission | 4項目すべて一致。`failurePolicy` の既定 `Fail` と `timeoutSeconds` の 1〜30 秒は、解説ページではなく API 一覧のほうに書かれている |
+| rollout | 4項目すべて一致。25% ずつ・600秒・`minReadySeconds` の既定 0・`ProgressDeadlineExceeded` まで合った |
+| probe | 一致。裏どりが数値でなく項目名の列挙なので、直すところが無かった |
+| rbac | 4項目すべて一致 |
+| quota | 一致 |
+| pod-lifecycle | 一致 |
+| cpu-throttling | 一致。`cpu.max` の `"max 100000"`、`cpu.max.burst` の既定 0、`cpu.weight` の既定 100 まで確認 |
+| csi | `reclaimPolicy` の既定 `Delete` は一致。**`volumeBindingMode` の既定は `Immediate`** なのに「後者が既定に近い扱い」と曖昧に書いていたので、既定と推奨を分けて書き直した |
+| statefulset | **「明示的に消すまで PVC は残り続ける」が今は不正確**。`persistentVolumeClaimRetentionPolicy` で消させられる(既定は `Retain`)ので追記 |
+| etcd-ops | **`NOSPACE` は「読み取り専用」ではなく「読み取りと削除だけ」**。書き込みだけが止まるので、消して減らす道が残っている。これは復旧手順の前提そのもの。2GiB という数値が運用ページには無いことも書き添えた |
+| topology | 既定の制約が実在することは一致。値(どちらも `maxSkew` 3・`ScheduleAnyway`)と、Pod が自分で書くと既定が使われないことを具体化 |
+| job | `Allow` 既定は一致。**`Forbid` で飛ばした回に例外がある**(前の実行が終わったとき `startingDeadlineSeconds` の中なら走ることがある)ので追記 |
+| preemption | 5項目すべて一致。`preemptionPolicy` の既定 `PreemptLowerPriority` を追記 |
+| network-policy | 4項目すべて一致。通るには送る側の egress と受ける側の ingress の**両方**が許す必要がある点を追記 |
+
 **この作業で分かったこと**: 一次資料を要約させると、**確信のある口調で違う数字が返ることがある**。CrashLoopBackOff で「初期値 100ms・ゲート名 `PodBackoffOnUnhealthyPod`・1.27 から」という答えが返ったが、当て直すと初期値は 10 秒で、ゲート名も版も違っていた。**数字は必ず二度当てる**。
+
+**見つかった欠陥の型**: 22章で直したのは10箇所で、うち**7箇所は「既定は合っているが、いまは変えられる」型**だった(HPA の許容誤差、CrashLoopBackOff の頭打ち、StatefulSet の PVC、Codex の `sandbox_mode`、TLS の終端)。上流は既定値を変えずに、設定できる範囲を広げる方向で動く。**間違いより、書いた当時は正しかった断定のほうが多い**。
 
 ## 機械で見ている検査(2026-08-02)
 

@@ -133,7 +133,7 @@ StatefulSet のボリュームが Pod より長生きなのは、下に別の層
 - **`ReadWriteOncePod`**: 本当に1つの Pod からだけにしたいときのために、後から追加された。`ReadWriteOnce` がノード単位であることの裏返し
 - **attach detach controller**: 繋ぐ・外すは中央のコントローラが行う。ノード側の kubelet が行うのは見せる・隠すだけ
 - **ノード障害時の待ち時間**: ノードが `NotReady` になってから強制的に外すまで、既定でしばらく待つ。二重書き込みを避けるため
-- **`volumeBindingMode`**: `Immediate` と `WaitForFirstConsumer`。区画のある環境では後者が既定に近い扱いになる
+- **`volumeBindingMode`**: `Immediate` と `WaitForFirstConsumer` の2つで、**既定は `Immediate`**。ただし区画のある環境では `Immediate` だと置けない場所に領域を作ってしまうので、`WaitForFirstConsumer` が実質の推奨になる
 - **`reclaimPolicy`**: `Delete` と `Retain`。動的に作ったものは `Delete` が既定で、消し忘れると課金が続く
 
 ## 簡略化したこと

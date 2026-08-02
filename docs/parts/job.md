@@ -109,7 +109,7 @@ import FigureBox from '../components/figures/FigureBox.vue'
 - **Job**: `completions` と `parallelism` が別の設定で、`backoffLimit` が諦める点になる
 - **再試行の間隔**: 実物は失敗のたびに待ち時間が指数的に延びる。上限に達するまで無駄に速く試さない
 - **CronJob の concurrencyPolicy**: `Allow` / `Forbid` / `Replace` の3つ。既定は `Allow`
-- **飛ばされた実行**: `Forbid` で飛ばされた回は後から埋め合わされない。`startingDeadlineSeconds` を過ぎた回も同様
+- **飛ばされた実行**: `Forbid` で飛ばされた回は後から埋め合わされない。`startingDeadlineSeconds` を過ぎた回も同様。ただし1つ例外があって、`Forbid` で前の実行が終わったとき、`startingDeadlineSeconds` の中に収まっていれば実行が起きることがある
 
 ## 簡略化したこと
 

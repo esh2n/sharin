@@ -110,7 +110,7 @@ StatefulSet はこの前提を3つ置き換える。どれも「どの Pod も�
 
 - **StatefulSet**: 安定した名前、順序保証、`volumeClaimTemplates` による序数ごとのボリューム
 - **podManagementPolicy**: 既定は `OrderedReady`。`Parallel` にすると順序保証を捨てて同時に立ち上げられる
-- **PVC の寿命**: StatefulSet を消しても PVC は残る。縮小でも残る。明示的に消すまで残り続ける
+- **PVC の寿命**: StatefulSet を消しても PVC は残る。縮小でも残る。ただしこれは既定の話で、`persistentVolumeClaimRetentionPolicy` に `whenDeleted` と `whenScaled` を書けば消させられる。既定は両方とも `Retain`
 - **headless Service**: `clusterIP: None` にすると仮想 IP を持たず、`db-0.db` のように個体を直接引ける
 
 ## 簡略化したこと
