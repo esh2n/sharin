@@ -53,6 +53,7 @@ export default defineConfig({
           { text: "B-Treeページストア", link: "/parts/btree-page-store" },
           { text: "B-Tree + WAL", link: "/parts/btree-wal" },
           { text: "ミニSQL", link: "/parts/mini-sql" },
+          { text: "値が構文になる(SQLインジェクション)", link: "/parts/sql-injection" },
           { text: "セカンダリインデックス", link: "/parts/secondary-index" },
           { text: "複合インデックス", link: "/parts/composite-index" },
           { text: "MVCC / 分離レベル", link: "/parts/mvcc" },
