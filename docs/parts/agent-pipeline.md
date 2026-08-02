@@ -336,5 +336,6 @@ steps:
 - [Claude Code GitHub Actions](https://code.claude.com/docs/en/github-actions) — 決める節をワークフローに置く形
 - [ロールアウト、ロールバック、トラフィック移行(Cloud Run)](https://docs.cloud.google.com/run/docs/rollouts-rollbacks-traffic-migration) — 出すと開けるを分けるコマンド
 - [Gradual deployments(Cloudflare Workers)](https://developers.cloudflare.com/workers/configuration/versions-and-deployments/gradual-deployments/) — 同じ形を別の名前で
+- [Wrangler の Workers コマンド](https://developers.cloudflare.com/workers/wrangler/commands/workers/) — `versions upload` / `versions deploy` / `rollback` の書式そのもの
 - [google-github-actions/auth](https://github.com/google-github-actions/auth) — 鍵を置かない認証
 - 前の章: [エージェントの枠組み](/parts/agent-harness) / [隔離して走らせる](/parts/agent-isolation) / [人が見る前に落とす](/parts/agent-gates)

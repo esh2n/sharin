@@ -124,7 +124,7 @@ Pod を何個にするかを、負荷の測定値から決める。式は比例�
 裏どり:
 
 - **HorizontalPodAutoscaler**: `desiredReplicas = ceil(currentReplicas × currentMetric / desiredMetric)` という式そのもの
-- **HPA の許容誤差**: 既定 10%。目標との差がこの幅の内側なら動かさない
+- **HPA の許容誤差**: 既定 10%。目標との差がこの幅の内側なら動かさない。公式の説明では「設定できる許容誤差、既定は 0.1」と書かれていて、HPA ごとに変えられる
 - **behavior / stabilizationWindowSeconds**: 縮小の既定は 300 秒、拡大は 0 秒。上下を別々に設定できる
 - **Cluster Autoscaler**: Pod が置けずに Pending のままならノードを増やす。HPA とは別の層で、役割が分かれている
 - **KEDA**: キューの長さなど外部指標で駆動する拡張。指標をどこから取るかを差し替える発想

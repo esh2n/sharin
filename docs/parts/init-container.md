@@ -135,7 +135,7 @@ import FigureBox from '../components/figures/FigureBox.vue'
 
 - **init container**: 宣言順に1つずつ実行され、すべて成功するまでアプリコンテナは開始されない。失敗すると `restartPolicy` に従って再試行する
 - **sidecar container**: `initContainers` に `restartPolicy: Always` を付けたものが sidecar として扱われる。準備が整った時点で次へ進み、アプリの終了後に停止する
-- **CrashLoopBackOff**: 再起動の待ち時間は 10 秒から倍に伸び、5 分で頭打ちになる
+- **CrashLoopBackOff**: 再起動の待ち時間は 10 秒から倍に伸び、5 分で頭打ちになる。これは既定で、いまはノードごとに頭打ちを 1 秒から 300 秒の間で変えられる。頭打ちを 10 秒より短くすると、最初の待ち時間もそこまで下がる。既定そのものを 1 秒と 60 秒へ落とす設定も別に用意されている
 - **service mesh**: プロキシを注入する構成では、この起動順序が実際の問題として現れる
 
 ## 簡略化したこと
