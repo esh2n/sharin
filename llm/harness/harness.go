@@ -460,3 +460,59 @@ func lastObs(steps []Step) string {
 	}
 	return steps[len(steps)-1].Obs
 }
+
+// #region fanout
+
+// Fanout は同じ仕事を何人に配ったかの結果。
+type Fanout struct {
+	// Workers は配った人数。
+	Workers int
+	// Calls はモデルを呼んだ合計回数。
+	Calls int
+	// InputChars は渡した窓の合計。人数ぶん重ねて払う。
+	InputChars int
+	// Wall は壁時計。並列なので、いちばん遅い1人で決まる。
+	Wall int
+	// Serial は直列にやったときの壁時計。比べる相手になる。
+	Serial int
+	// Choices はモデルが選べたことの数。
+	Choices int
+	// WorkChars は子が生み出した記録の合計。親はこれを読まない。
+	WorkChars int
+}
+
+// Spread は同じ仕事を n 人へ配って、費用と時間と選べることを数える。
+//
+// 子は真っ新な窓から始まるので、モデルも道具も毎回作り直す。
+// 前置き(何をしてほしいか)も**人数ぶん渡し直す**ことになる。
+// ここが費用の効くところで、人数に正比例して増える。
+//
+// 一方で選べることは増えない。n 本の答えが出るだけで、
+// 子は互いを知らないので、混ぜて 1 本にはできないからだ。
+func Spread(n int, brief []Step, newModel func() Model, newTools func() map[string]Tool, cfg LoopConfig) Fanout {
+	if n < 1 {
+		n = 1
+	}
+	f := Fanout{Workers: n, Choices: 1}
+	for i := 0; i < n; i++ {
+		r := Loop(newModel(), newTools(), cfg)
+		f.Calls += r.ModelCalls
+		f.InputChars += r.InputChars + totalSize(brief)
+		f.WorkChars += totalSize(r.Steps)
+		if r.ToolCalls > f.Wall {
+			f.Wall = r.ToolCalls // いちばん遅い1人
+		}
+		f.Serial += r.ToolCalls
+	}
+	return f
+}
+
+// Integrate は配った結果を統合する側の負担。
+//
+// 親が受け取るのは要約だけなので、読む量は人数ぶんの要約で済む。
+// 代わりに**現物を見ていない**。ここが安さの正体になる。
+func Integrate(f Fanout, summary int) (read int, sawWork bool) {
+	return f.Workers * summary, false
+}
+
+// #endregion fanout

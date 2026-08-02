@@ -245,6 +245,7 @@ export default defineConfig({
               { text: "隔離して走らせる", link: "/parts/agent-isolation" },
               { text: "人が見る前に落とす", link: "/parts/agent-gates" },
               { text: "グラフを CI に写す", link: "/parts/agent-pipeline" },
+              { text: "配ると何が増えるか", link: "/parts/fanout" },
             ],
           },
           {

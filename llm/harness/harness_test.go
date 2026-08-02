@@ -655,3 +655,75 @@ func maxOf(m map[string]int) int {
 	}
 	return n
 }
+
+// #region spread
+
+// 配る人数を増やすと、費用は正比例で増え、選べることは増えない。
+func TestSpreadingCostsMoreAndDecidesNoMore(t *testing.T) {
+	brief := []Step{{Tool: "brief", Obs: "認証まわりを直す。既存の作法に合わせること"}}
+	plan := []Action{{Tool: "search"}, {Tool: "read"}, {Tool: "edit"}, {Tool: "test"}}
+
+	newModel := func() Model { return &planner{plan: plan} }
+	newTools := func() map[string]Tool { tools, _ := fixTools(); return tools }
+
+	t.Logf("前置き %d 文字を、人数ぶん渡し直す", totalSize(brief))
+	t.Logf("%-8s %8s %12s %10s %10s %10s", "人数", "呼び出し", "渡した文字", "壁時計", "直列なら", "選べること")
+
+	var chars, wall []int
+	for _, n := range []int{1, 2, 3} {
+		f := Spread(n, brief, newModel, newTools, LoopConfig{MaxCalls: 10})
+		chars = append(chars, f.InputChars)
+		wall = append(wall, f.Wall)
+		t.Logf("%-8d %8d %12d %10d %10d %10d",
+			f.Workers, f.Calls, f.InputChars, f.Wall, f.Serial, f.Choices)
+	}
+
+	// 費用は人数に正比例する。
+	if chars[2] != chars[0]*3 || chars[1] != chars[0]*2 {
+		t.Fatalf("正比例していない: %v", chars)
+	}
+	// 壁時計は増えない。並列だからだ。
+	for _, w := range wall {
+		if w != wall[0] {
+			t.Fatalf("壁時計が変わった: %v", wall)
+		}
+	}
+	// 選べることは 1 のまま。n 本出ても、混ぜて 1 本にはできない。
+	for _, n := range []int{1, 2, 3} {
+		if got := Spread(n, brief, newModel, newTools, LoopConfig{MaxCalls: 10}).Choices; got != 1 {
+			t.Fatalf("%d 人で選べることが %d", n, got)
+		}
+	}
+	// 0 人以下は 1 人として扱う。配らないという選択肢は、この関数には無い。
+	if Spread(0, brief, newModel, newTools, LoopConfig{MaxCalls: 10}).Workers != 1 {
+		t.Fatal("0 人の扱いが違う")
+	}
+	t.Logf("3 人にすると 渡した文字 %.1f 倍 / 壁時計 %.1f 倍 / 選べること %.1f 倍",
+		float64(chars[2])/float64(chars[0]),
+		float64(wall[2])/float64(wall[0]), 1.0)
+}
+
+// 統合する側は、人数ぶんの要約を読む。現物は読まない。
+func TestIntegratorReadsSummariesNotTheWork(t *testing.T) {
+	brief := []Step{{Tool: "brief", Obs: "認証まわりを直す"}}
+	plan := []Action{{Tool: "search"}, {Tool: "read"}, {Tool: "edit"}, {Tool: "test"}}
+	f := Spread(3, brief, func() Model { return &planner{plan: plan} },
+		func() map[string]Tool { tools, _ := fixTools(); return tools },
+		LoopConfig{MaxCalls: 10})
+
+	const summary = 20 // 要約 1 本の長さ
+	read, sawWork := Integrate(f, summary)
+	t.Logf("子が作った記録 %d 文字 / 親が読む要約 %d 文字(%d 本)", f.WorkChars, read, f.Workers)
+	t.Logf("親は現物を見たか: %v", sawWork)
+
+	// 親の読む量は、子が作った記録よりずっと小さい。
+	if read >= f.WorkChars/2 {
+		t.Fatalf("親の負担が小さくなっていない: %d と %d", read, f.WorkChars)
+	}
+	// そして現物は見ていない。安さの正体はここになる。
+	if sawWork {
+		t.Fatal("親が現物を見たことになっている")
+	}
+}
+
+// #endregion spread
