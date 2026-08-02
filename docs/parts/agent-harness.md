@@ -5,12 +5,12 @@ import Summary from '../components/Summary.vue'
 import FigureBox from '../components/figures/FigureBox.vue'
 </script>
 
-# エージェントの枠組み(プロンプト・文脈・ハーネス・ループ・グラフ)
+# エージェントの枠組み(プロンプト・コンテキスト・ハーネス・ループ・グラフ)
 
 > 実装: [`llm/harness/`](https://github.com/esh2n/sharin/tree/main/llm/harness) / 実行: `go test ./llm/harness/`
 
 <Summary>
-言語モデルに仕事をさせる枠組みは、プロンプト・文脈・ハーネス・ループ・グラフと語彙が増えてきた。層ごとに「1回ぶん」と数える単位が違う。そして入力の上限は有限なので、回すほど古い側から押し出される。同じ台本でも、直近だけ残すと同じファイルを8回読み直して終わらず、畳めば12手で終わった。捨てた観測299文字は、24文字の覚え書きで足りている。
+言語モデルに仕事をさせる枠組みは、プロンプト・コンテキスト・ハーネス・ループ・グラフと語彙が増えてきた。層ごとに「1回ぶん」と数える単位が違う。そして入力の上限は有限なので、回すほど古い側から押し出される。同じ台本でも、直近だけ残すと同じファイルを8回読み直して終わらず、畳めば12手で終わった。捨てた観測299文字は、24文字の覚え書きで足りている。
 </Summary>
 
 ## この章で作るもの
@@ -22,12 +22,14 @@ import FigureBox from '../components/figures/FigureBox.vue'
 | 層 | 1回ぶんの単位 | そこで決めること |
 |---|---|---|
 | プロンプト | 1入力 | どう訊くか |
-| 文脈 | 窓に残るもの | 次に訊くとき、何を見せるか |
+| コンテキスト | 窓に残るもの | 次に訊くとき、何を見せるか |
 | ハーネス | 1パス | 訊く → 道具 → 観測 の1周に何を置くか |
 | ループ | 実行全体 | いつ止めるか |
 | グラフ | ジョブ全体 | どの道を通ってよいか |
 
-**窓**というのは、モデルに一度に渡せる入力の上限のことだ。実物ではトークン数で数えるが、ここでは文字数で数える。仕事を進めるほど記録は伸びるのに窓は伸びないので、どこかで入らなくなる。そのとき何を残して何を捨てるかを決めるのが、文脈の層だ。
+英語では prompt、context、harness、loop、graph と呼ばれる。**コンテキスト**の層を指す言い方として、prompt engineering に対する context engineering という語もある。
+
+**窓**(コンテキストウィンドウ)というのは、モデルに一度に渡せる入力の上限のことだ。実物ではトークン数で数えるが、ここでは文字数で数える。仕事を進めるほど記録は伸びるのに窓は伸びないので、どこかで入らなくなる。そのとき何を残して何を捨てるかを決めるのが、コンテキストの層だ。
 
 上の並びは、順に強くなっていく話に見える。だが実際に起きたのはそう単純ではない。2026年、LangChain は事前に定義した LangGraph のワークフローから、より agentic な中核ループへ移した。GPT Researcher も、グラフに組んだ多エージェントの流れを Deep Agents に置き換えた。**グラフからループへ、逆向きに戻っている**。
 
@@ -175,13 +177,13 @@ import FigureBox from '../components/figures/FigureBox.vue'
 
 ③で消えたものは、実は2種類ある。**何をやったか**と、**何が分かったか**だ。この2つは別々に捨てられる。
 
-まず、溢れたぶんを道具名と引数だけの行に畳む:
+まず、溢れたぶんを道具名と引数だけの行に畳む。要約して詰め直すこの手は compaction と呼ばれる:
 
 <<< ../../llm/harness/harness.go#fold{go}
 
 観測は落ちるが、`read tax.go` という行は残る。だからモデルは「読んだ」ことを知っていて、読み直すのは中身が要る当たりの1本だけになる。テストで、畳んだ窓では `Did` が真のまま `Obs` が読めなくなること、直近だけ残す窓ではどちらも読めないことを固定した。
 
-もう1つは、要点を窓の外へ書き出しておく手だ:
+もう1つは、要点を窓の外へ書き出しておく手だ。structured note-taking と呼ばれる:
 
 <<< ../../llm/harness/harness.go#memo{go}
 
@@ -256,7 +258,7 @@ import FigureBox from '../components/figures/FigureBox.vue'
 
 ## どの層が壊れているか
 
-5つの層は、直しやすさの順でもある。プロンプトは1行書き換えればすぐ試せる。文脈の残し方はコードを1つ差し替える。ループの止め方は設定を変える。グラフは描き直しになる。
+5つの層は、直しやすさの順でもある。プロンプトは1行書き換えればすぐ試せる。コンテキストの残し方はコードを1つ差し替える。ループの止め方は設定を変える。グラフは描き直しになる。
 
 直しやすい順と、壊れる場所の分布は一致しない。だから起きるのは、**下の層で壊れているものを、いちばん上の層で直そうとすること**だ。
 
@@ -266,8 +268,8 @@ import FigureBox from '../components/figures/FigureBox.vue'
 
 | 症状 | まず書き足したくなること | 実際に見るところ |
 |---|---|---|
-| 同じ道具を何度も使う | 「二度やるな」 | 前の手が窓に残っているか(文脈) |
-| 中身を取り違える | 「よく読め」 | 観測が畳まれていないか(文脈) |
+| 同じ道具を何度も使う | 「二度やるな」 | 前の手が窓に残っているか(コンテキスト) |
+| 中身を取り違える | 「よく読め」 | 観測が畳まれていないか(コンテキスト) |
 | 止まらない | 「終わったら答えよ」 | 上限が置いてあるか(ループ) |
 | 毎回違う手順を通る | 「この順でやれ」 | 順が決まっているならグラフへ |
 | 失敗のたびに全部やり直す | 「やり直しは最小限に」 | 戻る先が書いてあるか(グラフ) |
@@ -290,14 +292,14 @@ import FigureBox from '../components/figures/FigureBox.vue'
 | | 1回ぶんの単位 | 観測を使えるか | 止め方 | やり直し | 窓の扱い |
 |---|---|---|---|---|---|
 | プロンプト | 1入力 | **使えない** | 1回で終わる | 無し | 溢れない |
-| 文脈 | 窓に残るもの | 残っていれば使える | — | やり直しの量を左右する | **ここで決める** |
+| コンテキスト | 窓に残るもの | 残っていれば使える | — | やり直しの量を左右する | **ここで決める** |
 | ハーネス + ループ | 1パス / 実行全体 | 使える | 外から上限 | 最初から | 回すほど埋まる |
 | **グラフ** | ジョブ全体 | 使える | 訪問回数の上限 | **節の単位** | 決める節だけ渡す |
 | グラフの上にループ | 両方 | 使える | 両方 | 節の単位 | 中間 |
 
 裏どり:
 
-- **文脈の層は名前がついている**: Anthropic は context engineering を「推論のあいだ、最適なトークンの集合を選び、保ち続けるための一連の戦略」と定義し、prompt engineering(指示をどう書き、どう並べるか)と区別している。**この章の③④がそこに当たる**
+- **コンテキストの層は名前がついている**: Anthropic は context engineering を「推論のあいだ、最適なトークンの集合を選び、保ち続けるための一連の戦略」と定義し、prompt engineering(指示をどう書き、どう並べるか)と区別している。**この章の③④がそこに当たる**
 - **窓を広げれば済む話ではない**: 同じ整理が、トークン数が増えるほど正しく思い出せる割合が落ちる現象を context rot と呼び、「attention budget(注意の予算)は新しいトークンを入れるたびに減る」と言い切っている。**入るかどうかと、効くかどうかは別**になる
 - **畳むことにも名前がある**: 窓の上限に近づいた会話を要約して、その要約から新しい窓を始めることを compaction と呼ぶ。窓の外へ書き出すほうは structured note-taking で、「窓の外の記憶に定期的にメモを書き出す」と説明されている。この章の `Fold` と `note` はその最小形になる
 - **効き目の数字**: Anthropic の agentic search の内部評価では、context editing だけで 29%、memory tool と併せて 39% 改善したと報告されている。100ターンの検索では、トークン消費が 84% 減り、そのままでは窓を使い切って失敗する仕事が完走したとしている
@@ -322,7 +324,7 @@ import FigureBox from '../components/figures/FigureBox.vue'
 
 ## 参考資料
 
-- [Effective context engineering for AI agents](https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents) — 文脈の層の定義、attention budget、compaction、structured note-taking
+- [Effective context engineering for AI agents](https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents) — コンテキストの層の定義、attention budget、compaction、structured note-taking
 - [Managing context on the Claude Developer Platform](https://claude.com/blog/context-management) — context editing と memory tool の効き目
 - [Getting started with loops](https://claude.com/blog/getting-started-with-loops) — ループの4分類と止め方
 - [The best AI agent frameworks in 2026](https://www.langchain.com/resources/ai-agent-frameworks) — グラフとハーネスの使い分け

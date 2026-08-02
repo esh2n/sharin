@@ -41,11 +41,11 @@ func TestCacheReducesProjectionsToLinear(t *testing.T) {
 	_, opsWith := m.GenerateWithCache(prompt, n)
 
 	// キャッシュ有り: 各位置の K/V を一度だけ作る。プロンプト 3 + 生成 19
-	// (最後の生成トークンは文脈として使われないので射影不要)。
+	// (最後の生成トークンはコンテキストとして使われないので射影不要)。
 	if opsWith != len(prompt)+n-1 {
 		t.Fatalf("cached ops = %d, want %d", opsWith, len(prompt)+n-1)
 	}
-	// キャッシュ無し: ステップ k で文脈(プロンプト + 生成済み k-1)を全部作り直す。
+	// キャッシュ無し: ステップ k でコンテキスト(プロンプト + 生成済み k-1)を全部作り直す。
 	want := 0
 	for step := 1; step <= n; step++ {
 		want += len(prompt) + step - 1

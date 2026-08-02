@@ -2,7 +2,7 @@
 import { computed, ref } from "vue";
 import DemoShell from "./DemoShell.vue";
 
-// llm/harness の文脈まわり(Go)を移植。台本なので何回動かしても同じ手数になる。
+// llm/harness のコンテキストまわり(Go)を移植。台本なので何回動かしても同じ手数になる。
 
 const FILES = ["calc.go", "tax.go", "fee.go", "cart.go", "item.go", "user.go", "order.go", "view.go"];
 const HIT = "tax.go";

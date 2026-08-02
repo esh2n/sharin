@@ -4,7 +4,7 @@ import DemoShell from "./DemoShell.vue";
 
 // Gemini 章のデモ。
 // 「トークン化」: 画像/音声/テキストがパッチ/符号/サブワードを経て共通トークン列に合流。
-// 「文脈窓の比較」: 各モデル・入力サイズの文脈長を対数スケールで並べる。
+// 「コンテキストウィンドウの比較」: 各モデル・入力サイズのコンテキスト長を対数スケールで並べる。
 
 interface TokFrame {
   title: string;
@@ -48,7 +48,7 @@ const mergedTokens = [
   { t: "猫", k: "txt" }, { t: "が", k: "txt" }, { t: "鳴い", k: "txt" }, { t: "た", k: "txt" },
 ];
 
-// 文脈窓の比較(対数)
+// コンテキストウィンドウの比較(対数)
 const ctxItems = [
   { name: "GPT-3(2020)", tokens: 4096, kind: "model" },
   { name: "Claude 2", tokens: 100000, kind: "model" },
@@ -65,7 +65,7 @@ const fmtTok = (n: number) => (n >= 1e6 ? (n / 1e6).toFixed(0) + "M" : n >= 1000
 
 const modes = [
   { key: "token", label: "トークン化" },
-  { key: "ctx", label: "文脈窓の比較" },
+  { key: "ctx", label: "コンテキストウィンドウの比較" },
 ] as const;
 const mode = ref<"token" | "ctx">("token");
 const at = ref(0);
@@ -79,7 +79,7 @@ const tf = computed(() => tokFrames[at.value]);
 const note = computed(() =>
   mode.value === "token"
     ? tf.value.note
-    : "文脈窓を対数で並べた。Gemini 1.5 の 100 万トークンは、1 時間の動画や中規模コードベースを丸ごと 1 つの窓に収められる桁。マルチモーダルは入力のトークン数を押し上げるので、この長さと相乗する",
+    : "コンテキストウィンドウを対数で並べた。Gemini 1.5 の 100 万トークンは、1 時間の動画や中規模コードベースを丸ごと 1 つの窓に収められる桁。マルチモーダルは入力のトークン数を押し上げるので、この長さと相乗する",
 );
 
 const canPrev = computed(() => at.value > 0);
@@ -89,11 +89,11 @@ function prev() { if (canPrev.value) at.value--; }
 function next() { if (canNext.value) at.value++; }
 function last() { at.value = frameCount.value - 1; }
 
-const badge = computed(() => (mode.value === "token" ? tf.value.title : "文脈窓(対数)"));
+const badge = computed(() => (mode.value === "token" ? tf.value.title : "コンテキストウィンドウ(対数)"));
 </script>
 
 <template>
-  <DemoShell title="Gemini(マルチモーダルと長文脈)" badge-tone="neutral" :badge="badge">
+  <DemoShell title="Gemini(マルチモーダルと長コンテキスト)" badge-tone="neutral" :badge="badge">
     <div class="sd-controls">
       <span class="sd-seg">
         <span v-for="m in modes" :key="m.key" class="sd-seg-opt" :class="{ on: mode === m.key }" @click="setMode(m.key)">{{ m.label }}</span>
@@ -121,7 +121,7 @@ const badge = computed(() => (mode.value === "token" ? tf.value.title : "文脈�
       </div>
     </div>
 
-    <!-- 文脈窓 -->
+    <!-- コンテキストウィンドウ -->
     <div v-else class="gm-ctx">
       <div v-for="c in ctxItems" :key="c.name" class="gm-ctx-row" :class="c.kind">
         <span class="gm-ctx-name">{{ c.name }}</span>

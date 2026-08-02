@@ -4,7 +4,7 @@ import DemoShell from "./DemoShell.vue";
 
 // Claude 章のデモ。
 // 「CAIの流れ」: 初回応答 → 原則引用 → 自己批評 → 修正版 の 1 サイクル。
-// 「系譜」: 各世代の文脈窓の伸びと積まれた能力。
+// 「系譜」: 各世代のコンテキストウィンドウの伸びと積まれた能力。
 
 interface CaiStep {
   role: string;
@@ -53,7 +53,7 @@ interface Gen {
   added: string;
 }
 const gens: Gen[] = [
-  { name: "Claude 1 / 2", year: "2023", ctx: 100, added: "CAI を載せた最初の製品世代。文脈窓 100k で長文書読解を差別化" },
+  { name: "Claude 1 / 2", year: "2023", ctx: 100, added: "CAI を載せた最初の製品世代。コンテキストウィンドウ 100k で長文書読解を差別化" },
   { name: "Claude 3", year: "2024", ctx: 200, added: "Haiku/Sonnet/Opus の 3 段。画像入力。速度・費用・能力の選択を利用者に渡す設計" },
   { name: "Claude 3.5 / 3.7", year: "2024-25", ctx: 200, added: "コーディング強化と computer use。環境に作用するエージェントへの一歩" },
   { name: "Claude 4 系", year: "2025〜", ctx: 200, added: "長時間エージェント作業に最適化。thinking で推論モデルの軸と合流" },
@@ -109,7 +109,7 @@ const badge = computed(() => (mode.value === "cai" ? cs.value.role : `${gens[at.
         <span class="cl-track"><span class="cl-fill" :style="{ width: (g.ctx / maxCtx) * 100 + '%' }"></span></span>
         <span class="cl-ctx mono">{{ g.ctx }}k</span>
       </div>
-      <p class="cl-scale">バーは文脈窓(トークン)。窓の拡大と、その上に積まれた能力を世代ごとに見る</p>
+      <p class="cl-scale">バーはコンテキストウィンドウ(トークン)。窓の拡大と、その上に積まれた能力を世代ごとに見る</p>
     </div>
 
     <p class="cl-note">{{ note }}</p>

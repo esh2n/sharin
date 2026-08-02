@@ -9,7 +9,7 @@ import DemoShell from "./DemoShell.vue";
 // --- KV キャッシュ ---
 const PROMPT_LEN = 3;
 const GEN_STEPS = 10;
-// step k: 無し = 文脈全体(3+k-1)を作り直し / 有り = 初回はプロンプト3、以降は新トークン1
+// step k: 無し = コンテキスト全体(3+k-1)を作り直し / 有り = 初回はプロンプト3、以降は新トークン1
 const cacheFrames = Array.from({ length: GEN_STEPS + 1 }, (_, k) => {
   let no = 0, withC = 0;
   for (let s = 1; s <= k; s++) {
@@ -130,7 +130,7 @@ const sf = computed(() => specFrames.value[at.value]);
 const note = computed(() => {
   if (mode.value === "spec") return sf.value.note;
   if (cf.value.step === 0) return "プロンプト 3 トークンから 10 トークン生成する。各ステップで作る K/V の本数を数える";
-  return `ステップ ${cf.value.step}: キャッシュ無しは文脈全体 ${cf.value.stepNo} 本を作り直し、有りは${cf.value.step === 1 ? `プロンプトの ${PROMPT_LEN} 本(初回だけ)` : "新トークンの 1 本だけ"}。累計の差が開いていく`;
+  return `ステップ ${cf.value.step}: キャッシュ無しはコンテキスト全体 ${cf.value.stepNo} 本を作り直し、有りは${cf.value.step === 1 ? `プロンプトの ${PROMPT_LEN} 本(初回だけ)` : "新トークンの 1 本だけ"}。累計の差が開いていく`;
 });
 
 const canPrev = computed(() => at.value > 0);

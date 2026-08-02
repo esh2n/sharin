@@ -7,7 +7,7 @@ import FigureBox from '../components/figures/FigureBox.vue'
 # OS(最小カーネルと協調スケジューラ)
 
 <Summary>
-「誰が CPU を握るかを決める」という OS の奥の仕事を Go でモデル化する。CPU は 1 つしかなく、それを分け合うのがスケジューラになる。ここで作るのは協調方式で、タスクが自分から手放したときにだけ次を選ぶ。タスクの文脈はプログラムカウンタ 1 つで表せて、context switch はその保存と復元になる。yield を書かないタスクは他を待たせる。
+「誰が CPU を握るかを決める」という OS の奥の仕事を Go でモデル化する。CPU は 1 つしかなく、それを分け合うのがスケジューラになる。ここで作るのは協調方式で、タスクが自分から手放したときにだけ次を選ぶ。タスクのコンテキストはプログラムカウンタ 1 つで表せて、context switch はその保存と復元になる。yield を書かないタスクは他を待たせる。
 </Summary>
 
 ## この章で作るもの
@@ -19,7 +19,7 @@ import FigureBox from '../components/figures/FigureBox.vue'
 
 この章で作るのは前者だ。初期の Mac OS(〜9)や Windows 3.x が採っていた方式であり、いまの async/await・コルーチン・goroutine が持つ「協調ポイントで切り替わる」感覚の原型でもある。実スレッドも割り込みも使わず、この仕組みを純粋なデータ構造で決定的に組む。
 
-<FigureBox caption="カーネルは run queue(FIFO=round-robin)の先頭を dispatch し、タスクが yield / sleep で CPU を手放すまで走らせる。保存される文脈の実体は pc だけ。sleep したタスクは blocked に退避し、起床時刻に run queue へ戻る。走れるタスクが尽きたら CPU は次の起床まで空転(idle)する">
+<FigureBox caption="カーネルは run queue(FIFO=round-robin)の先頭を dispatch し、タスクが yield / sleep で CPU を手放すまで走らせる。保存されるコンテキストの実体は pc だけ。sleep したタスクは blocked に退避し、起床時刻に run queue へ戻る。走れるタスクが尽きたら CPU は次の起床まで空転(idle)する">
 
 ```
         ┌──────────── Kernel(論理時計 + スケジューラ)────────────┐
@@ -29,7 +29,7 @@ import FigureBox from '../components/figures/FigureBox.vue'
         │    │ 先頭を dispatch                        ↑ 起床で戻る │
         │    ▼                                                    │
         │  ┌ Running: A ┐                                         │
-        │  │ pc = 3     │  ← 文脈の実体は pc                       │
+        │  │ pc = 3     │  ← コンテキストの実体は pc                       │
         │  │            │     switch = pc の保存と復元             │
         │  └────────────┘                                         │
         └────────────────────────────────────────────────────────┘
@@ -39,15 +39,15 @@ import FigureBox from '../components/figures/FigureBox.vue'
 
 順に見ていく。
 
-1. **文脈(コンテキスト)= pc**: タスクの状態は「プログラムのどこまで実行したか」だけで表せる
+1. **コンテキスト(コンテキスト)= pc**: タスクの状態は「プログラムのどこまで実行したか」だけで表せる
 2. **協調 = 横取りしない**: `yield` するまで CPU を握り続ける。書き忘れると他を待たせる
 3. **ブロックと空転**: `sleep` は run queue から外れ、走れるタスクが尽きたら CPU は空転する
 
-## ① タスクと文脈(pc)
+## ① タスクとコンテキスト(pc)
 
 まずタスクを定義する。ここでのタスクは、`Run` / `Yield` / `Sleep` という**命令の並び(プログラム)**にすぎない。そして状態は、実行可能(ready)・実行中(running)・ブロック中(blocked)・完了(done)の4つを行き来する。
 
-いちばん大事なのは `Task` の `pc`(program counter)だ。タスクの「文脈」はこの pc だけで表せる。実機ではレジスタやスタックポインタを退避するが、本質は同じで、context switch は「保存した位置を戻して、続きから走らせる」ことになる:
+いちばん大事なのは `Task` の `pc`(program counter)だ。タスクの「コンテキスト」はこの pc だけで表せる。実機ではレジスタやスタックポインタを退避するが、本質は同じで、context switch は「保存した位置を戻して、続きから走らせる」ことになる:
 
 <<< ../../foundations/os/task.go#task{go}
 

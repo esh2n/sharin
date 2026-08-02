@@ -95,7 +95,7 @@ func (m *Model) attend(cache *Cache, lastTok int) int {
 
 // #region generate
 
-// GenerateNoCache はキャッシュを使わず、毎ステップ文脈全体の K/V を作り直す。
+// GenerateNoCache はキャッシュを使わず、毎ステップ コンテキスト全体の K/V を作り直す。
 // 戻り値は (生成込みの列, K/V 射影の回数)。射影回数は系列長の二次で伸びる。
 func (m *Model) GenerateNoCache(prompt []int, n int) ([]int, int) {
 	seq := append([]int(nil), prompt...)
@@ -112,7 +112,7 @@ func (m *Model) GenerateNoCache(prompt []int, n int) ([]int, int) {
 }
 
 // GenerateWithCache は K/V を一度だけ作って使い回す。毎ステップの追加射影は
-// 新しく文脈に入ったトークンの 1 回だけで、射影回数は線形になる。
+// 新しくコンテキストに入ったトークンの 1 回だけで、射影回数は線形になる。
 // 生成列は GenerateNoCache と完全に一致する。
 func (m *Model) GenerateWithCache(prompt []int, n int) ([]int, int) {
 	seq := append([]int(nil), prompt...)
