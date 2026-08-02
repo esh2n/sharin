@@ -7,7 +7,8 @@
     "docs:build": "vitepress build",
     "docs:preview": "vitepress preview",
     "vrt": "vitest run --config vitest.config.mts",
-    "vrt:update": "UPDATE_VRT=1 vitest run --config vitest.config.mts"
+    "vrt:update": "UPDATE_VRT=1 vitest run --config vitest.config.mts",
+    "check:terms": "node scripts/check-terms.mjs"
   },
   "devDependencies": {
     "@types/pngjs": "^6.0.5",
