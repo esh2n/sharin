@@ -115,6 +115,29 @@ Hermes は端末の実行先を選べるようになっていて、`local`、`ss
 
 Claude Code のサンドボックスも同じ形をしている。自動許可モードは「境界が受け止めるから、いちいち訊かない」という設計で、訊く回数を減らすのが目的だと明記されている。境界を引いたぶんだけ、確認が要らなくなる。
 
+### 置き換えない作りもある
+
+ただし、これは唯一の形ではない。Codex は**2つを別々の設定として持っている**。
+
+| 設定 | 値 |
+|---|---|
+| `sandbox_mode` | `read-only` / `workspace-write` / `danger-full-access` |
+| `approval_policy` | `untrusted` / `on-request` / `never` |
+
+**どこまで触れるか**と、**いつ訊くか**が独立している。①で「2つは直交している」と書いたが、Codex はそれをそのまま設定の形にしている。既定の組み合わせは `workspace-write` + `on-request`、つまり**作業場所の中は自由に書けて、外へ出るときとネットワークが要るときだけ訊く**。
+
+そしてもう1つ効くのが、**既定でサンドボックスが入っている**ことだ。Claude Code は `/sandbox` で入れる形、Pi はそもそも持たない形だった。Codex は何も設定しなくても中にいる。
+
+| | 既定の隔離 | ネットワーク |
+|---|---|---|
+| Codex | **workspace-write。最初から中にいる** | **既定で切れている** |
+| Claude Code | 無し(`/sandbox` で入れる) | 入れれば許可制 |
+| Pi | 無し(外側で包む前提) | 素通し |
+
+外向きの通信が既定で切れているのは、④で見る持ち出しの話に直接効く。**出られないなら持ち出せない**。要るときは `[sandbox_workspace_write]` の `network_access` を立てる、という順になっている。
+
+3つを並べると、隔離の入れ方に3通りの立場があると分かる。**製品が最初から入れておく**(Codex)、**使う側が入れる**(Claude Code)、**外側で包ませる**(Pi)。②で見た道具の数と同じで、どれかが正しいのではなく、誰が決めるかが違う。
+
 **この置き換えは、片側だけ緩めると崩れる**。コンテナに入れたつもりで作業ディレクトリの外まで書けるようにした、ホームディレクトリをそのまま渡した、というときに、確認のほうは既に消えている。ドキュメントも同じことを警告している。
 
 > 効果のある隔離には、ファイルシステムとネットワークの両方が要る。ネットワークの隔離が無ければ、乗っ取られたエージェントは SSH の鍵のような機微なファイルを持ち出せる。ファイルシステムの隔離が無ければ、乗っ取られたエージェントはシステムに裏口を作ってネットワークに出られる。**既定を広げるときは、片側の緩和がもう片側の制限を打ち消していないか確かめること**。
@@ -144,6 +167,8 @@ Hermes もコンテキストファイルを走査する仕組みを持ってい�
 - **何を内側に入れたか数える**: Bash だけ包んでも、隣でフックと MCP が素通りする
 - **確認を全部消すなら、境界を先に引く**: 消したあとに残るのは境界だけになる
 - **隔離と承認は置き換えの関係**: 境界を引いたから訊かない、という作りになっている。片側を緩めるともう片側が既に無い
+- **ただし置き換えない作りもある**: 触れる範囲と訊く条件を別々の設定として持てば、両方を独立に決められる
+- **既定で入っているかを見る**: 製品が入れておくのか、使う側が入れるのか、外側で包むのか。誰が決めるかが違う
 - **両側を同時に見る**: ファイルの範囲を広げたら出口も見る。出口を広げたらファイルの範囲も見る
 - **渡した資格情報は境界を越える**: 中に入れた資格情報は、中でも同じ力を持つ。短命のものを最小限で渡す
 - **依存の隔離を安全の隔離と数えない**: 再現性の道具は、境界ではない
@@ -154,6 +179,7 @@ Hermes もコンテキストファイルを走査する仕組みを持ってい�
 | 包む範囲 | Bash | ファイル操作 | MCP・フック | 出口の制御 | 用意する手間 |
 |---|---|---|---|---|---|
 | 何もしない | — | — | — | — | 無し |
+| Codex(既定) | **内側** | 作業場所の中 | 確認していない | **既定で切る** | 無し(最初から) |
 | 組み込みサンドボックス | **内側** | 権限規則 | 外側 | ドメイン許可制 | 小(macOS は素で動く) |
 | プロセスごと包む | 内側 | **内側** | **内側** | ドメイン許可制 | 小 |
 | dev container | 内側 | 内側 | 内側 | **firewall で既定拒否** | 中 |
@@ -167,6 +193,7 @@ Hermes もコンテキストファイルを走査する仕組みを持ってい�
 - **組み込みサンドボックスの範囲**: Bash とその子プロセスのみ。「MCP サーバとフックは別のプロセスで、ホスト上で制約なく走る」。Read / Edit / WebFetch は権限規則で見る。実装は macOS が Seatbelt、Linux と WSL2 が bubblewrap で、**Windows は非対応**(WSL2 の中で動かす)
 - **確認を消すときの条件**: 「`--dangerously-skip-permissions` のセッションは、必ずコンテナか VM か sandbox runtime の中で走らせること」。この旗は Linux と macOS で root や sudo からは弾かれる。既知のサンドボックスの中でだけ、その検査が飛ばされる
 - **Hermes のバックエンド**: `local` / `ssh` / `docker` / `singularity` / `modal` / `daytona` / `vercel_sandbox`。「コンテナ自体がセキュリティ境界なので、危険なコマンドの確認は飛ばされる」のは後ろの5つ。Docker の既定は権限を全部落としてから必要なものだけ戻し、権限昇格を禁じ、プロセス数に上限を置く
+- **Codex の2軸**: `sandbox_mode` は `read-only` / `workspace-write` / `danger-full-access` の3つ、`approval_policy` は `untrusted` / `on-request` / `never` ほか。既定の組み合わせは workspace-write + on-request。`workspace-write` では「ネットワークは既定で切れている」ので、要るなら `[sandbox_workspace_write]` の `network_access = true` を立てる。OS 側の実装は macOS が `sandbox-exec` による Seatbelt、Linux が `bwrap` と seccomp、Windows は専用のもの
 - **Pi がサンドボックスを持たない理由**: 「部分的な in-process サンドボックスは、セキュリティ境界だと誤解されやすいわりに、結局ホストのシェル、ファイルシステム、パッケージ管理、資格情報、そして拡張のコードに依存し続ける。本物の隔離は、OS か仮想化/コンテナの境界から来る必要がある」。代わりにコンテナ、マイクロ VM への routing、方針つきサンドボックスの3通りを文書化している
 - **依存の隔離は境界ではない**: Nix を使う開発環境の道具は、パッケージと環境の隔離を提供するもので、コンテナや VM とは隔離の型が違う。必要ならコンテナ定義を出力できる、という位置づけになっている
 - **出口の限界**: 「既定では組み込みの代理サーバは外向きの通信の TLS を終端も検査もしないので、暗号化された接続の中身は見ていない」「`github.com` のような広いドメインを許すと、データ持ち出しの経路を作りうる」
@@ -187,6 +214,7 @@ Hermes もコンテキストファイルを走査する仕組みを持ってい�
 - [Choose a sandbox environment](https://code.claude.com/docs/en/sandbox-environments) — 包む範囲ごとの比較
 - [Configure the sandboxed Bash tool](https://code.claude.com/docs/en/sandboxing) — 組み込みサンドボックスの設定と限界
 - [Security](https://hermes-agent.nousresearch.com/docs/user-guide/security) — Hermes の実行先と、確認を飛ばす条件
+- [Agent approvals & security(Codex)](https://developers.openai.com/codex/agent-approvals-security) — 隔離と承認を別々に持つ形
 - [Pi の Security](https://github.com/earendil-works/pi/blob/main/packages/coding-agent/docs/security.md) — サンドボックスを持たない理由
 - [Pi の Containerization](https://github.com/earendil-works/pi/blob/main/packages/coding-agent/docs/containerization.md) — 外側で包む3通り
 - 前の章: [エージェントの枠組み](/parts/agent-harness) / [Hermes と Pi で読み替える](/parts/agent-stack)
