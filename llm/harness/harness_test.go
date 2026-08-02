@@ -351,6 +351,124 @@ func fixGraph() *Graph {
 	}
 }
 
+// #region decide
+
+// visitOrder は fixGraph をたどる順。
+var visitOrder = []string{"search", "read", "edit", "test"}
+
+// decideGraph は fixGraph と同じ経路のまま、どの節で訊くかだけを変える。
+//
+// 経路も道具の手数も変わらないので、比べられるのは「どこで訊くか」の効果だけになる。
+func decideGraph(ask ...string) (*Graph, []Action) {
+	set := map[string]bool{}
+	for _, a := range ask {
+		set[a] = true
+	}
+	g := fixGraph()
+	for name, n := range g.Nodes {
+		if set[name] {
+			n.Decide, n.Tool = true, "" // 何を使うかはモデルが返す
+		} else {
+			n.Decide, n.Tool = false, name // 節の名前がそのまま道具の名前
+		}
+		g.Nodes[name] = n
+	}
+	var plan []Action
+	for _, name := range visitOrder {
+		if set[name] {
+			plan = append(plan, Action{Tool: name})
+		}
+	}
+	return g, plan
+}
+
+// #endregion decide
+
+func runDecide(t *testing.T, ask ...string) Result {
+	t.Helper()
+	g, plan := decideGraph(ask...)
+	tools, fixed := fixTools()
+	r := g.Run(&planner{plan: plan}, tools)
+	if !r.OK || !*fixed {
+		t.Fatalf("%v で直っていない: %+v", ask, r)
+	}
+	if r.ToolCalls != 4 {
+		t.Fatalf("%v で道具の手数が変わった: %d", ask, r.ToolCalls)
+	}
+	return r
+}
+
+// 訊く節を増やすと、呼び出しは比例して増える。だが経路は選べないままになる。
+func TestMoreDecidingNodesCostMoreWithoutDecidingMore(t *testing.T) {
+	// 比べる相手のループ。同じ 4 手を毎回訊いて進める。
+	lt, _ := fixTools()
+	loop := Loop(&planner{plan: []Action{
+		{Tool: "search"}, {Tool: "read"}, {Tool: "edit"}, {Tool: "test"},
+	}}, lt, LoopConfig{MaxCalls: 10})
+
+	t.Logf("%-22s %6s %8s %12s %12s", "形", "道具", "モデル", "渡した文字", "経路を選べる")
+	t.Logf("%-22s %6d %8d %12d %12s", "ループ(毎手訊く)", loop.ToolCalls, loop.ModelCalls, loop.InputChars, "はい")
+
+	// edit を起点に、後ろから足していく。
+	sets := [][]string{
+		{"edit"},
+		{"edit", "test"},
+		{"read", "edit", "test"},
+		{"search", "read", "edit", "test"},
+	}
+	var calls, chars []int
+	for _, s := range sets {
+		r := runDecide(t, s...)
+		calls = append(calls, r.ModelCalls)
+		chars = append(chars, r.InputChars)
+		t.Logf("%-22s %6d %8d %12d %12s",
+			"グラフ 訊く節"+string(rune('0'+len(s)))+"つ", r.ToolCalls, r.ModelCalls, r.InputChars, "いいえ")
+	}
+
+	// 呼び出しは訊く節の数に正比例する。
+	for i, c := range calls {
+		if c != i+1 {
+			t.Fatalf("訊く節 %d で呼び出しが %d", i+1, c)
+		}
+	}
+	// 全部の節で訊いても、まだループより安い。ループは最後の「終わり」を
+	// いちばん記録が長い状態で訊くので、そこが余分に効く。
+	t.Logf("全部訊く %d 回 %d 文字 / ループ %d 回 %d 文字",
+		calls[3], chars[3], loop.ModelCalls, loop.InputChars)
+	if calls[3] >= loop.ModelCalls || chars[3] >= loop.InputChars {
+		t.Fatalf("ループを超えた: %d/%d と %d/%d",
+			calls[3], chars[3], loop.ModelCalls, loop.InputChars)
+	}
+	// それでいて、決められることは 1 つも増えていない。
+	// 経路は 4 通りとも同じで、モデルが選べるのは各節で使う道具だけになる。
+	if chars[0] >= chars[3] {
+		t.Fatal("増やしたのに渡す量が減った")
+	}
+}
+
+// 同じ 1 つでも、後ろの節で訊くほど高くつく。
+func TestWhereYouAskDecidesWhatItCosts(t *testing.T) {
+	t.Logf("%-10s %8s %12s", "訊く節", "モデル", "渡した文字")
+	var chars []int
+	for _, name := range visitOrder {
+		r := runDecide(t, name)
+		chars = append(chars, r.InputChars)
+		t.Logf("%-10s %8d %12d", name, r.ModelCalls, r.InputChars)
+	}
+
+	// どこで訊いても呼び出しは 1 回。だが渡す量は単調に増える。
+	for i := 1; i < len(chars); i++ {
+		if chars[i] <= chars[i-1] {
+			t.Fatalf("後ろの節のほうが安い: %v", chars)
+		}
+	}
+	// 最初の節では記録がまだ空なので、渡すものが無い。
+	if chars[0] != 0 {
+		t.Fatalf("最初の節で渡した文字: %d", chars[0])
+	}
+	t.Logf("最後の節で訊くのは、2 番目の節で訊くより %d 文字ぶん重い", chars[3]-chars[1])
+}
+
 // この章の中心その5。経路を先に描けるところは、モデルに訊かなくてよい。
 func TestGraphAsksTheModelOnlyWhereItMatters(t *testing.T) {
 	tools, fixed := fixTools()
