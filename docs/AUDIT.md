@@ -153,7 +153,7 @@
 | key-exchange | ✅ | TLS への言及が crypto を指す誤リンクだったのを tls-handshake に修正 |
 | crypto | ✅ | ハッシュ・共通鍵を「別章で作る」と書いていた箇所を既出章へのリンクに修正 |
 | tls-handshake | ✅ | 合格。既出4章の部品を明示して組み上げる構成 |
-| auth | ✅ | JWT を守るのは RSA 署名でなく HMAC なので参照を hashing へ修正。OAuth 節を次章への入口と明示 |
+| auth | ✅ | JWT を守るのは RSA 署名でなく HMAC なので参照を hashing へ修正。OAuth 節を次章への入口と明示 | **2026-08-02 改訂**: 標準形に揃えた(順に見ていく5項目=①〜⑤、メリット/デメリット→対照と実例、デモを「動かす」小節へ)。Cookie の印(HttpOnly/Secure/SameSite/Domain-Path)を本文に表として追加し、盗まれない印と勝手に使われない印は別物であることを明示。名前だけ出ていた CSRF/XSS を新章2本へ接続
 | oauth | ✅ | 合格 |
 | blockchain | ✅ | 合格。検出→抑止→値段の順で積み上がっている |
 | utxo | ✅ | 合格 |
