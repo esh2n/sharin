@@ -153,7 +153,7 @@ import FigureBox from '../components/figures/FigureBox.vue'
 
 テストで、外からの攻撃が止まり、同じ守りで XSS 経由が通ることを固定した。
 
-だからこの章の守りは、**XSS が無いことを前提にしている**。順番があるということで、出力のエスケープが先に立っていないと、この章の話は土台ごと無くなる。
+だからこの章の守りは、**XSS が無いことを前提にしている**。順番があるということで、[出力の変換](/parts/xss)が先に立っていないと、この章の話は土台ごと無くなる。
 
 ### 動かす
 
@@ -169,7 +169,7 @@ import FigureBox from '../components/figures/FigureBox.vue'
 - **`Strict` は流入を切ることを承知で選ぶ**: ログイン状態が消えて見えるのは、仕様どおりの動作になる
 - **合言葉は状態を変える要求だけに求める**: 読むだけの `GET` に求めると、外からのリンクが全部死ぬ
 - **重ねる理由を言えるようにする**: 2つ足すなら、片方が落とす筋書きをもう片方が拾っている、と説明できること
-- **XSS を先に片づける**: 内側に入られると、この章の守りはどちらも成立しない
+- **XSS を先に片づける**: 内側に入られると、この章の守りはどちらも成立しない([「エスケープした」では足りない](/parts/xss))
 
 ## 対照と実例
 
@@ -201,5 +201,5 @@ import FigureBox from '../components/figures/FigureBox.vue'
 
 - [CSRF(MDN)](https://developer.mozilla.org/ja/docs/Web/Security/Attacks/CSRF) — 成立の条件と対策
 - [SameSite クッキー(MDN)](https://developer.mozilla.org/ja/docs/Web/HTTP/Reference/Headers/Set-Cookie#samesitesamesite-value) — 3つの値と線の引かれ方
-- 前の章: [送れるのに読めない](/parts/same-origin)
+- 前の章: [送れるのに読めない](/parts/same-origin) / [「エスケープした」では足りない](/parts/xss)
 - 実装: [crypto/csrf](https://github.com/esh2n/sharin/tree/main/crypto/csrf)

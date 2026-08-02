@@ -178,6 +178,7 @@ export default defineConfig({
           { text: "TLSハンドシェイク", link: "/parts/tls-handshake" },
           { text: "認証と認可", link: "/parts/auth" },
           { text: "送れるのに読めない", link: "/parts/same-origin" },
+          { text: "「エスケープした」では足りない(XSS)", link: "/parts/xss" },
           { text: "送れることを使う攻撃(CSRF)", link: "/parts/csrf" },
           { text: "OAuthと認可フロー", link: "/parts/oauth" },
         ],
