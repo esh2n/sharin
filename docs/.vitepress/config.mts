@@ -28,6 +28,12 @@ export default defineConfig({
         ],
       },
       {
+        text: "サービスのつなぎ方",
+        items: [
+          { text: "配ると、いちばん遅い1台が全体を決める", link: "/parts/scatter-gather" },
+        ],
+      },
+      {
         text: "ネットワーク下層",
         items: [
           { text: "TCP/IP", link: "/parts/tcp" },
