@@ -31,6 +31,7 @@ export default defineConfig({
         text: "サービスのつなぎ方",
         items: [
           { text: "配ると、いちばん遅い1台が全体を決める", link: "/parts/scatter-gather" },
+          { text: "締め切りを渡さないと、リトライが掛け算になる", link: "/parts/deadline" },
         ],
       },
       {
