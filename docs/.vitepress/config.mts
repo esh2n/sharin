@@ -241,6 +241,7 @@ export default defineConfig({
               { text: "Hermes と Pi で読み替える", link: "/parts/agent-stack" },
               { text: "隔離して走らせる", link: "/parts/agent-isolation" },
               { text: "人が見る前に落とす", link: "/parts/agent-gates" },
+              { text: "グラフを CI に写す", link: "/parts/agent-pipeline" },
               { text: "編成をモデルの内側に隠す", link: "/parts/orchestrator-model" },
             ],
           },
