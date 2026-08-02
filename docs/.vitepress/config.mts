@@ -239,6 +239,7 @@ export default defineConfig({
             text: "製品で読み替える",
             items: [
               { text: "Hermes と Pi で読み替える", link: "/parts/agent-stack" },
+              { text: "隔離して走らせる", link: "/parts/agent-isolation" },
               { text: "編成をモデルの内側に隠す", link: "/parts/orchestrator-model" },
             ],
           },
